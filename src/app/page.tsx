@@ -1,103 +1,115 @@
-import Image from "next/image";
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { PlanList } from "@/components/plan-list"
+import { SearchFilter } from "@/components/search-filter"
+import { Sparkles, TrendingDown, Users, Award, Target, Zap } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-white">
+      
+      {/* Hero Section - Full Width with Split Design */}
+      <section className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-pink-50"></div>
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239333ea' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        }}></div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        <div className="container mx-auto px-4 py-20 md:py-28 relative">
+          <div className="max-w-6xl mx-auto">
+            
+            {/* Top Badge */}
+            <div className="flex justify-center mb-8">
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full shadow-lg">
+                <Sparkles className="w-5 h-5" />
+                <span className="font-bold">Türkiye'nin #1 Zayıflama Platformu</span>
+              </div>
+            </div>
+
+            {/* Main Heading */}
+            <h1 className="text-5xl md:text-7xl font-black text-center mb-6 leading-tight">
+              <span className="text-gray-900">Gerçek İnsanlar,</span>
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500">
+                Gerçek Sonuçlar
+              </span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-xl text-gray-600 text-center max-w-3xl mx-auto mb-12">
+              Binlerce kişinin başarı hikayesini keşfet, ilham al ve kendi yolculuğunu başlat
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
+              <Link href="/submit">
+                <Button className="h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all">
+                  <Zap className="w-5 h-5 mr-2" />
+                  Hikayeni Paylaş
+                </Button>
+              </Link>
+              <Link href="#plans">
+                <Button variant="outline" className="h-14 px-8 border-2 border-gray-300 hover:border-purple-400 rounded-xl font-bold text-lg">
+                  Hikayeleri Keşfet
+                </Button>
+              </Link>
+            </div>
+
+            {/* Stats Cards - Horizontal */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <div className="bg-white rounded-2xl p-6 shadow-md border-2 border-purple-100 hover:border-purple-300 transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <Users className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-black text-gray-900">1000+</p>
+                    <p className="text-sm text-gray-600 font-medium">Aktif Kullanıcı</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-md border-2 border-emerald-100 hover:border-emerald-300 transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <TrendingDown className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-black text-gray-900">500+</p>
+                    <p className="text-sm text-gray-600 font-medium">Başarı Hikayesi</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-md border-2 border-amber-100 hover:border-amber-300 transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+                    <Award className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-black text-gray-900">10K+</p>
+                    <p className="text-sm text-gray-600 font-medium">Toplam Kilo Kaybı</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Divider */}
+      <div className="container mx-auto px-4">
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+      </div>
+
+      {/* Plans Section */}
+      <section id="plans" className="relative bg-gray-50 py-16">
+        <div className="container mx-auto px-4">
+          <SearchFilter />
+          <PlanList />
+        </div>
+      </section>
     </div>
-  );
+  )
 }

@@ -1,0 +1,191 @@
+import { NextResponse } from "next/server"
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import { planSchema } from "@/lib/validations"
+import { generateSlug } from "@/lib/slugify"
+import { checkRateLimit, getIdentifier, RATE_LIMITS } from "@/lib/rate-limit"
+import { checkContent } from "@/lib/moderation"
+import { addXP, checkBadges, XP_REWARDS } from "@/lib/gamification"
+
+export async function POST(req: Request) {
+  try {
+    // Rate limiting: 5 plans per hour
+    const session = await auth()
+    const identifier = getIdentifier(req, session?.user?.id)
+    const rateCheck = checkRateLimit(`plan-create:${identifier}`, RATE_LIMITS.PLAN)
+    
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { error: "Çok fazla istek. Lütfen daha sonra tekrar deneyin." },
+        { status: 429 }
+      )
+    }
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Giriş yapmalısınız" },
+        { status: 401 }
+      )
+    }
+
+    const body = await req.json()
+    const { categoryId, tagIds, ...planData } = body
+    const validatedData = planSchema.parse(planData)
+
+    // İçerik moderasyonu kontrolü
+    const contentToCheck = `${validatedData.title} ${validatedData.routine} ${validatedData.diet} ${validatedData.exercise} ${validatedData.motivation}`
+    const moderationResult = await checkContent(contentToCheck)
+
+    const slug = generateSlug(validatedData.title)
+
+    // Tüm planlar önce PENDING durumunda oluşturulur ve admin onayı bekler
+    const plan = await prisma.plan.create({
+      data: {
+        ...validatedData,
+        slug,
+        userId: session.user.id,
+        imageUrl: validatedData.imageUrl || null,
+        status: "PENDING",
+        categoryId: categoryId || null,
+      }
+    })
+
+    // Etiketleri ekle
+    if (tagIds && Array.isArray(tagIds) && tagIds.length > 0) {
+      await prisma.planTag.createMany({
+        data: tagIds.map((tagId: string) => ({
+          planId: plan.id,
+          tagId,
+        })),
+        skipDuplicates: true,
+      })
+    }
+
+    // Gamification: Plan oluşturma XP'si
+    await addXP(session.user.id, XP_REWARDS.PLAN_CREATED, "Plan oluşturuldu");
+    
+    // Rozetleri kontrol et
+    const newBadges = await checkBadges(session.user.id);
+
+    // Kullanıcıya bilgi ver
+    return NextResponse.json({ 
+      plan,
+      message: "Planınız başarıyla oluşturuldu. Admin onayından sonra yayınlanacaktır.",
+      requiresApproval: true,
+      moderationWarning: !moderationResult.isClean ? (moderationResult.isSpam ? "spam" : "banned-words") : null,
+      xpEarned: XP_REWARDS.PLAN_CREATED,
+      newBadges: newBadges.map(b => b.badge.name),
+    })
+  } catch (error) {
+    console.error("Plan creation error:", error)
+    return NextResponse.json(
+      { error: "Plan oluşturulurken bir hata oluştu" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url)
+    const status = searchParams.get("status") || "APPROVED"
+    const search = searchParams.get("search") || ""
+    const sort = searchParams.get("sort") || "recent"
+    const page = parseInt(searchParams.get("page") || "1")
+    const limit = parseInt(searchParams.get("limit") || "12")
+    const minWeight = searchParams.get("minWeight")
+    const maxWeight = searchParams.get("maxWeight")
+    const categoryId = searchParams.get("categoryId")
+
+    const where: any = {
+      status,
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { user: { name: { contains: search, mode: "insensitive" } } }
+      ]
+    }
+
+    if (minWeight || maxWeight) {
+      where.goalWeight = {}
+      if (minWeight) where.goalWeight.gte = parseInt(minWeight)
+      if (maxWeight) where.goalWeight.lte = parseInt(maxWeight)
+    }
+
+    if (categoryId) {
+      where.categoryId = categoryId
+    }
+
+    const orderBy: any = sort === "popular" 
+      ? [{ views: "desc" }, { likes: { _count: "desc" } }]
+      : { createdAt: "desc" }
+
+    const [plans, total] = await Promise.all([
+      prisma.plan.findMany({
+        where,
+        orderBy,
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            }
+          },
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              color: true,
+            }
+          },
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                }
+              }
+            }
+          },
+          _count: {
+            select: {
+              likes: true,
+              comments: true,
+            }
+          }
+        }
+      }),
+      prisma.plan.count({ where })
+    ])
+
+    return NextResponse.json(
+      {
+        plans,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
+        }
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+        },
+      }
+    )
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Planlar yüklenirken bir hata oluştu" },
+      { status: 500 }
+    )
+  }
+}

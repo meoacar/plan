@@ -1,0 +1,357 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+import { prisma } from "@/lib/prisma";
+
+// XP hesaplama
+export const XP_REWARDS = {
+  PLAN_CREATED: 50,
+  PLAN_APPROVED: 100,
+  LIKE_RECEIVED: 5,
+  COMMENT_RECEIVED: 10,
+  COMMENT_GIVEN: 5,
+  LIKE_GIVEN: 2,
+  DAILY_LOGIN: 10,
+  PROFILE_COMPLETE: 25,
+  VIEW_MILESTONE: 20,
+};
+
+// Seviye hesaplama (her seviye için gereken XP)
+export function calculateLevel(xp: number): number {
+  return Math.floor(Math.sqrt(xp / 100)) + 1;
+}
+
+export function xpForNextLevel(currentLevel: number): number {
+  return Math.pow(currentLevel, 2) * 100;
+}
+
+// Kullanıcıya XP ekle
+export async function addXP(userId: string, amount: number, reason: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) return null;
+
+  const newXP = (user.xp || 0) + amount;
+  const newLevel = calculateLevel(newXP);
+  const leveledUp = newLevel > (user.level || 1);
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      xp: newXP,
+      level: newLevel,
+    },
+  });
+
+  // Aktivite logu
+  await prisma.activityLog.create({
+    data: {
+      userId,
+      type: "SETTINGS_UPDATED",
+      description: `${amount} XP kazandı: ${reason}`,
+      metadata: { xp: amount, reason, leveledUp },
+    },
+  });
+
+  return { user: updatedUser, leveledUp, newLevel };
+}
+
+// Rozet kontrolü ve verme
+export async function checkAndAwardBadge(userId: string, badgeType: string) {
+  const badge = await prisma.badge.findUnique({
+    where: { type: badgeType },
+  });
+
+  if (!badge) return null;
+
+  // Zaten var mı kontrol et
+  const existing = await prisma.userBadge.findFirst({
+    where: {
+      userId,
+      badgeId: badge.id,
+    },
+  });
+
+  if (existing) return null;
+
+  // Rozeti ver
+  const userBadge = await prisma.userBadge.create({
+    data: {
+      userId,
+      badgeId: badge.id,
+    },
+    include: {
+      badge: true,
+    },
+  });
+
+  // XP ödülü ver
+  if (badge.xpReward > 0) {
+    await addXP(userId, badge.xpReward, `${badge.name} rozeti kazanıldı`);
+  }
+
+  return userBadge;
+}
+
+// Rozet kontrollerini yap
+export async function checkBadges(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      plans: {
+        where: { status: "APPROVED" },
+        include: {
+          likes: true,
+        },
+      },
+      comments: true,
+      badges: true,
+    },
+  });
+
+  if (!user) return [];
+
+  const newBadges = [];
+
+  // İlk plan
+  if (user.plans.length >= 1) {
+    const badge = await checkAndAwardBadge(userId, "FIRST_PLAN");
+    if (badge) newBadges.push(badge);
+  }
+
+  // 5, 10, 25 plan
+  if (user.plans.length >= 5) {
+    const badge = await checkAndAwardBadge(userId, "PLANS_5");
+    if (badge) newBadges.push(badge);
+  }
+  if (user.plans.length >= 10) {
+    const badge = await checkAndAwardBadge(userId, "PLANS_10");
+    if (badge) newBadges.push(badge);
+  }
+  if (user.plans.length >= 25) {
+    const badge = await checkAndAwardBadge(userId, "PLANS_25");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Toplam beğeni sayısı
+  const totalLikes = user.plans.reduce((sum, plan) => sum + plan.likes.length, 0);
+  if (totalLikes >= 10) {
+    const badge = await checkAndAwardBadge(userId, "LIKES_10");
+    if (badge) newBadges.push(badge);
+  }
+  if (totalLikes >= 50) {
+    const badge = await checkAndAwardBadge(userId, "LIKES_50");
+    if (badge) newBadges.push(badge);
+  }
+  if (totalLikes >= 100) {
+    const badge = await checkAndAwardBadge(userId, "LIKES_100");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Toplam görüntülenme
+  const totalViews = user.plans.reduce((sum, plan) => sum + plan.views, 0);
+  if (totalViews >= 100) {
+    const badge = await checkAndAwardBadge(userId, "VIEWS_100");
+    if (badge) newBadges.push(badge);
+  }
+  if (totalViews >= 500) {
+    const badge = await checkAndAwardBadge(userId, "VIEWS_500");
+    if (badge) newBadges.push(badge);
+  }
+  if (totalViews >= 1000) {
+    const badge = await checkAndAwardBadge(userId, "VIEWS_1000");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Yorum sayısı
+  if (user.comments.length >= 10) {
+    const badge = await checkAndAwardBadge(userId, "COMMENTS_10");
+    if (badge) newBadges.push(badge);
+  }
+  if (user.comments.length >= 50) {
+    const badge = await checkAndAwardBadge(userId, "COMMENTS_50");
+    if (badge) newBadges.push(badge);
+  }
+
+  return newBadges;
+}
+
+// Günlük giriş streak kontrolü
+export async function updateStreak(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) return null;
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  if (!user.lastActiveDate) {
+    // İlk giriş
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        lastActiveDate: now,
+        streak: 1,
+      },
+    });
+    await addXP(userId, XP_REWARDS.DAILY_LOGIN, "Günlük giriş");
+    return { streak: 1, isNew: true };
+  }
+
+  const lastActive = new Date(user.lastActiveDate);
+  const lastActiveDay = new Date(
+    lastActive.getFullYear(),
+    lastActive.getMonth(),
+    lastActive.getDate()
+  );
+
+  const daysDiff = Math.floor(
+    (today.getTime() - lastActiveDay.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (daysDiff === 0) {
+    // Bugün zaten giriş yapmış
+    return { streak: user.streak || 0, isNew: false };
+  } else if (daysDiff === 1) {
+    // Ardışık gün
+    const newStreak = (user.streak || 0) + 1;
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        lastActiveDate: now,
+        streak: newStreak,
+      },
+    });
+    await addXP(userId, XP_REWARDS.DAILY_LOGIN, "Günlük giriş");
+
+    // Streak rozetleri
+    if (newStreak >= 7) {
+      await checkAndAwardBadge(userId, "ACTIVE_7_DAYS");
+    }
+    if (newStreak >= 30) {
+      await checkAndAwardBadge(userId, "ACTIVE_30_DAYS");
+    }
+    if (newStreak >= 100) {
+      await checkAndAwardBadge(userId, "ACTIVE_100_DAYS");
+    }
+
+    return { streak: newStreak, isNew: true };
+  } else {
+    // Streak kırıldı
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        lastActiveDate: now,
+        streak: 1,
+      },
+    });
+    await addXP(userId, XP_REWARDS.DAILY_LOGIN, "Günlük giriş");
+    return { streak: 1, isNew: true, broken: true };
+  }
+}
+
+// Liderlik tablosu
+export async function getLeaderboard(type: "xp" | "likes" | "views", limit = 10) {
+  if (type === "xp") {
+    return await prisma.user.findMany({
+      where: {
+        role: "USER",
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        xp: true,
+        level: true,
+        _count: {
+          select: {
+            plans: {
+              where: { status: "APPROVED" },
+            },
+          },
+        },
+      },
+      orderBy: {
+        xp: "desc",
+      },
+      take: limit,
+    });
+  }
+
+  if (type === "likes") {
+    const users = await prisma.user.findMany({
+      where: {
+        role: "USER",
+        plans: {
+          some: {
+            status: "APPROVED",
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        xp: true,
+        level: true,
+        plans: {
+          where: { status: "APPROVED" },
+          select: {
+            _count: {
+              select: {
+                likes: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return users
+      .map((user) => ({
+        ...user,
+        totalLikes: user.plans.reduce((sum, plan) => sum + plan._count.likes, 0),
+      }))
+      .sort((a, b) => b.totalLikes - a.totalLikes)
+      .slice(0, limit);
+  }
+
+  if (type === "views") {
+    const users = await prisma.user.findMany({
+      where: {
+        role: "USER",
+        plans: {
+          some: {
+            status: "APPROVED",
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        xp: true,
+        level: true,
+        plans: {
+          where: { status: "APPROVED" },
+          select: {
+            views: true,
+          },
+        },
+      },
+    });
+
+    return users
+      .map((user) => ({
+        ...user,
+        totalViews: user.plans.reduce((sum, plan) => sum + plan.views, 0),
+      }))
+      .sort((a, b) => b.totalViews - a.totalViews)
+      .slice(0, limit);
+  }
+
+  return [];
+}

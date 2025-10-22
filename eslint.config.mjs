@@ -20,6 +20,20 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "react/no-unescaped-entities": "warn",
+      "@next/next/no-img-element": "warn",
+      "@next/next/no-html-link-for-pages": "warn",
+      "react-hooks/exhaustive-deps": "warn",
+      "prefer-const": "warn",
+      "@typescript-eslint/no-empty-object-type": "warn",
+      "@typescript-eslint/ban-ts-comment": "warn",
+      "jsx-a11y/alt-text": "warn",
+    },
+  },
 ];
 
 export default eslintConfig;

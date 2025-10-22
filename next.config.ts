@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
   // Production optimizations
   poweredByHeader: false,
   reactStrictMode: true,
-  
+
   // TypeScript - build sırasında tip kontrolünü atla
   typescript: {
     ignoreBuildErrors: true,

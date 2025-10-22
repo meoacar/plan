@@ -178,7 +178,6 @@ async function seedGamification() {
   ];
 
   for (const badge of badges) {
-    // @ts-expect-error - Prisma client will be regenerated
     await prisma.badge.upsert({
       where: { type: badge.type },
       update: badge,

@@ -12,6 +12,7 @@ export const XP_REWARDS = {
   LIKE_GIVEN: 2,
   DAILY_LOGIN: 10,
   PROFILE_COMPLETE: 25,
+  PROFILE_COMPLETE_100: 100, // %100 tamamlama bonusu
   VIEW_MILESTONE: 20,
 };
 
@@ -60,7 +61,7 @@ export async function addXP(userId: string, amount: number, reason: string) {
 // Rozet kontrolü ve verme
 export async function checkAndAwardBadge(userId: string, badgeType: string) {
   const badge = await prisma.badge.findUnique({
-    where: { type: badgeType },
+    where: { type: badgeType as any },
   });
 
   if (!badge) return null;
@@ -175,6 +176,67 @@ export async function checkBadges(userId: string) {
   }
 
   return newBadges;
+}
+
+// Profil tamamlama kontrolü
+export async function checkProfileCompletion(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      name: true,
+      bio: true,
+      image: true,
+      city: true,
+      startWeight: true,
+      goalWeight: true,
+      instagram: true,
+      twitter: true,
+      youtube: true,
+      tiktok: true,
+      website: true,
+    },
+  });
+
+  if (!user) return { completed: false, percentage: 0 };
+
+  const fields = [
+    { name: 'name', value: user.name },
+    { name: 'bio', value: user.bio },
+    { name: 'image', value: user.image },
+    { name: 'city', value: user.city },
+    { name: 'startWeight', value: user.startWeight },
+    { name: 'goalWeight', value: user.goalWeight },
+    { 
+      name: 'social', 
+      value: user.instagram || user.twitter || user.youtube || user.tiktok || user.website 
+    },
+  ];
+
+  const completedFields = fields.filter(f => f.value).length;
+  const totalFields = fields.length;
+  const percentage = Math.round((completedFields / totalFields) * 100);
+  const isComplete = percentage === 100;
+
+  // %100 tamamlandıysa rozet ve XP ver
+  if (isComplete) {
+    const badge = await checkAndAwardBadge(userId, "PROFILE_COMPLETE");
+    if (badge) {
+      return { 
+        completed: true, 
+        percentage, 
+        newBadge: badge,
+        completedFields,
+        totalFields 
+      };
+    }
+  }
+
+  return { 
+    completed: isComplete, 
+    percentage,
+    completedFields,
+    totalFields 
+  };
 }
 
 // Günlük giriş streak kontrolü

@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ProfileCompletionCard } from "@/components/profile-completion-card"
+import { BadgeNotification } from "@/components/badge-notification"
 
 export default function EditProfilePage() {
   const router = useRouter()
@@ -20,12 +22,14 @@ export default function EditProfilePage() {
   const [passwordSuccess, setPasswordSuccess] = useState("")
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [hasPassword, setHasPassword] = useState(false)
+  const [newBadge, setNewBadge] = useState<any>(null)
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     bio: "",
     image: "",
+    city: "",
     startWeight: "",
     goalWeight: "",
     instagram: "",
@@ -78,6 +82,7 @@ export default function EditProfilePage() {
           email: data.email || "",
           bio: data.bio || "",
           image: data.image || "",
+          city: data.city || "",
           startWeight: data.startWeight?.toString() || "",
           goalWeight: data.goalWeight?.toString() || "",
           instagram: data.instagram || "",
@@ -168,6 +173,7 @@ export default function EditProfilePage() {
           name: formData.name,
           bio: formData.bio,
           image: uploadedImage || selectedAvatar || null,
+          city: formData.city || null,
           startWeight: formData.startWeight ? parseInt(formData.startWeight) : null,
           goalWeight: formData.goalWeight ? parseInt(formData.goalWeight) : null,
           instagram: formData.instagram || null,
@@ -185,7 +191,15 @@ export default function EditProfilePage() {
         return
       }
 
-      setSuccess("✅ Profil başarıyla güncellendi!")
+      // Profil tamamlama kontrolü
+      if (data.profileCompletion?.newBadge) {
+        setNewBadge(data.profileCompletion.newBadge.badge)
+        setSuccess(`🎉 Tebrikler! Profilini %100 tamamladın ve "${data.profileCompletion.newBadge.badge.name}" rozetini kazandın!`)
+      } else if (data.profileCompletion?.completed) {
+        setSuccess("✅ Profil başarıyla güncellendi! Profilin %100 tamamlandı! 🎉")
+      } else {
+        setSuccess(`✅ Profil başarıyla güncellendi! (Tamamlanma: %${data.profileCompletion?.percentage || 0})`)
+      }
     } catch (error) {
       setError("Bir hata oluştu")
     } finally {
@@ -272,6 +286,14 @@ export default function EditProfilePage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
+      {/* Badge Notification */}
+      {newBadge && (
+        <BadgeNotification 
+          badge={newBadge} 
+          onClose={() => setNewBadge(null)} 
+        />
+      )}
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">⚙️ Profil Ayarları</h1>
@@ -280,7 +302,20 @@ export default function EditProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sidebar Navigation */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-6">
+          {/* Profil Tamamlama */}
+          <ProfileCompletionCard 
+            fields={[
+              { name: 'name', label: 'İsim Soyisim', completed: !!formData.name },
+              { name: 'bio', label: 'Hakkında', completed: !!formData.bio },
+              { name: 'image', label: 'Profil Resmi', completed: !!(uploadedImage || selectedAvatar) },
+              { name: 'city', label: 'Şehir', completed: !!formData.city },
+              { name: 'startWeight', label: 'Başlangıç Kilosu', completed: !!formData.startWeight },
+              { name: 'goalWeight', label: 'Hedef Kilo', completed: !!formData.goalWeight },
+              { name: 'social', label: 'Sosyal Medya', completed: !!(formData.instagram || formData.twitter || formData.youtube || formData.tiktok || formData.website) },
+            ]}
+          />
+
           <Card className="shadow-lg sticky top-4">
             <CardContent className="p-4">
               <nav className="space-y-2">
@@ -498,6 +533,21 @@ export default function EditProfilePage() {
                       className="resize-none border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                     />
                     <p className="text-xs text-gray-500 mt-1.5 ml-1">Profilinizde görünecek kısa bir açıklama</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700 flex items-center gap-2">
+                      <span>📍</span>
+                      Şehir
+                    </label>
+                    <Input
+                      type="text"
+                      value={formData.city}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      placeholder="örn: İstanbul, Ankara, İzmir"
+                      className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1.5 ml-1">Türkiye Kilo Haritası için kullanılacak</p>
                   </div>
                 </div>
 

@@ -8,6 +8,7 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import FollowButton from "@/components/follow-button"
 import UserFollowStats from "@/components/user-follow-stats"
+import WallPosts from "@/components/wall-posts"
 
 interface PageProps {
   params: Promise<{ userId: string }>
@@ -55,6 +56,23 @@ async function getUser(userId: string, isOwnProfile: boolean = false) {
           plans: { where: { status: "APPROVED" } },
           comments: true,
           likes: true,
+        },
+      },
+      polls: {
+        where: isOwnProfile ? undefined : { isActive: true },
+        orderBy: { createdAt: "desc" },
+        include: {
+          options: {
+            orderBy: { order: "asc" },
+            include: {
+              _count: {
+                select: { votes: true },
+              },
+            },
+          },
+          _count: {
+            select: { votes: true },
+          },
         },
       },
     },
@@ -240,6 +258,8 @@ export default async function ProfilePage({ params }: PageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Left Column - About & Goals */}
         <div className="lg:col-span-1 space-y-6">
+          {/* Wall Posts */}
+          <WallPosts userId={user.id} isOwnProfile={isOwnProfile} />
           {/* About Section */}
           {user.bio && (
             <Card className="shadow-lg hover:shadow-xl transition-shadow">
@@ -476,6 +496,95 @@ export default async function ProfilePage({ params }: PageProps) {
               </div>
             )}
           </div>
+
+          {/* User Polls */}
+          {user.polls && user.polls.length > 0 && (
+            <div className="mt-12">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-3xl">📊</span>
+                  {isOwnProfile ? "Oluşturduğum Anketler" : "Anketleri"}
+                  <span className="text-xl text-gray-500">({user.polls.length})</span>
+                </h2>
+              </div>
+
+              <div className="space-y-6">
+                {user.polls.map((poll: any) => (
+                  <Card key={poll.id} className="shadow-lg hover:shadow-xl transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                            {poll.question}
+                          </h3>
+                          {poll.description && (
+                            <p className="text-sm text-gray-600 mb-3">{poll.description}</p>
+                          )}
+                          <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                            <span className="flex items-center gap-1">
+                              🗳️ {poll._count.votes} oy
+                            </span>
+                            {poll.allowMultiple && (
+                              <span className="rounded-full bg-blue-100 px-2 py-1 text-blue-700">
+                                Çoklu seçim
+                              </span>
+                            )}
+                            {poll.isActive ? (
+                              <span className="rounded-full bg-green-100 px-2 py-1 text-green-700">
+                                Aktif
+                              </span>
+                            ) : (
+                              <span className="rounded-full bg-gray-100 px-2 py-1 text-gray-700">
+                                Pasif
+                              </span>
+                            )}
+                            {poll.endsAt && (
+                              <span>
+                                Bitiş: {new Date(poll.endsAt).toLocaleDateString('tr-TR')}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        {poll.options.map((option: any) => {
+                          const percentage = poll._count.votes > 0 
+                            ? Math.round((option._count.votes / poll._count.votes) * 100)
+                            : 0;
+                          
+                          return (
+                            <div key={option.id} className="relative">
+                              <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                <span className="relative z-10 text-sm font-medium text-gray-900">
+                                  {option.text}
+                                </span>
+                                <span className="relative z-10 text-sm font-semibold text-gray-700">
+                                  {percentage}% ({option._count.votes})
+                                </span>
+                                <div
+                                  className="absolute inset-0 rounded-lg bg-green-100 opacity-50"
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="mt-4 flex justify-end">
+                        <Link href="/polls">
+                          <Button variant="outline" size="sm">
+                            Tüm Anketleri Gör →
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

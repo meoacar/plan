@@ -1,20 +1,44 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
 
-export default function Loading() {
+export default function PlanDetailLoading() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Card className="shadow-xl animate-pulse">
-        <CardHeader className="bg-gradient-to-r from-gray-300 to-gray-400 rounded-t-xl h-48"></CardHeader>
-        <CardContent className="space-y-6 pt-8">
-          <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-          <div className="space-y-3">
-            <div className="h-4 bg-gray-200 rounded"></div>
-            <div className="h-4 bg-gray-200 rounded"></div>
-            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      {/* Header Skeleton */}
+      <div className="mb-8">
+        <Skeleton className="h-12 w-3/4 mb-4" />
+        <div className="flex items-center gap-4 mb-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="flex-1">
+            <Skeleton className="h-5 w-32 mb-2" />
+            <Skeleton className="h-4 w-48" />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Stats Skeleton */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i}>
+            <CardContent className="p-4">
+              <Skeleton className="h-8 w-16 mb-2" />
+              <Skeleton className="h-4 w-20" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Content Skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+        <div className="lg:col-span-1 space-y-6">
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </div>
     </div>
-  )
+  );
 }

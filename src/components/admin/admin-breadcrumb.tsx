@@ -19,6 +19,7 @@ const routeLabels: Record<string, string> = {
   moderation: "Moderasyon",
   emails: "Email",
   "activity-log": "Aktivite Logu",
+  seo: "SEO Optimizasyonu",
   settings: "Ayarlar",
   maintenance: "Bakım",
 }

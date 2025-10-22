@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { Upload, X } from 'lucide-react';
+import { SkeletonGallery } from '@/components/ui/skeleton';
 
 interface ProgressPhoto {
   id: string;
@@ -30,11 +31,14 @@ export function ProgressGallery({ userId, isOwner }: ProgressGalleryProps) {
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch(`/api/progress-photos?userId=${userId}`)
       .then((r) => r.json())
-      .then(setPhotos);
+      .then(setPhotos)
+      .finally(() => setLoading(false));
   }, [userId]);
 
   const deletePhoto = async (id: string) => {
@@ -130,7 +134,9 @@ export function ProgressGallery({ userId, isOwner }: ProgressGalleryProps) {
         )}
       </div>
 
-      {photos.length === 0 ? (
+      {loading ? (
+        <SkeletonGallery items={6} />
+      ) : photos.length === 0 ? (
         <div className="rounded-lg border-2 border-dashed p-12 text-center text-gray-500">
           Henüz fotoğraf eklenmemiş
         </div>

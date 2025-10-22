@@ -1,12 +1,29 @@
-export default function Loading() {
+import { Skeleton, SkeletonCard, SkeletonTable } from '@/components/ui/skeleton';
+
+export default function AdminLoading() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="bg-gradient-to-r from-gray-300 to-gray-400 p-8 rounded-xl mb-8 h-32 animate-pulse"></div>
+      <div className="mb-8">
+        <Skeleton className="h-10 w-64 mb-4" />
+        <Skeleton className="h-6 w-96" />
+      </div>
+
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-gray-200 rounded-xl h-32 animate-pulse"></div>
+          <SkeletonCard key={i} />
         ))}
       </div>
+
+      {/* Tabs */}
+      <div className="flex gap-4 mb-6">
+        <Skeleton className="h-12 w-32 rounded-lg" />
+        <Skeleton className="h-12 w-32 rounded-lg" />
+        <Skeleton className="h-12 w-32 rounded-lg" />
+      </div>
+
+      {/* Table */}
+      <SkeletonTable rows={8} />
     </div>
-  )
+  );
 }

@@ -12,6 +12,7 @@ import { FavoriteButton } from "./favorite-button"
 import { AddToCollectionButton } from "./add-to-collection-button"
 import { PdfExportButton } from "./pdf-export-button"
 import { VideoEmbed } from "./video-embed"
+import { CommentReactions } from "./comment-reactions"
 
 interface PlanDetailProps {
   plan: any
@@ -36,8 +37,8 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
 
   useEffect(() => {
     // Increment view count
-    fetch(`/api/plans/${plan.id}/view`, { method: "POST" })
-  }, [plan.id])
+    fetch(`/api/plans/${plan.slug}/view`, { method: "POST" })
+  }, [plan.slug])
 
   const handleLike = async () => {
     if (!session) {
@@ -605,6 +606,15 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                             )}
                           </div>
                           <p className="text-gray-300 text-base leading-relaxed">{comment.body}</p>
+                          
+                          {/* Emoji Reactions */}
+                          <CommentReactions 
+                            commentId={comment.id}
+                            initialReactions={comment.reactions?.map((r: any) => ({
+                              emoji: r.emoji,
+                              userId: r.user.id
+                            })) || []}
+                          />
                         </div>
                       </div>
                     </CardContent>

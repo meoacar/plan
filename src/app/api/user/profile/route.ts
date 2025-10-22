@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { checkProfileCompletion } from "@/lib/gamification"
 
 // GET - Kullanıcı profilini getir
 export async function GET() {
@@ -19,6 +20,7 @@ export async function GET() {
         email: true,
         image: true,
         bio: true,
+        city: true,
         startWeight: true,
         goalWeight: true,
         instagram: true,
@@ -40,6 +42,7 @@ export async function GET() {
       email: user.email,
       image: user.image,
       bio: user.bio,
+      city: user.city,
       startWeight: user.startWeight,
       goalWeight: user.goalWeight,
       instagram: user.instagram,
@@ -65,7 +68,7 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json()
-    const { name, bio, image, startWeight, goalWeight, instagram, twitter, youtube, tiktok, website } = body
+    const { name, bio, image, city, startWeight, goalWeight, instagram, twitter, youtube, tiktok, website } = body
 
     // Validasyon
     if (!name || name.trim().length === 0) {
@@ -86,6 +89,7 @@ export async function PUT(request: Request) {
         name: name.trim(),
         image: image || null,
         bio: bio?.trim() || null,
+        city: city?.trim() || null,
         startWeight: startWeight || null,
         goalWeight: goalWeight || null,
         instagram: instagram?.trim() || null,
@@ -100,6 +104,7 @@ export async function PUT(request: Request) {
         email: true,
         image: true,
         bio: true,
+        city: true,
         startWeight: true,
         goalWeight: true,
         instagram: true,
@@ -110,7 +115,13 @@ export async function PUT(request: Request) {
       },
     })
 
-    return NextResponse.json(user)
+    // Profil tamamlama kontrolü yap
+    const profileCheck = await checkProfileCompletion(user.id)
+    
+    return NextResponse.json({
+      ...user,
+      profileCompletion: profileCheck,
+    })
   } catch (error) {
     console.error("Profil güncelleme hatası:", error)
     return NextResponse.json({ error: "Profil güncellenemedi" }, { status: 500 })

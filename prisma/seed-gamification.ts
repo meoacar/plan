@@ -133,6 +133,48 @@ async function seedGamification() {
       icon: "💪",
       xpReward: 500,
     },
+    {
+      type: "FIRST_PARTNER",
+      name: "İlk Partner",
+      description: "İlk partnerini edindin",
+      icon: "🤝",
+      xpReward: 100,
+    },
+    {
+      type: "SUPPORTIVE_PARTNER",
+      name: "Destekleyici Partner",
+      description: "50 destek notu ekledin",
+      icon: "💬",
+      xpReward: 200,
+    },
+    {
+      type: "GOAL_ACHIEVER",
+      name: "Hedef Avcısı",
+      description: "10 ortak hedef tamamladın",
+      icon: "🎯",
+      xpReward: 300,
+    },
+    {
+      type: "LONG_TERM_PARTNER",
+      name: "Uzun Soluklu Partner",
+      description: "90 gün aktif partnerlik",
+      icon: "⏳",
+      xpReward: 500,
+    },
+    {
+      type: "MOTIVATOR",
+      name: "Motivasyon Kaynağı",
+      description: "100 motivasyon mesajı gönderdin",
+      icon: "✨",
+      xpReward: 250,
+    },
+    {
+      type: "PROFILE_COMPLETE",
+      name: "Profil Tamamlandı",
+      description: "Profilini %100 tamamladın",
+      icon: "✅",
+      xpReward: 100,
+    },
   ];
 
   for (const badge of badges) {

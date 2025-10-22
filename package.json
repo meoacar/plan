@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
-    "db:seed:gamification": "tsx prisma/seed-gamification.ts"
+    "db:seed:gamification": "tsx prisma/seed-gamification.ts",
+    "db:seed:polls": "tsx prisma/seed-polls.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

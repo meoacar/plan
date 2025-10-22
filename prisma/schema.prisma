@@ -64,6 +64,12 @@ enum BadgeType {
   EARLY_ADOPTER
   COMMUNITY_HELPER
   WEIGHT_LOSS_HERO
+  FIRST_PARTNER
+  SUPPORTIVE_PARTNER
+  GOAL_ACHIEVER
+  LONG_TERM_PARTNER
+  MOTIVATOR
+  PROFILE_COMPLETE
 }
 
 enum GoalType {
@@ -74,48 +80,64 @@ enum GoalType {
   MONTHLY_ACTIVE
 }
 
+enum PartnershipStatus {
+  PENDING
+  ACTIVE
+  ENDED
+  REJECTED
+}
+
 model User {
-  id              String          @id @default(cuid())
-  email           String          @unique
-  passwordHash    String?
-  name            String?
-  image           String? // avatar
-  bio             String?         @db.Text
-  startWeight     Int?
-  goalWeight      Int?
-  instagram       String?
-  twitter         String?
-  youtube         String?
-  tiktok          String?
-  website         String?
-  role            Role            @default(USER)
-  xp              Int             @default(0)
-  level           Int             @default(1)
-  streak          Int             @default(0)
-  lastActiveDate  DateTime?
-  accounts        Account[]
-  sessions        Session[]
-  plans           Plan[]
-  comments        Comment[]
-  likes           Like[]
-  favorites       Favorite[]
-  collections     Collection[]
-  activityLogs    ActivityLog[]
-  emailCampaigns  EmailCampaign[]
-  bannedWords     BannedWord[]
-  siteSettings    SiteSettings[]
-  backups         Backup[]
-  badges          UserBadge[]
-  goals           UserGoal[]
-  weightLogs      WeightLog[]
-  checkIns        CheckIn[]
-  progressPhotos  ProgressPhoto[]
-  measurements    Measurement[]
-  moodLogs        MoodLog[]
-  following       Follow[]        @relation("UserFollowing")
-  followers       Follow[]        @relation("UserFollowers")
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  id               String            @id @default(cuid())
+  email            String            @unique
+  passwordHash     String?
+  name             String?
+  image            String? // avatar
+  bio              String?           @db.Text
+  city             String?           // Şehir bilgisi (analytics için)
+  startWeight      Int?
+  goalWeight       Int?
+  instagram        String?
+  twitter          String?
+  youtube          String?
+  tiktok           String?
+  website          String?
+  role             Role              @default(USER)
+  xp               Int               @default(0)
+  level            Int               @default(1)
+  streak           Int               @default(0)
+  lastActiveDate   DateTime?
+  accounts         Account[]
+  sessions         Session[]
+  plans            Plan[]
+  comments         Comment[]
+  commentReactions CommentReaction[]
+  likes            Like[]
+  favorites        Favorite[]
+  collections      Collection[]
+  activityLogs     ActivityLog[]
+  emailCampaigns   EmailCampaign[]
+  bannedWords      BannedWord[]
+  siteSettings     SiteSettings[]
+  backups          Backup[]
+  badges           UserBadge[]
+  goals            UserGoal[]
+  weightLogs       WeightLog[]
+  checkIns         CheckIn[]
+  progressPhotos   ProgressPhoto[]
+  measurements     Measurement[]
+  moodLogs         MoodLog[]
+  following        Follow[]          @relation("UserFollowing")
+  followers        Follow[]          @relation("UserFollowers")
+  polls            Poll[]
+  pollVotes        PollVote[]
+  partnerRequests  AccountabilityPartnership[] @relation("PartnerRequester")
+  partnerReceived  AccountabilityPartnership[] @relation("PartnerReceiver")
+  crisisButtons    CrisisButton[]
+  wallPosts        WallPost[]        @relation("WallPostOwner")
+  wallPostsWritten WallPost[]        @relation("WallPostAuthor")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   @@index([xp, level])
 }
@@ -155,13 +177,28 @@ model Plan {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
+  id        String            @id @default(cuid())
   planId    String
-  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  plan      Plan              @relation(fields: [planId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String            @db.Text
+  reactions CommentReaction[]
+  createdAt DateTime          @default(now())
+}
+
+model CommentReaction {
+  id        String   @id @default(cuid())
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  body      String   @db.Text
+  emoji     String   // 💪, 🔥, 👏, ❤️, 😊
   createdAt DateTime @default(now())
+
+  @@unique([commentId, userId, emoji])
+  @@index([commentId])
+  @@index([userId])
 }
 
 model Like {
@@ -396,18 +433,19 @@ model WeightLog {
 
 // Check-in sistemi
 model CheckIn {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weight      Float?   // kg
-  energy      Int?     // 1-5 arası enerji seviyesi
-  motivation  Int?     // 1-5 arası motivasyon
-  sleep       Int?     // saat cinsinden uyku
-  water       Int?     // bardak cinsinden su tüketimi
-  exercise    Boolean  @default(false)
-  dietPlan    Boolean  @default(false)
-  note        String?  @db.Text
-  createdAt   DateTime @default(now())
+  id                  String                @id @default(cuid())
+  userId              String
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weight              Float?                // kg
+  energy              Int?                  // 1-5 arası enerji seviyesi
+  motivation          Int?                  // 1-5 arası motivasyon
+  sleep               Int?                  // saat cinsinden uyku
+  water               Int?                  // bardak cinsinden su tüketimi
+  exercise            Boolean               @default(false)
+  dietPlan            Boolean               @default(false)
+  note                String?               @db.Text
+  partnershipCheckIns PartnershipCheckIn[]
+  createdAt           DateTime              @default(now())
 
   @@index([userId, createdAt])
 }
@@ -498,4 +536,152 @@ model Follow {
   @@unique([followerId, followingId])
   @@index([followerId])
   @@index([followingId])
+}
+
+// SEO Ayarları
+model SeoSettings {
+  id        Int      @id @default(1)
+  settings  Json     // SEO ayarlarını JSON olarak sakla
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Hesap Verebilirlik Partneri Sistemi
+model AccountabilityPartnership {
+  id          String                 @id @default(cuid())
+  requesterId String
+  requester   User                   @relation("PartnerRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  partnerId   String
+  partner     User                   @relation("PartnerReceiver", fields: [partnerId], references: [id], onDelete: Cascade)
+  status      PartnershipStatus      @default(PENDING)
+  message     String?                @db.Text
+  sharedGoals PartnershipGoal[]
+  messages    PartnershipMessage[]
+  checkIns    PartnershipCheckIn[]
+  createdAt   DateTime               @default(now())
+  acceptedAt  DateTime?
+  endedAt     DateTime?
+
+  @@unique([requesterId, partnerId])
+  @@index([requesterId, status])
+  @@index([partnerId, status])
+}
+
+model PartnershipGoal {
+  id            String                    @id @default(cuid())
+  partnershipId String
+  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?                   @db.Text
+  targetDate    DateTime
+  completed     Boolean                   @default(false)
+  completedAt   DateTime?
+  createdBy     String
+  createdAt     DateTime                  @default(now())
+
+  @@index([partnershipId, completed])
+}
+
+model PartnershipMessage {
+  id            String                    @id @default(cuid())
+  partnershipId String
+  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+  senderId      String
+  content       String                    @db.Text
+  isRead        Boolean                   @default(false)
+  readAt        DateTime?
+  createdAt     DateTime                  @default(now())
+
+  @@index([partnershipId, createdAt])
+  @@index([senderId])
+}
+
+model PartnershipCheckIn {
+  id            String                    @id @default(cuid())
+  partnershipId String
+  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+  checkInId     String
+  checkIn       CheckIn                   @relation(fields: [checkInId], references: [id], onDelete: Cascade)
+  supportNote   String?                   @db.Text
+  createdAt     DateTime                  @default(now())
+
+  @@index([partnershipId, createdAt])
+}
+
+// Anket Sistemi
+model Poll {
+  id          String       @id @default(cuid())
+  question    String
+  description String?      @db.Text
+  isActive    Boolean      @default(true)
+  isPublic    Boolean      @default(true)
+  allowMultiple Boolean    @default(false) // Çoklu seçim izni
+  endsAt      DateTime?    // Anket bitiş tarihi (opsiyonel)
+  createdBy   String
+  creator     User         @relation(fields: [createdBy], references: [id])
+  options     PollOption[]
+  votes       PollVote[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([isActive, createdAt])
+  @@index([createdBy])
+}
+
+model PollOption {
+  id        String     @id @default(cuid())
+  pollId    String
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  text      String
+  order     Int        @default(0)
+  votes     PollVote[]
+  createdAt DateTime   @default(now())
+
+  @@index([pollId, order])
+}
+
+model PollVote {
+  id        String     @id @default(cuid())
+  pollId    String
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  optionId  String
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userId    String
+  voter     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  @@unique([pollId, optionId, userId])
+  @@index([pollId])
+  @@index([userId])
+}
+
+// Kriz Anı Sistemi
+model CrisisButton {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trigger     String   // "food_craving", "motivation_low", "stress_eating", "boredom"
+  resolved    Boolean  @default(false)
+  resolvedAt  DateTime?
+  note        String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([trigger])
+}
+
+// Duvar Yazıları Sistemi
+model WallPost {
+  id        String   @id @default(cuid())
+  userId    String   // Duvarın sahibi
+  user      User     @relation("WallPostOwner", fields: [userId], references: [id], onDelete: Cascade)
+  authorId  String   // Mesajı yazan
+  author    User     @relation("WallPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  isPublic  Boolean  @default(true) // Herkes görebilir mi?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([authorId])
 }

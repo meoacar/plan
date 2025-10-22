@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
 import { Button } from "./ui/button"
 import { useState, useRef, useEffect } from "react"
-import { Menu, X, User, LogOut, Settings, ChevronDown, FolderOpen, Camera, Trophy, BarChart3, Users } from "lucide-react"
+import { Menu, X, User, LogOut, Settings, ChevronDown, FolderOpen, Camera, Trophy, BarChart3, Users, BarChart2 } from "lucide-react"
 import { Logo } from "./logo"
 
 interface NavbarClientProps {
@@ -70,54 +70,80 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
               Plan Ekle
             </Link>
 
-            {session && (
-              <div className="relative" ref={featuresMenuRef}>
-                <button
-                  onClick={() => setFeaturesMenuOpen(!featuresMenuOpen)}
-                  className="flex items-center gap-1 text-base font-medium text-gray-700 hover:text-[#2d7a4a] transition-colors"
-                >
-                  Özellikler
-                  <ChevronDown className={`w-4 h-4 transition-transform ${featuresMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {featuresMenuOpen && (
-                  <div className="absolute top-full mt-2 right-0 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    <Link
-                      href="/collections"
-                      onClick={() => setFeaturesMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <FolderOpen className="w-4 h-4 text-[#2d7a4a]" />
-                      <span>Koleksiyonlar</span>
-                    </Link>
-                    <Link
-                      href="/progress"
-                      onClick={() => setFeaturesMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <Camera className="w-4 h-4 text-[#2d7a4a]" />
-                      <span>Fotoğraf Galerisi</span>
-                    </Link>
-                    <Link
-                      href="/analytics"
-                      onClick={() => setFeaturesMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <BarChart3 className="w-4 h-4 text-[#2d7a4a]" />
-                      <span>İlerleme Takibi</span>
-                    </Link>
-                    <Link
-                      href="/gamification"
-                      onClick={() => setFeaturesMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <Trophy className="w-4 h-4 text-[#2d7a4a]" />
-                      <span>Rozetler & Liderlik</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="relative" ref={featuresMenuRef}>
+              <button
+                onClick={() => setFeaturesMenuOpen(!featuresMenuOpen)}
+                className="flex items-center gap-1 text-base font-medium text-gray-700 hover:text-[#2d7a4a] transition-colors"
+              >
+                Özellikler
+                <ChevronDown className={`w-4 h-4 transition-transform ${featuresMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {featuresMenuOpen && (
+                <div className="absolute top-full mt-2 right-0 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <Link
+                    href="/polls"
+                    onClick={() => setFeaturesMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                  >
+                    <BarChart2 className="w-4 h-4 text-[#2d7a4a]" />
+                    <span>Anketler</span>
+                  </Link>
+                  {session && (
+                    <>
+                      <Link
+                        href="/collections"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <FolderOpen className="w-4 h-4 text-[#2d7a4a]" />
+                        <span>Koleksiyonlar</span>
+                      </Link>
+                      <Link
+                        href="/progress"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <Camera className="w-4 h-4 text-[#2d7a4a]" />
+                        <span>Fotoğraf Galerisi</span>
+                      </Link>
+                      <Link
+                        href="/analytics"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <BarChart3 className="w-4 h-4 text-[#2d7a4a]" />
+                        <span>İlerleme Takibi</span>
+                      </Link>
+                      <Link
+                        href="/gamification"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <Trophy className="w-4 h-4 text-[#2d7a4a]" />
+                        <span>Rozetler & Liderlik</span>
+                      </Link>
+                      <Link
+                        href="/partnerships"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <Users className="w-4 h-4 text-[#2d7a4a]" />
+                        <span>Partnerler</span>
+                      </Link>
+                      <Link
+                        href="/crisis-stats"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <span className="text-lg">🆘</span>
+                        <span>Kriz İstatistikleri</span>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
 
             {status === "loading" ? (
               <div className="w-20 h-9 bg-gray-200 rounded-lg animate-pulse"></div>
@@ -238,6 +264,16 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
               >
                 Plan Ekle
               </Link>
+              <Link
+                href="/polls"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/polls"
+                  ? "bg-[#2d7a4a] text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                📊 Anketler
+              </Link>
               {session && (
                 <>
                   <Link
@@ -279,6 +315,16 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
                       }`}
                   >
                     📊 İlerleme Takibi
+                  </Link>
+                  <Link
+                    href="/partnerships"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/partnerships"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    🤝 Partnerler
                   </Link>
                 </>
               )}

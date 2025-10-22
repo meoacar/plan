@@ -14,11 +14,13 @@ export default async function AdminPage() {
         redirect("/")
     }
 
-    const [totalUsers, totalPlans, pendingPlans, approvedPlans] = await Promise.all([
+    const [totalUsers, totalPlans, pendingPlans, approvedPlans, totalPolls, totalVotes] = await Promise.all([
         prisma.user.count(),
         prisma.plan.count(),
         prisma.plan.count({ where: { status: "PENDING" } }),
         prisma.plan.count({ where: { status: "APPROVED" } }),
+        prisma.poll.count(),
+        prisma.pollVote.count(),
     ])
 
     const topPlans = await prisma.plan.findMany({
@@ -40,7 +42,7 @@ export default async function AdminPage() {
                 <p className="text-lg text-white/90">Hoş geldiniz, {session.user.name}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 <Card className="shadow-lg border-2 hover:shadow-xl transition-shadow">
                     <CardHeader className="bg-blue-50">
                         <CardTitle className="text-sm font-bold text-blue-900">👥 Toplam Kullanıcı</CardTitle>
@@ -76,6 +78,24 @@ export default async function AdminPage() {
                         <p className="text-4xl font-extrabold text-green-600">{approvedPlans}</p>
                     </CardContent>
                 </Card>
+
+                <Card className="shadow-lg border-2 hover:shadow-xl transition-shadow">
+                    <CardHeader className="bg-teal-50">
+                        <CardTitle className="text-sm font-bold text-teal-900">📊 Toplam Anket</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        <p className="text-4xl font-extrabold text-teal-600">{totalPolls}</p>
+                    </CardContent>
+                </Card>
+
+                <Card className="shadow-lg border-2 hover:shadow-xl transition-shadow">
+                    <CardHeader className="bg-indigo-50">
+                        <CardTitle className="text-sm font-bold text-indigo-900">🗳️ Toplam Oy</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        <p className="text-4xl font-extrabold text-indigo-600">{totalVotes}</p>
+                    </CardContent>
+                </Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -104,6 +124,12 @@ export default async function AdminPage() {
                             className="block p-4 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 rounded-lg transition-all border-2 border-purple-200 shadow-sm"
                         >
                             <span className="font-bold text-purple-900">👥 Kullanıcı Yönetimi</span>
+                        </Link>
+                        <Link
+                            href="/admin/polls"
+                            className="block p-4 bg-gradient-to-r from-teal-50 to-teal-100 hover:from-teal-100 hover:to-teal-200 rounded-lg transition-all border-2 border-teal-200 shadow-sm"
+                        >
+                            <span className="font-bold text-teal-900">📊 Anket Yönetimi</span>
                         </Link>
                     </CardContent>
                 </Card>

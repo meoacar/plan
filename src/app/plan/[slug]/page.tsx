@@ -39,6 +39,15 @@ async function getPlan(slug: string, isAdmin: boolean = false) {
               name: true,
               image: true,
             }
+          },
+          reactions: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                }
+              }
+            }
           }
         },
         orderBy: {

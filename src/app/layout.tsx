@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar";
 import { Providers } from "@/components/providers";
 import { MaintenanceChecker } from "@/components/maintenance-checker";
 import { StreakTracker } from "@/components/gamification/StreakTracker";
+import { CrisisButton } from "@/components/crisis-button";
 import { prisma } from "@/lib/prisma";
 import { Logo } from "@/components/logo";
 
@@ -76,6 +77,7 @@ export default async function RootLayout({
         <Providers>
           <MaintenanceChecker />
           <StreakTracker />
+          <CrisisButton />
           <Navbar />
           <main className="min-h-screen bg-[#f8f8f8]">
             {children}

@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, BadgeType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -6,7 +6,13 @@ async function seedGamification() {
   console.log("🎮 Gamification verileri ekleniyor...");
 
   // Rozetler
-  const badges = [
+  const badges: Array<{
+    type: BadgeType;
+    name: string;
+    description: string;
+    icon: string;
+    xpReward: number;
+  }> = [
     {
       type: "FIRST_PLAN",
       name: "İlk Adım",

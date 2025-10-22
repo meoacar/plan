@@ -1,4 +1,4 @@
-import { PrismaClient, BadgeType } from "@prisma/client";
+import { PrismaClient, BadgeType, GoalType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -195,7 +195,7 @@ async function seedGamification() {
 
   // Hedefler
   const goals: Array<{
-    type: string;
+    type: GoalType;
     name: string;
     description: string;
     target: number;

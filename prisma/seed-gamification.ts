@@ -194,7 +194,13 @@ async function seedGamification() {
   console.log(`✅ ${badges.length} rozet eklendi`);
 
   // Hedefler
-  const goals = [
+  const goals: Array<{
+    type: string;
+    name: string;
+    description: string;
+    target: number;
+    xpReward: number;
+  }> = [
     {
       type: "DAILY_LOGIN",
       name: "Günlük Giriş",
@@ -233,7 +239,6 @@ async function seedGamification() {
   ];
 
   for (const goal of goals) {
-    // @ts-expect-error - Prisma client will be regenerated
     await prisma.goal.upsert({
       where: { type: goal.type },
       update: goal,

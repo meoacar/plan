@@ -6,7 +6,7 @@ import { addXP, checkBadges, XP_REWARDS } from "@/lib/gamification"
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -20,6 +20,7 @@ export async function PATCH(
 
     const body = await req.json()
     const { status } = body
+    const { id } = await params
 
     if (!["PENDING", "APPROVED", "REJECTED"].includes(status)) {
       return NextResponse.json(
@@ -29,7 +30,7 @@ export async function PATCH(
     }
 
     const plan = await prisma.plan.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
       include: {
         user: {
@@ -77,7 +78,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -89,9 +90,11 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
+
     // Plan bilgilerini al (silmeden önce)
     const plan = await prisma.plan.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -110,7 +113,7 @@ export async function DELETE(
     }
 
     await prisma.plan.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     // Activity log

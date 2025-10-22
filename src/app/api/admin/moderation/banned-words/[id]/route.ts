@@ -10,11 +10,11 @@ import { logActivity } from "@/lib/activity-logger"
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await requireAdmin()
-    const { id } = params
+    const { id } = await params
 
     // Yasaklı kelimeyi bul
     const bannedWord = await prisma.bannedWord.findUnique({

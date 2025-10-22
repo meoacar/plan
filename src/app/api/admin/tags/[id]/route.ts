@@ -10,14 +10,15 @@ import { logActivity } from "@/lib/activity-logger"
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await requireAdmin()
+    const { id } = await params
 
     // Etiket var mı kontrol et
     const tag = await prisma.tag.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { plans: true },
@@ -34,7 +35,7 @@ export async function DELETE(
 
     // Etiketi sil (PlanTag ilişkileri cascade ile otomatik silinir)
     await prisma.tag.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     // Activity log

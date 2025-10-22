@@ -11,15 +11,16 @@ import { logActivity } from "@/lib/activity-logger"
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await requireAdmin()
     const body = await request.json()
+    const { id } = await params
 
     // Kategori var mı kontrol et
     const existingCategory = await prisma.category.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingCategory) {
@@ -37,7 +38,7 @@ export async function PATCH(
       const slugExists = await prisma.category.findFirst({
         where: {
           slug: validatedData.slug,
-          id: { not: params.id },
+          id: { not: id },
         },
       })
 
@@ -54,7 +55,7 @@ export async function PATCH(
       const nameExists = await prisma.category.findFirst({
         where: {
           name: validatedData.name,
-          id: { not: params.id },
+          id: { not: id },
         },
       })
 
@@ -67,7 +68,7 @@ export async function PATCH(
     }
 
     const category = await prisma.category.update({
-      where: { id: params.id },
+      where: { id },
       data: validatedData,
       include: {
         _count: {
@@ -124,14 +125,15 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await requireAdmin()
+    const { id } = await params
 
     // Kategori var mı kontrol et
     const category = await prisma.category.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { plans: true },
@@ -149,14 +151,14 @@ export async function DELETE(
     // İlişkili planların categoryId'sini null yap
     if (category._count.plans > 0) {
       await prisma.plan.updateMany({
-        where: { categoryId: params.id },
+        where: { categoryId: id },
         data: { categoryId: null },
       })
     }
 
     // Kategoriyi sil
     await prisma.category.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     // Activity log

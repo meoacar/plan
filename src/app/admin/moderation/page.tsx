@@ -84,7 +84,11 @@ export default async function ModerationPage() {
           createdAt: bw.createdAt.toISOString(),
         }))}
         initialBlockedContent={{
-          blockedPlans,
+          blockedPlans: blockedPlans.map(plan => ({
+            ...plan,
+            createdAt: plan.createdAt.toISOString(),
+            updatedAt: plan.updatedAt.toISOString(),
+          })),
           totalPlans: totalBlockedPlans,
         }}
         stats={{

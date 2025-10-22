@@ -12,8 +12,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com", // Google OAuth avatars
       },
+      {
+        protocol: "https",
+        hostname: "zayiflamaplanim.com", // Local uploads
+      },
     ],
     formats: ["image/avif", "image/webp"],
+    unoptimized: false,
   },
 
   // Compression

@@ -79,7 +79,10 @@ export default async function ModerationPage() {
       </div>
 
       <ModerationPanel
-        initialBannedWords={bannedWords}
+        initialBannedWords={bannedWords.map(bw => ({
+          ...bw,
+          createdAt: bw.createdAt.toISOString(),
+        }))}
         initialBlockedContent={{
           blockedPlans,
           totalPlans: totalBlockedPlans,

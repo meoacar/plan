@@ -46,13 +46,25 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
       return
     }
 
+    // Optimistic update
+    const wasLiked = liked
+    setLiked(!wasLiked)
+    setLikeCount((prev: number) => wasLiked ? prev - 1 : prev + 1)
+
     try {
       const res = await fetch(`/api/plans/${plan.slug}/like`, { method: "POST" })
       const data = await res.json()
-      setLiked(data.liked)
-      setLikeCount((prev: number) => data.liked ? prev + 1 : prev - 1)
+      
+      // Sunucudan gelen yanıt ile senkronize et
+      if (data.liked !== !wasLiked) {
+        setLiked(data.liked)
+        setLikeCount((prev: number) => data.liked ? prev + 1 : prev - 1)
+      }
     } catch (error) {
       console.error("Like error:", error)
+      // Hata durumunda geri al
+      setLiked(wasLiked)
+      setLikeCount((prev: number) => wasLiked ? prev + 1 : prev - 1)
     }
   }
 

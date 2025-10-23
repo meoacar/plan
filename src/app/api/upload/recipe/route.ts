@@ -47,8 +47,17 @@ export async function POST(req: NextRequest) {
 
     // Uploads klasörünü oluştur
     const uploadsDir = join(process.cwd(), "public", "uploads", "recipes");
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
+    
+    try {
+      if (!existsSync(uploadsDir)) {
+        await mkdir(uploadsDir, { recursive: true });
+      }
+    } catch (mkdirError) {
+      console.error("Klasör oluşturma hatası:", mkdirError);
+      return NextResponse.json(
+        { error: "Yükleme klasörü oluşturulamadı" },
+        { status: 500 }
+      );
     }
 
     // Benzersiz dosya adı oluştur
@@ -59,7 +68,15 @@ export async function POST(req: NextRequest) {
     const filepath = join(uploadsDir, filename);
 
     // Dosyayı kaydet
-    await writeFile(filepath, buffer);
+    try {
+      await writeFile(filepath, buffer);
+    } catch (writeError) {
+      console.error("Dosya yazma hatası:", writeError);
+      return NextResponse.json(
+        { error: "Dosya kaydedilemedi" },
+        { status: 500 }
+      );
+    }
 
     // URL'i döndür
     const url = `/uploads/recipes/${filename}`;

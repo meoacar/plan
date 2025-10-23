@@ -1,0 +1,89 @@
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import RecipeDetail from "@/components/recipe-detail";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const recipe = await prisma.recipe.findUnique({
+    where: { slug: params.slug },
+  });
+
+  if (!recipe) {
+    return {
+      title: "Tarif Bulunamadı",
+    };
+  }
+
+  return {
+    title: `${recipe.title} - Sağlıklı Tarif`,
+    description: recipe.description,
+  };
+}
+
+export default async function RecipePage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const session = await auth();
+
+  const recipe = await prisma.recipe.findUnique({
+    where: { slug: params.slug },
+    include: {
+      images: {
+        orderBy: { order: "asc" },
+      },
+      likes: {
+        select: {
+          userId: true,
+        },
+      },
+      comments: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              username: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+          favorites: true,
+        },
+      },
+    },
+  });
+
+  if (!recipe || recipe.status !== "APPROVED") {
+    notFound();
+  }
+
+  // Görüntülenme sayısını artır
+  await prisma.recipe.update({
+    where: { id: recipe.id },
+    data: { views: { increment: 1 } },
+  });
+
+  const isLiked = session?.user?.id
+    ? recipe.likes.some((like) => like.userId === session.user.id)
+    : false;
+
+  return (
+    <RecipeDetail
+      recipe={recipe}
+      isLiked={isLiked}
+      currentUserId={session?.user?.id}
+    />
+  );
+}

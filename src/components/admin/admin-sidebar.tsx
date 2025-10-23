@@ -14,6 +14,7 @@ interface NavItem {
 const adminNavItems: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: "📊" },
   { href: "/admin/plans", label: "Planlar", icon: "📋" },
+  { href: "/admin/recipes", label: "Tarifler", icon: "🍽️" },
   { href: "/admin/users", label: "Kullanıcılar", icon: "👥" },
   { href: "/admin/comments", label: "Yorumlar", icon: "💬" },
   { href: "/admin/analytics", label: "Analitik", icon: "📈" },

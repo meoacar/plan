@@ -35,6 +35,9 @@ enum ActivityType {
   EMAIL_SENT
   BACKUP_CREATED
   CACHE_CLEARED
+  RECIPE_APPROVED
+  RECIPE_REJECTED
+  RECIPE_DELETED
 }
 
 enum EmailStatus {
@@ -797,4 +800,91 @@ model ShoppingListItem {
   createdAt      DateTime     @default(now())
 
   @@index([shoppingListId, category, order])
+}
+
+// Tarif Paylaşımı Sistemi
+enum RecipeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Recipe {
+  id              String       @id @default(cuid())
+  userId          String
+  title           String
+  slug            String       @unique
+  description     String       @db.Text
+  ingredients     String       @db.Text // JSON array olarak saklanacak
+  instructions    String       @db.Text // Adım adım talimatlar
+  prepTime        Int?         // Hazırlık süresi (dakika)
+  cookTime        Int?         // Pişirme süresi (dakika)
+  servings        Int?         // Kaç kişilik
+  difficulty      String?      // "Kolay", "Orta", "Zor"
+  category        String       // "Ana Yemek", "Çorba", "Salata", "Tatlı", "Atıştırmalık", "İçecek"
+  calories        Float?       // Porsiyon başı kalori
+  protein         Float?       // Porsiyon başı protein (g)
+  carbs           Float?       // Porsiyon başı karbonhidrat (g)
+  fat             Float?       // Porsiyon başı yağ (g)
+  images          RecipeImage[]
+  status          RecipeStatus @default(PENDING)
+  rejectionReason String?      @db.Text
+  views           Int          @default(0)
+  likes           RecipeLike[]
+  comments        RecipeComment[]
+  favorites       RecipeFavorite[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([userId, status])
+  @@index([status, createdAt])
+  @@index([category])
+  @@index([slug])
+}
+
+model RecipeImage {
+  id        String   @id @default(cuid())
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([recipeId, order])
+}
+
+model RecipeLike {
+  id        String   @id @default(cuid())
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@unique([recipeId, userId])
+  @@index([userId])
+}
+
+model RecipeComment {
+  id        String   @id @default(cuid())
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  userId    String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([recipeId, createdAt])
+  @@index([userId])
+}
+
+model RecipeFavorite {
+  id        String   @id @default(cuid())
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  userId    String
+  note      String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@unique([recipeId, userId])
+  @@index([userId, createdAt])
 }

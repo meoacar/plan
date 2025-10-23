@@ -14,13 +14,15 @@ export default async function AdminPage() {
         redirect("/")
     }
 
-    const [totalUsers, totalPlans, pendingPlans, approvedPlans, totalPolls, totalVotes] = await Promise.all([
+    const [totalUsers, totalPlans, pendingPlans, approvedPlans, totalPolls, totalVotes, totalRecipes, pendingRecipes] = await Promise.all([
         prisma.user.count(),
         prisma.plan.count(),
         prisma.plan.count({ where: { status: "PENDING" } }),
         prisma.plan.count({ where: { status: "APPROVED" } }),
         prisma.poll.count(),
         prisma.pollVote.count(),
+        prisma.recipe.count(),
+        prisma.recipe.count({ where: { status: "PENDING" } }),
     ])
 
     const topPlans = await prisma.plan.findMany({
@@ -96,6 +98,24 @@ export default async function AdminPage() {
                         <p className="text-4xl font-extrabold text-indigo-600">{totalVotes}</p>
                     </CardContent>
                 </Card>
+
+                <Card className="shadow-lg border-2 hover:shadow-xl transition-shadow">
+                    <CardHeader className="bg-pink-50">
+                        <CardTitle className="text-sm font-bold text-pink-900">🍽️ Toplam Tarif</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        <p className="text-4xl font-extrabold text-pink-600">{totalRecipes}</p>
+                    </CardContent>
+                </Card>
+
+                <Card className="shadow-lg border-2 hover:shadow-xl transition-shadow">
+                    <CardHeader className="bg-yellow-50">
+                        <CardTitle className="text-sm font-bold text-yellow-900">⏳ Bekleyen Tarif</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        <p className="text-4xl font-extrabold text-yellow-600">{pendingRecipes}</p>
+                    </CardContent>
+                </Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -130,6 +150,15 @@ export default async function AdminPage() {
                             className="block p-4 bg-gradient-to-r from-teal-50 to-teal-100 hover:from-teal-100 hover:to-teal-200 rounded-lg transition-all border-2 border-teal-200 shadow-sm"
                         >
                             <span className="font-bold text-teal-900">📊 Anket Yönetimi</span>
+                        </Link>
+                        <Link
+                            href="/admin/recipes?status=PENDING"
+                            className="block p-4 bg-gradient-to-r from-pink-50 to-pink-100 hover:from-pink-100 hover:to-pink-200 rounded-lg transition-all border-2 border-pink-200 shadow-sm"
+                        >
+                            <span className="font-bold text-pink-900">🍽️ Onay Bekleyen Tarifler</span>
+                            <span className="ml-2 px-3 py-1 bg-pink-500 text-white rounded-full text-sm font-bold">
+                                {pendingRecipes}
+                            </span>
                         </Link>
                     </CardContent>
                 </Card>

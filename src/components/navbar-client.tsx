@@ -89,6 +89,14 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
                     <BarChart2 className="w-4 h-4 text-[#2d7a4a]" />
                     <span>Anketler</span>
                   </Link>
+                  <Link
+                    href="/recipes"
+                    onClick={() => setFeaturesMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="text-lg">🍽️</span>
+                    <span>Sağlıklı Tarifler</span>
+                  </Link>
                   {session && (
                     <>
                       <Link

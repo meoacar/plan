@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
+import AnalyticsDashboard from '@/components/analytics/analytics-dashboard';
 import { TurkeyWeightMap } from '@/components/analytics/turkey-weight-map';
 import { ActivityHeatmap } from '@/components/analytics/activity-heatmap';
 import { UserTimeline } from '@/components/analytics/user-timeline';
@@ -29,6 +30,9 @@ export default async function AnalyticsPage() {
       </div>
 
       <div className="space-y-8">
+        {/* Ana Dashboard - Kilo, Check-in, Ölçümler, Ruh Hali, Fotoğraflar */}
+        <AnalyticsDashboard userId={session.user.id} />
+
         {/* Başarı Tahmini */}
         <SuccessPredictor userId={session.user.id} />
 

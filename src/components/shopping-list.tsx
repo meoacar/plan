@@ -189,20 +189,36 @@ export function ShoppingList({ planId, planTitle, dietContent }: ShoppingListPro
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
-            <ShoppingCart className="w-6 h-6 text-white" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
+              <ShoppingCart className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-3xl font-bold text-white">Alışveriş Listesi</h3>
           </div>
-          <h3 className="text-3xl font-bold text-white">Alışveriş Listesi</h3>
+          <Button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Yeni Liste
+          </Button>
         </div>
-        <Button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Yeni Liste
-        </Button>
+        
+        {/* Info Box */}
+        <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 backdrop-blur-xl rounded-xl p-4 border border-blue-500/30">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-xl">💡</span>
+            </div>
+            <div className="flex-1">
+              <p className="text-blue-200 text-sm leading-relaxed">
+                <span className="font-bold">Bu plana özel alışveriş listesi oluşturun!</span> Akıllı liste özelliği, yukarıdaki beslenme programını analiz ederek ihtiyacınız olan malzemeleri otomatik olarak belirler ve kategorilere ayırır. Markete gitmeden önce listenizi hazırlayın ve hiçbir şeyi unutmayın.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Create Form */}
@@ -215,26 +231,42 @@ export function ShoppingList({ planId, planTitle, dietContent }: ShoppingListPro
               placeholder="Liste adı (örn: Haftalık Alışveriş)"
               className="bg-gray-800/50 border-gray-700 text-white"
             />
+            
+            {dietContent && (
+              <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
+                <p className="text-purple-200 text-xs leading-relaxed">
+                  <span className="font-bold">🤖 Akıllı Liste:</span> Beslenme programınızdaki yiyecekleri otomatik tespit eder (tavuk, yumurta, brokoli vb.) ve kategorilere ayırarak alışveriş listenizi hazırlar.
+                </p>
+              </div>
+            )}
+            
             <div className="flex gap-3">
               {dietContent && (
                 <Button
                   onClick={generateSmartList}
                   disabled={generating}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold"
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold hover:shadow-lg hover:shadow-purple-500/30 transition-all"
                 >
-                  {generating ? "Oluşturuluyor..." : "🤖 Akıllı Liste Oluştur"}
+                  {generating ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Oluşturuluyor...
+                    </span>
+                  ) : (
+                    "🤖 Akıllı Liste Oluştur"
+                  )}
                 </Button>
               )}
               <Button
                 onClick={createEmptyList}
-                className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold"
+                className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all"
               >
-                Boş Liste Oluştur
+                📝 Boş Liste Oluştur
               </Button>
               <Button
                 onClick={() => setShowCreateForm(false)}
                 variant="outline"
-                className="border-gray-700 text-gray-300"
+                className="border-gray-700 text-gray-300 hover:bg-gray-800"
               >
                 İptal
               </Button>
@@ -346,20 +378,46 @@ export function ShoppingList({ planId, planTitle, dietContent }: ShoppingListPro
       ) : (
         <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border border-white/10">
           <CardContent className="pt-6 text-center py-12">
-            <ShoppingCart className="w-20 h-20 text-gray-600 mx-auto mb-4" />
-            <p className="text-xl font-bold text-white mb-2">
-              Henüz alışveriş listesi yok
-            </p>
-            <p className="text-gray-400 mb-6">
-              Diyet planınıza göre akıllı liste oluşturun
-            </p>
-            <Button
-              onClick={() => setShowCreateForm(true)}
-              className="bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              İlk Listeni Oluştur
-            </Button>
+            <div className="max-w-md mx-auto">
+              <ShoppingCart className="w-20 h-20 text-gray-600 mx-auto mb-4" />
+              <p className="text-xl font-bold text-white mb-2">
+                Henüz alışveriş listesi yok
+              </p>
+              <p className="text-gray-400 mb-4">
+                Bu plana özel alışveriş listesi oluşturun
+              </p>
+              
+              {/* Feature highlights */}
+              <div className="bg-gray-800/50 rounded-lg p-4 mb-6 text-left">
+                <p className="text-sm text-gray-300 mb-3 font-semibold">Akıllı liste ile:</p>
+                <ul className="space-y-2 text-sm text-gray-400">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">✓</span>
+                    <span>Beslenme programınızdaki tüm malzemeler otomatik tespit edilir</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">✓</span>
+                    <span>Kategorilere göre düzenlenir (Protein, Sebze, Meyve vb.)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">✓</span>
+                    <span>Önerilen miktarlar belirtilir</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">✓</span>
+                    <span>Markette kolayca takip edebilirsiniz</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <Button
+                onClick={() => setShowCreateForm(true)}
+                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold hover:shadow-lg hover:shadow-green-500/30 transition-all"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                İlk Listeni Oluştur
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}

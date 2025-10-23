@@ -9,8 +9,13 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { userId } = await params
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { id: userId },
+        { username: userId }
+      ]
+    },
     select: { name: true },
   });
 
@@ -26,8 +31,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function FollowersPage({ params }: PageProps) {
   const { userId } = await params
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { id: userId },
+        { username: userId }
+      ]
+    },
     select: {
       id: true,
       name: true,

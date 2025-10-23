@@ -13,11 +13,26 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
+    // Username veya ID ile kullanıcıyı bul
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { id: userId },
+          { username: userId }
+        ]
+      },
+      select: { id: true }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const skip = (page - 1) * limit;
 
     const [followers, total] = await Promise.all([
       prisma.follow.findMany({
-        where: { followingId: userId },
+        where: { followingId: user.id },
         include: {
           follower: {
             select: {
@@ -42,7 +57,7 @@ export async function GET(req: NextRequest) {
         take: limit,
       }),
       prisma.follow.count({
-        where: { followingId: userId },
+        where: { followingId: user.id },
       }),
     ]);
 

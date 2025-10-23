@@ -125,12 +125,18 @@ export const revalidate = 300
 export default async function ProfilePage({ params }: PageProps) {
   const { userId } = await params
   const session = await auth()
-  const isOwnProfile = session?.user?.id === userId
+  
+  // İlk kontrol - userId veya username ile eşleşme
+  let isOwnProfile = session?.user?.id === userId || session?.user?.username === userId
+  
   const user = await getUser(userId, isOwnProfile)
 
   if (!user) {
     notFound()
   }
+
+  // User bulunduktan sonra kesin kontrol - ID ile
+  isOwnProfile = session?.user?.id === user.id
 
   const weightDiff = user.startWeight && user.goalWeight ? user.startWeight - user.goalWeight : null
 

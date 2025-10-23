@@ -9,6 +9,7 @@ import type { Metadata } from "next"
 import FollowButton from "@/components/follow-button"
 import UserFollowStats from "@/components/user-follow-stats"
 import WallPosts from "@/components/wall-posts"
+import { ProfileTabs } from "@/components/profile-tabs"
 
 interface PageProps {
   params: Promise<{ userId: string }>
@@ -399,11 +400,21 @@ export default async function ProfilePage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Right Column - Plans */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Pending Plans - Sadece kendi profilinde */}
-          {isOwnProfile && pendingPlans.length > 0 && (
-            <div>
+        {/* Right Column - Plans & Tabs */}
+        <div className="lg:col-span-2">
+          <ProfileTabs
+            isOwnProfile={isOwnProfile}
+            approvedPlans={approvedPlans}
+            pendingPlans={pendingPlans}
+            rejectedPlans={rejectedPlans}
+            polls={user.polls || []}
+            userId={user.id}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
               <div className="flex items-center gap-3 mb-4">
                 <div className="bg-yellow-100 p-2 rounded-lg">
                   <span className="text-2xl">⏳</span>

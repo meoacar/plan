@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardHeader } from "./ui/card"
 import { Button } from "./ui/button"
@@ -8,13 +8,34 @@ import { Textarea } from "./ui/textarea"
 import { Heart, Eye, MessageCircle, Trash2, Edit2, Save, X } from "lucide-react"
 
 interface FavoritesListProps {
-  initialFavorites: any[]
+  initialFavorites?: any[]
 }
 
-export function FavoritesList({ initialFavorites }: FavoritesListProps) {
+export function FavoritesList({ initialFavorites = [] }: FavoritesListProps) {
   const [favorites, setFavorites] = useState(initialFavorites)
+  const [loading, setLoading] = useState(initialFavorites.length === 0)
   const [editingNote, setEditingNote] = useState<string | null>(null)
   const [noteText, setNoteText] = useState("")
+
+  useEffect(() => {
+    if (initialFavorites.length === 0) {
+      fetchFavorites()
+    }
+  }, [])
+
+  const fetchFavorites = async () => {
+    try {
+      const res = await fetch('/api/favorites')
+      if (res.ok) {
+        const data = await res.json()
+        setFavorites(data.favorites || [])
+      }
+    } catch (error) {
+      console.error('Fetch favorites error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleRemoveFavorite = async (favoriteId: string) => {
     if (!confirm("Bu planı favorilerden çıkarmak istediğinize emin misiniz?")) {
@@ -75,17 +96,28 @@ export function FavoritesList({ initialFavorites }: FavoritesListProps) {
     setNoteText("")
   }
 
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-center py-20">
+          <div className="text-4xl mb-4">⏳</div>
+          <p className="text-gray-600">Favoriler yükleniyor...</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
   if (favorites.length === 0) {
     return (
-      <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-xl border border-gray-700">
+      <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
         <CardContent className="pt-6 text-center py-20">
-          <div className="w-24 h-24 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-6xl">⭐</span>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Henüz favori planınız yok
           </h2>
-          <p className="text-gray-400 text-lg mb-8">
+          <p className="text-gray-600 text-lg mb-8">
             Beğendiğiniz planları favorilere ekleyerek daha sonra kolayca ulaşabilirsiniz
           </p>
           <Link href="/">
@@ -109,7 +141,7 @@ export function FavoritesList({ initialFavorites }: FavoritesListProps) {
           <div key={favorite.id} className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-3xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity" />
             
-            <Card className="relative bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border border-white/10 hover:border-yellow-500/30 transition-all">
+            <Card className="relative bg-white border border-gray-200 hover:border-yellow-500/50 transition-all shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between gap-4">
                   <Link 

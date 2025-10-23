@@ -63,21 +63,23 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
       
       console.log('API response:', data)
       
-      // API'den gelen duruma göre güncelle
-      setLiked(data.liked)
-      
-      // Eğer beğeni eklendiyse +1, kaldırıldıysa -1
-      if (data.liked && !previousLiked) {
-        console.log('Adding like: +1')
+      // Önce optimistic update yap
+      if (data.liked) {
+        // Beğeni eklendi
+        setLiked(true)
         setLikeCount(previousCount + 1)
-      } else if (!data.liked && previousLiked) {
-        console.log('Removing like: -1')
-        setLikeCount(previousCount - 1)
+        console.log('Adding like: +1, new count:', previousCount + 1)
       } else {
-        console.log('No change in count')
+        // Beğeni kaldırıldı
+        setLiked(false)
+        setLikeCount(Math.max(0, previousCount - 1))
+        console.log('Removing like: -1, new count:', Math.max(0, previousCount - 1))
       }
     } catch (error) {
       console.error("Like error:", error)
+      // Hata durumunda geri al
+      setLiked(previousLiked)
+      setLikeCount(previousCount)
       alert("Bir hata oluştu, lütfen tekrar deneyin")
     }
   }

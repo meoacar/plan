@@ -88,8 +88,8 @@ async function getUser(userIdOrUsername: string, isOwnProfile: boolean = false) 
 
   // Takipçi ve takip sayılarını ayrı olarak al
   const [followersCount, followingCount] = await Promise.all([
-    prisma.follow.count({ where: { followingId: userId } }),
-    prisma.follow.count({ where: { followerId: userId } }),
+    prisma.follow.count({ where: { followingId: user.id } }),
+    prisma.follow.count({ where: { followerId: user.id } }),
   ])
 
   return {

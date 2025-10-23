@@ -13,6 +13,7 @@ import { AddToCollectionButton } from "./add-to-collection-button"
 import { PdfExportButton } from "./pdf-export-button"
 import { VideoEmbed } from "./video-embed"
 import { CommentReactions } from "./comment-reactions"
+import { ShoppingList } from "./shopping-list"
 
 interface PlanDetailProps {
   plan: any
@@ -23,11 +24,11 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
   const { data: session } = useSession()
   const [liked, setLiked] = useState(plan.isLiked || false)
   const [likeCount, setLikeCount] = useState(plan._count.likes)
-  
-  console.log('Plan loaded:', { 
-    isLiked: plan.isLiked, 
+
+  console.log('Plan loaded:', {
+    isLiked: plan.isLiked,
     likeCount: plan._count.likes,
-    likes: plan.likes 
+    likes: plan.likes
   })
   const [comments, setComments] = useState(plan.comments)
   const [commentBody, setCommentBody] = useState("")
@@ -36,7 +37,7 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
   const [rejecting, setRejecting] = useState(false)
   const [showRejectModal, setShowRejectModal] = useState(false)
   const [rejectionReason, setRejectionReason] = useState("")
-  
+
   const isAdmin = session?.user?.role === "ADMIN"
   const isPending = plan.status === "PENDING"
   const isRejected = plan.status === "REJECTED"
@@ -54,15 +55,15 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
 
     const previousLiked = liked
     const previousCount = likeCount
-    
+
     console.log('Before like:', { previousLiked, previousCount })
 
     try {
       const res = await fetch(`/api/plans/${plan.slug}/like`, { method: "POST" })
       const data = await res.json()
-      
+
       console.log('API response:', data)
-      
+
       // Önce optimistic update yap
       if (data.liked) {
         // Beğeni eklendi
@@ -210,11 +211,10 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
               {/* Admin Status Badge */}
               {isAdmin && (isPending || isRejected) && (
                 <div className="mb-6">
-                  <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg shadow-xl ${
-                    isPending 
-                      ? "bg-yellow-500 text-yellow-900" 
+                  <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg shadow-xl ${isPending
+                      ? "bg-yellow-500 text-yellow-900"
                       : "bg-red-500 text-white"
-                  }`}>
+                    }`}>
                     <span className="text-2xl">{isPending ? "⏳" : "❌"}</span>
                     <span>{isPending ? "Onay Bekliyor" : "Reddedildi"}</span>
                   </div>
@@ -229,9 +229,9 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                 >
                   <div className="w-16 h-16 rounded-full overflow-hidden bg-white/20 backdrop-blur-xl flex items-center justify-center text-white font-bold text-2xl border-2 border-white/30 group-hover/author:scale-110 transition-transform shadow-xl">
                     {plan.user.image ? (
-                      <img 
-                        src={plan.user.image} 
-                        alt={plan.user.name || "Profil"} 
+                      <img
+                        src={plan.user.image}
+                        alt={plan.user.name || "Profil"}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -508,6 +508,18 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                     <p className="text-gray-300 italic text-xl font-medium leading-relaxed">{plan.motivation}</p>
                   </div>
                 </div>
+
+                {/* Shopping List */}
+                <div className="relative group/section">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
+                  <div className="relative bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl p-8 rounded-2xl border border-green-500/30">
+                    <ShoppingList 
+                      planId={plan.id}
+                      planTitle={plan.title}
+                      dietContent={plan.diet}
+                    />
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -601,9 +613,9 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
                           {comment.user.image ? (
-                            <img 
-                              src={comment.user.image} 
-                              alt={comment.user.name || "Profil"} 
+                            <img
+                              src={comment.user.image}
+                              alt={comment.user.name || "Profil"}
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -634,9 +646,9 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                             )}
                           </div>
                           <p className="text-gray-300 text-base leading-relaxed">{comment.body}</p>
-                          
+
                           {/* Emoji Reactions */}
-                          <CommentReactions 
+                          <CommentReactions
                             commentId={comment.id}
                             initialReactions={comment.reactions?.map((r: any) => ({
                               emoji: r.emoji,

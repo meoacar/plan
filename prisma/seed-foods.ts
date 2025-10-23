@@ -157,16 +157,14 @@ async function main() {
     // Önce mevcut yemekleri kontrol et
     try {
         const existingCount = await prisma.food.count();
-
-        if (existingCount > 0) {
-            console.log(`ℹ️  Veritabanında zaten ${existingCount} yemek var. Atlanıyor...`);
-            return;
-        }
+        console.log(`ℹ️  Mevcut yemek sayısı: ${existingCount}`);
     } catch (error) {
         console.log('ℹ️  Food tablosu kontrol edilemiyor, devam ediliyor...');
     }
 
     let addedCount = 0;
+    let skippedCount = 0;
+    
     for (const food of foods) {
         try {
             await prisma.food.create({
@@ -174,11 +172,16 @@ async function main() {
             });
             addedCount++;
         } catch (error) {
-            console.log(`⚠️  ${food.name} eklenemedi (muhtemelen zaten var)`);
+            skippedCount++;
+            // Zaten varsa sessizce atla
         }
     }
 
-    console.log(`✅ ${addedCount} yemek eklendi!`);
+    console.log(`✅ ${addedCount} yeni yemek eklendi!`);
+    console.log(`ℹ️  ${skippedCount} yemek zaten mevcut (atlandı)`);
+    
+    const finalCount = await prisma.food.count();
+    console.log(`📊 Toplam yemek sayısı: ${finalCount}`);
 }
 
 main()

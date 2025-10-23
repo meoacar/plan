@@ -71,8 +71,45 @@ export default function RecipeDetail({
     }
   };
 
+  const getStatusBadge = () => {
+    switch (recipe.status) {
+      case "PENDING":
+        return (
+          <span className="rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-700">
+            ⏳ Onay Bekliyor
+          </span>
+        );
+      case "REJECTED":
+        return (
+          <span className="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+            ❌ Reddedildi
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8">
+      {/* Durum Badge'i (Admin veya kendi tarifi için) */}
+      {recipe.status !== "APPROVED" && (
+        <div className="mb-4 rounded-lg bg-yellow-50 p-4 border border-yellow-200">
+          <div className="flex items-center gap-2">
+            {getStatusBadge()}
+            <span className="text-sm text-gray-700">
+              {recipe.status === "PENDING" && "Bu tarif henüz admin onayı bekliyor"}
+              {recipe.status === "REJECTED" && "Bu tarif reddedildi"}
+            </span>
+          </div>
+          {recipe.rejectionReason && (
+            <div className="mt-2 text-sm text-red-700">
+              <strong>Red Nedeni:</strong> {recipe.rejectionReason}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Başlık */}
       <div className="mb-6">
         <div className="mb-3 flex items-center gap-2">

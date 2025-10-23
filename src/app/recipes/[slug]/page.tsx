@@ -65,15 +65,28 @@ export default async function RecipePage({
     },
   });
 
-  if (!recipe || recipe.status !== "APPROVED") {
+  if (!recipe) {
     notFound();
   }
 
-  // Görüntülenme sayısını artır
-  await prisma.recipe.update({
-    where: { id: recipe.id },
-    data: { views: { increment: 1 } },
-  });
+  // Admin değilse sadece onaylı tarifleri göster
+  if (recipe.status !== "APPROVED") {
+    // Admin kontrolü
+    if (!session?.user || session.user.role !== "ADMIN") {
+      // Kendi tarifi mi kontrol et
+      if (!session?.user?.id || recipe.userId !== session.user.id) {
+        notFound();
+      }
+    }
+  }
+
+  // Görüntülenme sayısını artır (sadece onaylı tarifler için)
+  if (recipe.status === "APPROVED") {
+    await prisma.recipe.update({
+      where: { id: recipe.id },
+      data: { views: { increment: 1 } },
+    });
+  }
 
   const isLiked = session?.user?.id
     ? recipe.likes.some((like) => like.userId === session.user.id)

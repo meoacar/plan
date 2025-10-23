@@ -94,19 +94,45 @@ export default function RecipeDetail({
     <div className="container mx-auto max-w-6xl px-4 py-8">
       {/* Durum Badge'i (Admin veya kendi tarifi için) */}
       {recipe.status !== "APPROVED" && (
-        <div className="mb-4 rounded-lg bg-yellow-50 p-4 border border-yellow-200">
-          <div className="flex items-center gap-2">
-            {getStatusBadge()}
-            <span className="text-sm text-gray-700">
-              {recipe.status === "PENDING" && "Bu tarif henüz admin onayı bekliyor"}
-              {recipe.status === "REJECTED" && "Bu tarif reddedildi"}
-            </span>
-          </div>
-          {recipe.rejectionReason && (
-            <div className="mt-2 text-sm text-red-700">
-              <strong>Red Nedeni:</strong> {recipe.rejectionReason}
+        <div className={`mb-6 rounded-xl p-6 border-2 shadow-lg ${
+          recipe.status === "PENDING" 
+            ? "bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300" 
+            : "bg-gradient-to-r from-red-50 to-pink-50 border-red-300"
+        }`}>
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 text-4xl">
+              {recipe.status === "PENDING" ? "⏳" : "❌"}
             </div>
-          )}
+            <div className="flex-1">
+              <div className="mb-2 flex items-center gap-3">
+                {getStatusBadge()}
+              </div>
+              <p className={`text-base font-medium ${
+                recipe.status === "PENDING" ? "text-yellow-900" : "text-red-900"
+              }`}>
+                {recipe.status === "PENDING" && (
+                  <>
+                    <strong>Bu tarif henüz admin onayı bekliyor.</strong>
+                    <br />
+                    <span className="text-sm">Tarifin incelendikten sonra yayınlanacak. Lütfen sabırlı olun.</span>
+                  </>
+                )}
+                {recipe.status === "REJECTED" && (
+                  <>
+                    <strong>Bu tarif reddedildi.</strong>
+                    <br />
+                    <span className="text-sm">Aşağıdaki nedeni inceleyip tarifini düzenleyebilirsin.</span>
+                  </>
+                )}
+              </p>
+              {recipe.rejectionReason && (
+                <div className="mt-4 rounded-lg bg-white/80 p-4 border-l-4 border-red-500">
+                  <p className="text-sm font-semibold text-red-900 mb-1">📝 Red Nedeni:</p>
+                  <p className="text-sm text-red-800">{recipe.rejectionReason}</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

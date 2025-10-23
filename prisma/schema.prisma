@@ -142,6 +142,7 @@ model User {
   wallPostsWritten WallPost[]        @relation("WallPostAuthor")
   meals            Meal[]
   calorieGoal      CalorieGoal?
+  recipeComments   RecipeComment[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
@@ -869,6 +870,7 @@ model RecipeComment {
   recipeId  String
   recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   content   String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

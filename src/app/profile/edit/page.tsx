@@ -203,6 +203,11 @@ export default function EditProfilePage() {
       } else {
         setSuccess(`✅ Profil başarıyla güncellendi! (Tamamlanma: %${data.profileCompletion?.percentage || 0})`)
       }
+
+      // Username güncellendiyse form state'ini güncelle
+      if (data.username) {
+        setFormData(prev => ({ ...prev, username: data.username }))
+      }
     } catch (error) {
       setError("Bir hata oluştu")
     } finally {
@@ -344,7 +349,11 @@ export default function EditProfilePage() {
                   type="button"
                   variant="outline"
                   className="w-full font-semibold"
-                  onClick={() => router.push(`/profile/${session?.user?.id}`)}
+                  onClick={() => {
+                    // Username varsa onu kullan, yoksa ID kullan
+                    const profilePath = formData.username || session?.user?.id
+                    router.push(`/profile/${profilePath}`)
+                  }}
                 >
                   ← Profile Dön
                 </Button>

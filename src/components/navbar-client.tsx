@@ -178,7 +178,7 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
                       </p>
                     </div>
                     <Link
-                      href={`/profile/${session.user?.id}`}
+                      href={`/profile/${session.user?.username || session.user?.id}`}
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
                     >
@@ -186,7 +186,7 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
                       <span>Profilim</span>
                     </Link>
                     <Link
-                      href={`/profile/${session.user?.id}/following`}
+                      href={`/profile/${session.user?.username || session.user?.id}/following`}
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
                     >
@@ -349,7 +349,7 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
                     </Link>
                   )}
                   <Link
-                    href={`/profile/${session.user?.id}`}
+                    href={`/profile/${session.user?.username || session.user?.id}`}
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >

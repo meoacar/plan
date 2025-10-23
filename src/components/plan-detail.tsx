@@ -21,7 +21,7 @@ interface PlanDetailProps {
 
 export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
   const { data: session } = useSession()
-  const [liked, setLiked] = useState(false)
+  const [liked, setLiked] = useState(plan.isLiked || false)
   const [likeCount, setLikeCount] = useState(plan._count.likes)
   const [comments, setComments] = useState(plan.comments)
   const [commentBody, setCommentBody] = useState("")
@@ -47,7 +47,7 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
     }
 
     try {
-      const res = await fetch(`/api/plans/${plan.id}/like`, { method: "POST" })
+      const res = await fetch(`/api/plans/${plan.slug}/like`, { method: "POST" })
       const data = await res.json()
       setLiked(data.liked)
       setLikeCount((prev: number) => data.liked ? prev + 1 : prev - 1)

@@ -8,7 +8,7 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-async function getPlan(slug: string, isAdmin: boolean = false) {
+async function getPlan(slug: string, isAdmin: boolean = false, userId?: string) {
   const plan = await prisma.plan.findUnique({
     where: { 
       slug,
@@ -54,6 +54,14 @@ async function getPlan(slug: string, isAdmin: boolean = false) {
           createdAt: "desc"
         }
       },
+      likes: userId ? {
+        where: {
+          userId: userId
+        },
+        select: {
+          id: true
+        }
+      } : false,
       _count: {
         select: {
           likes: true,
@@ -63,7 +71,15 @@ async function getPlan(slug: string, isAdmin: boolean = false) {
     }
   })
 
-  return plan
+  if (!plan) return null
+
+  // Add isLiked property
+  const planWithLikeStatus = {
+    ...plan,
+    isLiked: userId ? (plan.likes as any[]).length > 0 : false
+  }
+
+  return planWithLikeStatus
 }
 
 async function getSimilarPlans(goalWeight: number, currentPlanId: string) {
@@ -149,7 +165,7 @@ export default async function PlanPage({ params }: PageProps) {
   const { slug } = await params
   const session = await auth()
   const isAdmin = session?.user?.role === "ADMIN"
-  const plan = await getPlan(slug, isAdmin)
+  const plan = await getPlan(slug, isAdmin, session?.user?.id)
 
   if (!plan) {
     notFound()

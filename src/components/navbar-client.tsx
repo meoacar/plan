@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
 import { Button } from "./ui/button"
 import { useState, useRef, useEffect } from "react"
-import { Menu, X, User, LogOut, Settings, ChevronDown, FolderOpen, Camera, Trophy, BarChart3, Users, BarChart2 } from "lucide-react"
+import { Menu, X, User, LogOut, Settings, ChevronDown, FolderOpen, Camera, Trophy, BarChart3, Users, BarChart2, Utensils } from "lucide-react"
 import { Logo } from "./logo"
 
 interface NavbarClientProps {
@@ -114,6 +114,14 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
                       >
                         <BarChart3 className="w-4 h-4 text-[#2d7a4a]" />
                         <span>İlerleme Takibi</span>
+                      </Link>
+                      <Link
+                        href="/calories"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <Utensils className="w-4 h-4 text-[#2d7a4a]" />
+                        <span>Kalori Takibi</span>
                       </Link>
                       <Link
                         href="/gamification"
@@ -315,6 +323,16 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
                       }`}
                   >
                     📊 İlerleme Takibi
+                  </Link>
+                  <Link
+                    href="/calories"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/calories"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    🍽️ Kalori Takibi
                   </Link>
                   <Link
                     href="/partnerships"

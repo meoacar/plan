@@ -137,6 +137,8 @@ model User {
   crisisButtons    CrisisButton[]
   wallPosts        WallPost[]        @relation("WallPostOwner")
   wallPostsWritten WallPost[]        @relation("WallPostAuthor")
+  meals            Meal[]
+  calorieGoal      CalorieGoal?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
@@ -685,4 +687,81 @@ model WallPost {
 
   @@index([userId, createdAt])
   @@index([authorId])
+}
+
+// Kalori Takibi Sistemi
+
+// Yemek veritabanı (önceden tanımlı yemekler)
+model Food {
+  id          String       @id @default(cuid())
+  name        String
+  nameEn      String?      // İngilizce isim
+  category    String       // "Kahvaltı", "Ana Yemek", "Atıştırmalık", "İçecek", "Meyve", "Sebze"
+  calories    Float        // 100g için kalori
+  protein     Float?       // 100g için protein (g)
+  carbs       Float?       // 100g için karbonhidrat (g)
+  fat         Float?       // 100g için yağ (g)
+  fiber       Float?       // 100g için lif (g)
+  servingSize Float        @default(100) // Standart porsiyon (g)
+  isCommon    Boolean      @default(false) // Sık kullanılan yemekler
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  mealEntries MealEntry[]
+
+  @@index([category])
+  @@index([isCommon])
+  @@index([name])
+}
+
+// Kullanıcı öğün kayıtları
+model Meal {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime    // Öğün tarihi
+  mealType    String      // "Kahvaltı", "Öğle", "Akşam", "Atıştırmalık"
+  totalCalories Float     @default(0)
+  totalProtein  Float     @default(0)
+  totalCarbs    Float     @default(0)
+  totalFat      Float     @default(0)
+  note        String?     @db.Text
+  entries     MealEntry[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId, date])
+  @@index([mealType])
+}
+
+// Öğün içindeki yemekler
+model MealEntry {
+  id        String   @id @default(cuid())
+  mealId    String
+  meal      Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  foodId    String?  // Veritabanından seçilmişse
+  food      Food?    @relation(fields: [foodId], references: [id])
+  foodName  String   // Özel yemek adı (veritabanında yoksa)
+  amount    Float    // Miktar (g)
+  calories  Float    // Hesaplanan kalori
+  protein   Float?   // Hesaplanan protein
+  carbs     Float?   // Hesaplanan karbonhidrat
+  fat       Float?   // Hesaplanan yağ
+  createdAt DateTime @default(now())
+
+  @@index([mealId])
+  @@index([foodId])
+}
+
+// Günlük kalori hedefi
+model CalorieGoal {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyCalories Int      // Günlük kalori hedefi
+  dailyProtein  Int?     // Günlük protein hedefi (g)
+  dailyCarbs    Int?     // Günlük karbonhidrat hedefi (g)
+  dailyFat      Int?     // Günlük yağ hedefi (g)
+  activityLevel String   @default("sedentary") // "sedentary", "light", "moderate", "active", "very_active"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

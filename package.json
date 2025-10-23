@@ -10,7 +10,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:gamification": "tsx prisma/seed-gamification.ts",
     "db:seed:polls": "tsx prisma/seed-polls.ts",
-    "db:seed:foods": "tsx prisma/seed-foods.ts"
+    "db:seed:foods": "tsx prisma/seed-foods.ts",
+    "db:seed:foods-mega": "tsx prisma/seed-foods-mega.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -66,19 +66,30 @@ async function main() {
     console.log('🍽️  Yemek veritabanı seed başlıyor...');
 
     // Önce mevcut yemekleri kontrol et
-    const existingCount = await prisma.food.count();
+    try {
+        const existingCount = await prisma.food.count();
 
-    if (existingCount > 0) {
-        console.log(`ℹ️  Veritabanında zaten ${existingCount} yemek var. Yeni yemekler ekleniyor...`);
+        if (existingCount > 0) {
+            console.log(`ℹ️  Veritabanında zaten ${existingCount} yemek var. Atlanıyor...`);
+            return;
+        }
+    } catch (error) {
+        console.log('ℹ️  Food tablosu kontrol edilemiyor, devam ediliyor...');
     }
 
+    let addedCount = 0;
     for (const food of foods) {
-        await prisma.food.create({
-            data: food,
-        });
+        try {
+            await prisma.food.create({
+                data: food,
+            });
+            addedCount++;
+        } catch (error) {
+            console.log(`⚠️  ${food.name} eklenemedi (muhtemelen zaten var)`);
+        }
     }
 
-    console.log(`✅ ${foods.length} yemek eklendi!`);
+    console.log(`✅ ${addedCount} yemek eklendi!`);
 }
 
 main()

@@ -46,25 +46,25 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
       return
     }
 
-    // Optimistic update
-    const wasLiked = liked
-    setLiked(!wasLiked)
-    setLikeCount((prev: number) => wasLiked ? prev - 1 : prev + 1)
+    const previousLiked = liked
+    const previousCount = likeCount
 
     try {
       const res = await fetch(`/api/plans/${plan.slug}/like`, { method: "POST" })
       const data = await res.json()
       
-      // Sunucudan gelen yanıt ile senkronize et
-      if (data.liked !== !wasLiked) {
-        setLiked(data.liked)
-        setLikeCount((prev: number) => data.liked ? prev + 1 : prev - 1)
+      // API'den gelen duruma göre güncelle
+      setLiked(data.liked)
+      
+      // Eğer beğeni eklendiyse +1, kaldırıldıysa -1
+      if (data.liked && !previousLiked) {
+        setLikeCount(previousCount + 1)
+      } else if (!data.liked && previousLiked) {
+        setLikeCount(previousCount - 1)
       }
     } catch (error) {
       console.error("Like error:", error)
-      // Hata durumunda geri al
-      setLiked(wasLiked)
-      setLikeCount((prev: number) => wasLiked ? prev + 1 : prev - 1)
+      alert("Bir hata oluştu, lütfen tekrar deneyin")
     }
   }
 

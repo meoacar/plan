@@ -23,6 +23,12 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
   const { data: session } = useSession()
   const [liked, setLiked] = useState(plan.isLiked || false)
   const [likeCount, setLikeCount] = useState(plan._count.likes)
+  
+  console.log('Plan loaded:', { 
+    isLiked: plan.isLiked, 
+    likeCount: plan._count.likes,
+    likes: plan.likes 
+  })
   const [comments, setComments] = useState(plan.comments)
   const [commentBody, setCommentBody] = useState("")
   const [submitting, setSubmitting] = useState(false)
@@ -48,19 +54,27 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
 
     const previousLiked = liked
     const previousCount = likeCount
+    
+    console.log('Before like:', { previousLiked, previousCount })
 
     try {
       const res = await fetch(`/api/plans/${plan.slug}/like`, { method: "POST" })
       const data = await res.json()
+      
+      console.log('API response:', data)
       
       // API'den gelen duruma göre güncelle
       setLiked(data.liked)
       
       // Eğer beğeni eklendiyse +1, kaldırıldıysa -1
       if (data.liked && !previousLiked) {
+        console.log('Adding like: +1')
         setLikeCount(previousCount + 1)
       } else if (!data.liked && previousLiked) {
+        console.log('Removing like: -1')
         setLikeCount(previousCount - 1)
+      } else {
+        console.log('No change in count')
       }
     } catch (error) {
       console.error("Like error:", error)

@@ -76,7 +76,7 @@ async function getPlan(slug: string, isAdmin: boolean = false, userId?: string) 
   // Add isLiked property
   const planWithLikeStatus = {
     ...plan,
-    isLiked: userId ? (plan.likes as any[]).length > 0 : false
+    isLiked: userId && plan.likes ? (plan.likes as any[]).length > 0 : false
   }
 
   return planWithLikeStatus

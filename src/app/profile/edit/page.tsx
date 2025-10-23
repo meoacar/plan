@@ -27,6 +27,7 @@ export default function EditProfilePage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    username: "",
     bio: "",
     image: "",
     city: "",
@@ -80,6 +81,7 @@ export default function EditProfilePage() {
         setFormData({
           name: data.name || "",
           email: data.email || "",
+          username: data.username || "",
           bio: data.bio || "",
           image: data.image || "",
           city: data.city || "",
@@ -171,6 +173,7 @@ export default function EditProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
+          username: formData.username || null,
           bio: formData.bio,
           image: uploadedImage || selectedAvatar || null,
           city: formData.city || null,
@@ -307,6 +310,7 @@ export default function EditProfilePage() {
           <ProfileCompletionCard 
             fields={[
               { name: 'name', label: 'İsim Soyisim', completed: !!formData.name },
+              { name: 'username', label: 'Kullanıcı Adı', completed: !!formData.username },
               { name: 'bio', label: 'Hakkında', completed: !!formData.bio },
               { name: 'image', label: 'Profil Resmi', completed: !!(uploadedImage || selectedAvatar) },
               { name: 'city', label: 'Şehir', completed: !!formData.city },
@@ -518,6 +522,31 @@ export default function EditProfilePage() {
                       required
                       className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700 flex items-center gap-2">
+                      <span>@</span>
+                      Kullanıcı Adı
+                    </label>
+                    <Input
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) => {
+                        // Sadece küçük harf, rakam, alt çizgi ve tire kabul et
+                        const value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '')
+                        setFormData({ ...formData, username: value })
+                      }}
+                      placeholder="ornek_kullanici"
+                      maxLength={30}
+                      className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1.5 ml-1">
+                      Profil URL'iniz: zayiflamaplanim.com/@{formData.username || "kullaniciadi"}
+                    </p>
+                    <p className="text-xs text-gray-500 ml-1">
+                      Sadece küçük harf, rakam, alt çizgi (_) ve tire (-) kullanabilirsiniz
+                    </p>
                   </div>
 
                   <div>

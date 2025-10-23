@@ -184,6 +184,7 @@ export async function checkProfileCompletion(userId: string) {
     where: { id: userId },
     select: {
       name: true,
+      username: true,
       bio: true,
       image: true,
       city: true,
@@ -201,6 +202,7 @@ export async function checkProfileCompletion(userId: string) {
 
   const fields = [
     { name: 'name', value: user.name },
+    { name: 'username', value: user.username },
     { name: 'bio', value: user.bio },
     { name: 'image', value: user.image },
     { name: 'city', value: user.city },

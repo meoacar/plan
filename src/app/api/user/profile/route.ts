@@ -18,6 +18,7 @@ export async function GET() {
         id: true,
         name: true,
         email: true,
+        username: true,
         image: true,
         bio: true,
         city: true,
@@ -40,6 +41,7 @@ export async function GET() {
       id: user.id,
       name: user.name,
       email: user.email,
+      username: user.username,
       image: user.image,
       bio: user.bio,
       city: user.city,
@@ -68,11 +70,43 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json()
-    const { name, bio, image, city, startWeight, goalWeight, instagram, twitter, youtube, tiktok, website } = body
+    const { name, username, bio, image, city, startWeight, goalWeight, instagram, twitter, youtube, tiktok, website } = body
 
     // Validasyon
     if (!name || name.trim().length === 0) {
       return NextResponse.json({ error: "İsim boş olamaz" }, { status: 400 })
+    }
+
+    // Username validasyonu
+    if (username) {
+      const trimmedUsername = username.trim().toLowerCase()
+      
+      // Username format kontrolü (sadece harf, rakam, alt çizgi ve tire)
+      if (!/^[a-z0-9_-]+$/.test(trimmedUsername)) {
+        return NextResponse.json({ 
+          error: "Kullanıcı adı sadece küçük harf, rakam, alt çizgi (_) ve tire (-) içerebilir" 
+        }, { status: 400 })
+      }
+
+      // Minimum uzunluk kontrolü
+      if (trimmedUsername.length < 3) {
+        return NextResponse.json({ error: "Kullanıcı adı en az 3 karakter olmalıdır" }, { status: 400 })
+      }
+
+      // Maximum uzunluk kontrolü
+      if (trimmedUsername.length > 30) {
+        return NextResponse.json({ error: "Kullanıcı adı en fazla 30 karakter olabilir" }, { status: 400 })
+      }
+
+      // Username benzersizlik kontrolü
+      const existingUser = await prisma.user.findUnique({
+        where: { username: trimmedUsername },
+        select: { id: true, email: true },
+      })
+
+      if (existingUser && existingUser.email !== session.user.email) {
+        return NextResponse.json({ error: "Bu kullanıcı adı zaten kullanılıyor" }, { status: 400 })
+      }
     }
 
     if (startWeight && (startWeight < 30 || startWeight > 300)) {
@@ -87,6 +121,7 @@ export async function PUT(request: Request) {
       where: { email: session.user.email },
       data: {
         name: name.trim(),
+        username: username ? username.trim().toLowerCase() : null,
         image: image || null,
         bio: bio?.trim() || null,
         city: city?.trim() || null,
@@ -102,6 +137,7 @@ export async function PUT(request: Request) {
         id: true,
         name: true,
         email: true,
+        username: true,
         image: true,
         bio: true,
         city: true,

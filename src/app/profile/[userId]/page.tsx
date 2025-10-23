@@ -14,9 +14,15 @@ interface PageProps {
   params: Promise<{ userId: string }>
 }
 
-async function getUser(userId: string, isOwnProfile: boolean = false) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+async function getUser(userIdOrUsername: string, isOwnProfile: boolean = false) {
+  // Username veya ID ile kullanıcıyı bul
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { id: userIdOrUsername },
+        { username: userIdOrUsername }
+      ]
+    },
     select: {
       id: true,
       name: true,

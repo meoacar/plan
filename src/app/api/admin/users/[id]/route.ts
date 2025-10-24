@@ -19,9 +19,10 @@ export async function PATCH(
 
     const { id } = await params
     const body = await req.json()
-    const { role } = body
+    const { role, name, email, goalWeight, startWeight, city } = body
 
-    if (!["USER", "ADMIN"].includes(role)) {
+    // Validate role if provided
+    if (role && !["USER", "ADMIN"].includes(role)) {
       return NextResponse.json(
         { error: "Geçersiz rol" },
         { status: 400 }
@@ -36,22 +37,32 @@ export async function PATCH(
       )
     }
 
+    // Build update data object
+    const updateData: any = {}
+    if (role !== undefined) updateData.role = role
+    if (name !== undefined) updateData.name = name
+    if (email !== undefined) updateData.email = email
+    if (goalWeight !== undefined) updateData.goalWeight = goalWeight
+    if (startWeight !== undefined) updateData.startWeight = startWeight
+    if (city !== undefined) updateData.city = city
+
     const user = await prisma.user.update({
       where: { id },
-      data: { role },
+      data: updateData,
     })
 
     // Activity log
+    const changedFields = Object.keys(updateData).join(", ")
     await logActivity({
       userId: session.user.id,
-      type: "USER_ROLE_CHANGED",
-      description: `${user.name || user.email} kullanıcısının rolü ${role} olarak değiştirildi`,
+      type: role ? "USER_ROLE_CHANGED" : "USER_UPDATED",
+      description: `${user.name || user.email} kullanıcısı güncellendi (${changedFields})`,
       targetId: user.id,
       targetType: "User",
       metadata: {
         userName: user.name,
         userEmail: user.email,
-        newRole: role,
+        changedFields: updateData,
       },
       request: req,
     })

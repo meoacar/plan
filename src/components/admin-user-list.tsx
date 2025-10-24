@@ -447,9 +447,8 @@ export function AdminUserList({ users }: AdminUserListProps) {
           filteredAndSortedUsers.map((user) => (
             <Card
               key={user.id}
-              className={`shadow-md hover:shadow-lg transition-all border-2 ${
-                selectedUsers.has(user.id) ? "border-blue-500 bg-blue-50" : ""
-              }`}
+              className={`shadow-md hover:shadow-lg transition-all border-2 ${selectedUsers.has(user.id) ? "border-blue-500 bg-blue-50" : ""
+                }`}
             >
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
@@ -511,11 +510,10 @@ export function AdminUserList({ users }: AdminUserListProps) {
 
                   <div className="flex flex-col gap-2">
                     <div
-                      className={`px-4 py-2 rounded-lg font-bold text-center ${
-                        user.role === "ADMIN"
-                          ? "bg-purple-100 text-purple-900 border-2 border-purple-300"
-                          : "bg-gray-100 text-gray-900 border-2 border-gray-300"
-                      }`}
+                      className={`px-4 py-2 rounded-lg font-bold text-center ${user.role === "ADMIN"
+                        ? "bg-purple-100 text-purple-900 border-2 border-purple-300"
+                        : "bg-gray-100 text-gray-900 border-2 border-gray-300"
+                        }`}
                     >
                       {user.role === "ADMIN" ? "👑 ADMIN" : "👤 USER"}
                     </div>
@@ -575,7 +573,7 @@ export function AdminUserList({ users }: AdminUserListProps) {
           <Card className="max-w-2xl w-full my-8">
             <CardContent className="pt-6">
               <h3 className="text-2xl font-bold mb-6">✏️ Kullanıcıyı Düzenle</h3>
-              
+
               <div className="space-y-4">
                 {/* İsim */}
                 <div>

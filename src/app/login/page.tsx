@@ -7,12 +7,14 @@ import { signIn } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
@@ -81,13 +83,28 @@ export default function LoginPage() {
 
             <div>
               <label className="block text-base font-bold mb-2 text-gray-800">🔒 Şifre</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              <div className="text-right mt-2">
+                <Link href="/forgot-password" className="text-sm text-[#2d7a4a] hover:underline font-semibold">
+                  Şifremi Unuttum
+                </Link>
+              </div>
             </div>
 
             <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={loading}>

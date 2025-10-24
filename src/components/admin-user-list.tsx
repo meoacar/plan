@@ -32,9 +32,8 @@ interface AdminUserListProps {
 type SortField = "name" | "email" | "createdAt" | "plans" | "activity"
 type SortOrder = "asc" | "desc"
 
-export function AdminUserList({ users: initialUsers }: AdminUserListProps) {
+export function AdminUserList({ users }: AdminUserListProps) {
   const router = useRouter()
-  const [users, setUsers] = useState<User[]>(initialUsers)
   const [loading, setLoading] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState<"ALL" | "USER" | "ADMIN">("ALL")
@@ -132,18 +131,6 @@ export function AdminUserList({ users: initialUsers }: AdminUserListProps) {
       })
 
       if (res.ok) {
-        const data = await res.json()
-        const updatedUser = data.user
-        
-        // Local state'i güncelle
-        setUsers(prevUsers => 
-          prevUsers.map(u => 
-            u.id === updatedUser.id 
-              ? { ...u, role: updatedUser.role }
-              : u
-          )
-        )
-        
         router.refresh()
       } else {
         const data = await res.json()
@@ -165,9 +152,6 @@ export function AdminUserList({ users: initialUsers }: AdminUserListProps) {
       })
 
       if (res.ok) {
-        // Local state'ten kullanıcıyı kaldır
-        setUsers(prevUsers => prevUsers.filter(u => u.id !== userId))
-        
         setShowDeleteModal(false)
         setUserToDelete(null)
         router.refresh()
@@ -215,23 +199,6 @@ export function AdminUserList({ users: initialUsers }: AdminUserListProps) {
       })
 
       if (res.ok) {
-        const data = await res.json()
-        const updatedUser = data.user
-        
-        console.log("API Response:", updatedUser)
-        console.log("Form Data:", editForm)
-        
-        // Local state'i güncelle
-        setUsers(prevUsers => {
-          const newUsers = prevUsers.map(u => 
-            u.id === updatedUser.id 
-              ? { ...u, ...updatedUser }
-              : u
-          )
-          console.log("Updated Users:", newUsers.find(u => u.id === updatedUser.id))
-          return newUsers
-        })
-        
         setShowEditModal(false)
         setUserToEdit(null)
         alert("✓ Kullanıcı güncellendi!")
@@ -263,15 +230,6 @@ export function AdminUserList({ users: initialUsers }: AdminUserListProps) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ role: newRole }),
           })
-        )
-      )
-      
-      // Local state'i güncelle
-      setUsers(prevUsers => 
-        prevUsers.map(u => 
-          selectedUsers.has(u.id) 
-            ? { ...u, role: newRole }
-            : u
         )
       )
       

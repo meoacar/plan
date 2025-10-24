@@ -5,6 +5,7 @@ import { AdminUserList } from "@/components/admin-user-list"
 
 // Disable caching for admin pages
 export const dynamic = "force-dynamic"
+export const revalidate = 0
 
 export default async function AdminUsersPage() {
   const session = await auth()

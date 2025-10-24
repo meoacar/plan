@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { 
@@ -18,7 +19,9 @@ import {
   FolderOpen,
   Rocket,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Upload,
+  X
 } from "lucide-react"
 
 type Category = {
@@ -64,7 +67,9 @@ interface PlanEditFormProps {
 
 export function PlanEditForm({ plan, categories, tags }: PlanEditFormProps) {
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
   const [selectedTags, setSelectedTags] = useState<string[]>(
     plan.tags.map(pt => pt.tag.id)
@@ -81,6 +86,44 @@ export function PlanEditForm({ plan, categories, tags }: PlanEditFormProps) {
     imageUrl: plan.imageUrl || "",
     categoryId: plan.categoryId || "",
   })
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    setError("")
+
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const res = await fetch("/api/upload/plan", {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || "Resim yüklenirken bir hata oluştu")
+        return
+      }
+
+      setFormData(prev => ({ ...prev, imageUrl: data.url }))
+    } catch (error) {
+      setError("Resim yüklenirken bir hata oluştu")
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setFormData(prev => ({ ...prev, imageUrl: "" }))
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -351,14 +394,75 @@ export function PlanEditForm({ plan, categories, tags }: PlanEditFormProps) {
                 <div className="space-y-3">
                   <label className="flex items-center gap-3 text-white font-bold text-lg">
                     <ImageIcon className="w-6 h-6 text-cyan-400" />
-                    <span>Görsel URL</span>
+                    <span>Görsel (Opsiyonel)</span>
                   </label>
-                  <Input
-                    type="url"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    className="h-14 bg-gray-800/50 border-gray-700 text-white"
-                  />
+                  
+                  <div className="space-y-4">
+                    {/* Dosya Yükleme */}
+                    <div className="flex gap-3">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        id="plan-image-upload"
+                      />
+                      <label
+                        htmlFor="plan-image-upload"
+                        className={`flex-1 h-14 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-semibold flex items-center justify-center gap-3 cursor-pointer hover:from-cyan-500 hover:to-blue-500 transition-all ${
+                          uploading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        {uploading ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Yükleniyor...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-5 h-5" />
+                            Bilgisayardan Yükle
+                          </>
+                        )}
+                      </label>
+                    </div>
+
+                    {/* URL Girişi */}
+                    <div className="relative">
+                      <Input
+                        type="url"
+                        value={formData.imageUrl}
+                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                        placeholder="veya görsel URL'si girin..."
+                        className="h-14 bg-gray-800/50 border-gray-700 text-white pr-12"
+                      />
+                      {formData.imageUrl && (
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-400 transition-colors"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Görsel Önizleme */}
+                    {formData.imageUrl && (
+                      <div className="relative w-full h-48 rounded-xl overflow-hidden border border-gray-700">
+                        <Image
+                          src={formData.imageUrl}
+                          alt="Plan görseli önizleme"
+                          fill
+                          className="object-cover"
+                          onError={() => {
+                            setError("Görsel yüklenemedi. Lütfen geçerli bir URL girin.")
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="pt-6 flex gap-4">

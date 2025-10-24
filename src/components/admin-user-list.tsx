@@ -32,8 +32,9 @@ interface AdminUserListProps {
 type SortField = "name" | "email" | "createdAt" | "plans" | "activity"
 type SortOrder = "asc" | "desc"
 
-export function AdminUserList({ users }: AdminUserListProps) {
+export function AdminUserList({ users: initialUsers }: AdminUserListProps) {
   const router = useRouter()
+  const [users, setUsers] = useState<User[]>(initialUsers)
   const [loading, setLoading] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState<"ALL" | "USER" | "ADMIN">("ALL")
@@ -131,6 +132,18 @@ export function AdminUserList({ users }: AdminUserListProps) {
       })
 
       if (res.ok) {
+        const data = await res.json()
+        const updatedUser = data.user
+        
+        // Local state'i güncelle
+        setUsers(prevUsers => 
+          prevUsers.map(u => 
+            u.id === updatedUser.id 
+              ? { ...u, role: updatedUser.role }
+              : u
+          )
+        )
+        
         router.refresh()
       } else {
         const data = await res.json()
@@ -152,9 +165,12 @@ export function AdminUserList({ users }: AdminUserListProps) {
       })
 
       if (res.ok) {
-        router.refresh()
+        // Local state'ten kullanıcıyı kaldır
+        setUsers(prevUsers => prevUsers.filter(u => u.id !== userId))
+        
         setShowDeleteModal(false)
         setUserToDelete(null)
+        router.refresh()
       } else {
         const data = await res.json()
         alert(data.error || "Kullanıcı silinemedi")
@@ -199,10 +215,22 @@ export function AdminUserList({ users }: AdminUserListProps) {
       })
 
       if (res.ok) {
-        router.refresh()
+        const data = await res.json()
+        const updatedUser = data.user
+        
+        // Local state'i güncelle
+        setUsers(prevUsers => 
+          prevUsers.map(u => 
+            u.id === updatedUser.id 
+              ? { ...u, ...updatedUser }
+              : u
+          )
+        )
+        
         setShowEditModal(false)
         setUserToEdit(null)
         alert("✓ Kullanıcı güncellendi!")
+        router.refresh()
       } else {
         const data = await res.json()
         alert(data.error || "Kullanıcı güncellenemedi")
@@ -232,8 +260,18 @@ export function AdminUserList({ users }: AdminUserListProps) {
           })
         )
       )
-      router.refresh()
+      
+      // Local state'i güncelle
+      setUsers(prevUsers => 
+        prevUsers.map(u => 
+          selectedUsers.has(u.id) 
+            ? { ...u, role: newRole }
+            : u
+        )
+      )
+      
       setSelectedUsers(new Set())
+      router.refresh()
     } catch (error) {
       console.error("Error bulk updating:", error)
       alert("Toplu güncelleme sırasında hata oluştu")

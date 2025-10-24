@@ -13,6 +13,11 @@ interface User {
   email: string
   role: string
   createdAt: Date
+  goalWeight?: number | null
+  startWeight?: number | null
+  city?: string | null
+  image?: string | null
+  username?: string | null
   _count: {
     plans: number
     comments: number
@@ -37,6 +42,16 @@ export function AdminUserList({ users }: AdminUserListProps) {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [userToDelete, setUserToDelete] = useState<string | null>(null)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [userToEdit, setUserToEdit] = useState<User | null>(null)
+  const [editForm, setEditForm] = useState({
+    name: "",
+    email: "",
+    role: "USER",
+    goalWeight: "",
+    startWeight: "",
+    city: "",
+  })
 
   // Filtreleme ve sıralama
   const filteredAndSortedUsers = useMemo(() => {
@@ -146,6 +161,54 @@ export function AdminUserList({ users }: AdminUserListProps) {
       }
     } catch (error) {
       console.error("Error deleting user:", error)
+      alert("Bir hata oluştu")
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const openEditModal = (user: User) => {
+    setUserToEdit(user)
+    setEditForm({
+      name: user.name || "",
+      email: user.email,
+      role: user.role,
+      goalWeight: user.goalWeight?.toString() || "",
+      startWeight: user.startWeight?.toString() || "",
+      city: user.city || "",
+    })
+    setShowEditModal(true)
+  }
+
+  const updateUser = async () => {
+    if (!userToEdit) return
+
+    setLoading(userToEdit.id)
+    try {
+      const res = await fetch(`/api/admin/users/${userToEdit.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editForm.name || null,
+          email: editForm.email,
+          role: editForm.role,
+          goalWeight: editForm.goalWeight ? parseInt(editForm.goalWeight) : null,
+          startWeight: editForm.startWeight ? parseInt(editForm.startWeight) : null,
+          city: editForm.city || null,
+        }),
+      })
+
+      if (res.ok) {
+        router.refresh()
+        setShowEditModal(false)
+        setUserToEdit(null)
+        alert("✓ Kullanıcı güncellendi!")
+      } else {
+        const data = await res.json()
+        alert(data.error || "Kullanıcı güncellenemedi")
+      }
+    } catch (error) {
+      console.error("Error updating user:", error)
       alert("Bir hata oluştu")
     } finally {
       setLoading(null)
@@ -477,6 +540,16 @@ export function AdminUserList({ users }: AdminUserListProps) {
                     )}
 
                     <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openEditModal(user)}
+                      disabled={loading === user.id}
+                      className="font-bold"
+                    >
+                      ✏️ Düzenle
+                    </Button>
+
+                    <Button
                       variant="destructive"
                       size="sm"
                       onClick={() => {
@@ -495,6 +568,159 @@ export function AdminUserList({ users }: AdminUserListProps) {
           ))
         )}
       </div>
+
+      {/* Düzenleme Modal */}
+      {showEditModal && userToEdit && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <Card className="max-w-2xl w-full my-8">
+            <CardContent className="pt-6">
+              <h3 className="text-2xl font-bold mb-6">✏️ Kullanıcıyı Düzenle</h3>
+              
+              <div className="space-y-4">
+                {/* İsim */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    👤 İsim
+                  </label>
+                  <Input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    placeholder="Kullanıcı adı"
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    📧 Email
+                  </label>
+                  <Input
+                    type="email"
+                    value={editForm.email}
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    placeholder="email@example.com"
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Rol */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    👑 Rol
+                  </label>
+                  <select
+                    value={editForm.role}
+                    onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                    className="w-full p-3 border rounded-lg"
+                  >
+                    <option value="USER">👤 USER</option>
+                    <option value="ADMIN">👑 ADMIN</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Başlangıç Kilosu */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      ⚖️ Başlangıç Kilosu (kg)
+                    </label>
+                    <Input
+                      type="number"
+                      value={editForm.startWeight}
+                      onChange={(e) => setEditForm({ ...editForm, startWeight: e.target.value })}
+                      placeholder="Örn: 85"
+                      className="w-full"
+                    />
+                  </div>
+
+                  {/* Hedef Kilo */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      🎯 Hedef Kilo (kg)
+                    </label>
+                    <Input
+                      type="number"
+                      value={editForm.goalWeight}
+                      onChange={(e) => setEditForm({ ...editForm, goalWeight: e.target.value })}
+                      placeholder="Örn: 70"
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+
+                {/* Şehir */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    📍 Şehir
+                  </label>
+                  <Input
+                    type="text"
+                    value={editForm.city}
+                    onChange={(e) => setEditForm({ ...editForm, city: e.target.value })}
+                    placeholder="Örn: İstanbul"
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Kullanıcı Bilgileri */}
+                <div className="bg-gray-50 p-4 rounded-lg border">
+                  <h4 className="font-semibold text-gray-700 mb-2">📊 Kullanıcı İstatistikleri</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-gray-600">Username:</span>{" "}
+                      <span className="font-semibold">{userToEdit.username || "Yok"}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Profil Resmi:</span>{" "}
+                      <span className="font-semibold">{userToEdit.image ? "✓ Var" : "✗ Yok"}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Planlar:</span>{" "}
+                      <span className="font-semibold">{userToEdit._count.plans}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Yorumlar:</span>{" "}
+                      <span className="font-semibold">{userToEdit._count.comments}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Beğeniler:</span>{" "}
+                      <span className="font-semibold">{userToEdit._count.likes}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Üyelik:</span>{" "}
+                      <span className="font-semibold">
+                        {new Date(userToEdit.createdAt).toLocaleDateString("tr-TR")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <Button
+                  onClick={updateUser}
+                  disabled={loading === userToEdit.id}
+                  className="flex-1 font-bold"
+                >
+                  {loading === userToEdit.id ? "⏳ Kaydediliyor..." : "💾 Kaydet"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowEditModal(false)
+                    setUserToEdit(null)
+                  }}
+                  className="flex-1 font-bold"
+                >
+                  ✖ İptal
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Silme Onay Modal */}
       {showDeleteModal && userToDelete && (

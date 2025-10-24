@@ -69,6 +69,36 @@ export default async function RecipePage({
     notFound();
   }
 
+  // Tarif sahibi bilgilerini al
+  const recipeOwner = await prisma.user.findUnique({
+    where: { id: recipe.userId },
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      username: true,
+      level: true,
+      xp: true,
+      _count: {
+        select: {
+          plans: { where: { status: "APPROVED" } },
+        },
+      },
+    },
+  });
+
+  // Kullanıcının toplam onaylı tarif sayısı
+  const ownerRecipeCount = await prisma.recipe.count({
+    where: {
+      userId: recipe.userId,
+      status: "APPROVED",
+    },
+  });
+
+  if (!recipe) {
+    notFound();
+  }
+
   // Admin değilse sadece onaylı tarifleri göster
   if (recipe.status !== "APPROVED") {
     // Admin kontrolü
@@ -89,7 +119,7 @@ export default async function RecipePage({
   }
 
   const isLiked = session?.user?.id
-    ? recipe.likes.some((like) => like.userId === session.user.id)
+    ? recipe.likes.some((like: { userId: string }) => like.userId === session.user.id)
     : false;
 
   return (
@@ -97,6 +127,8 @@ export default async function RecipePage({
       recipe={recipe}
       isLiked={isLiked}
       currentUserId={session?.user?.id}
+      recipeOwner={recipeOwner}
+      ownerRecipeCount={ownerRecipeCount}
     />
   );
 }

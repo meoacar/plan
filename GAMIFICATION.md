@@ -6,13 +6,26 @@ Bu dokümantasyon, Zayıflama Planım platformuna eklenen gamification (oyunlaş
 
 ### 1. XP (Deneyim Puanı) Sistemi
 Kullanıcılar çeşitli aktivitelerle XP kazanır:
+
+#### Plan Aktiviteleri
 - **Plan Oluşturma**: 50 XP
 - **Plan Onaylanma**: 100 XP
 - **Beğeni Alma**: 5 XP
 - **Yorum Alma**: 10 XP
 - **Yorum Yapma**: 5 XP
 - **Beğeni Verme**: 2 XP
+
+#### Tarif Aktiviteleri
+- **Tarif Oluşturma**: 30 XP
+- **Tarif Onaylanma**: 75 XP
+- **Tarif Beğeni Alma**: 3 XP
+- **Tarif Yorum Alma**: 8 XP
+- **Tarif Yorum Yapma**: 3 XP
+
+#### Diğer
 - **Günlük Giriş**: 10 XP
+- **Profil Tamamlama**: 25 XP
+- **%100 Profil Tamamlama**: 100 XP
 
 ### 2. Seviye Sistemi
 - XP biriktirerek seviye atlama
@@ -20,7 +33,7 @@ Kullanıcılar çeşitli aktivitelerle XP kazanır:
 - Örnek: Seviye 2 için 400 XP, Seviye 3 için 900 XP gerekir
 
 ### 3. Rozetler (Badges)
-18 farklı rozet kategorisi:
+36 farklı rozet kategorisi:
 
 #### Plan Rozetleri
 - 🎯 **İlk Adım**: İlk planını oluştur (50 XP)
@@ -47,10 +60,32 @@ Kullanıcılar çeşitli aktivitelerle XP kazanır:
 - 🗓️ **Aylık Aktif**: 30 gün üst üste giriş (300 XP)
 - 🏆 **Sadık Kullanıcı**: 100 gün üst üste giriş (1000 XP)
 
+#### Partner Rozetleri
+- 🤝 **İlk Partner**: İlk partnerini edindin (100 XP)
+- 💬 **Destekleyici Partner**: 50 destek notu ekledin (200 XP)
+- 🎯 **Hedef Avcısı**: 10 ortak hedef tamamladın (300 XP)
+- ⏳ **Uzun Soluklu Partner**: 90 gün aktif partnerlik (500 XP)
+- ✨ **Motivasyon Kaynağı**: 100 motivasyon mesajı gönderdin (250 XP)
+
+#### Tarif Rozetleri
+- 🍽️ **İlk Tarif**: İlk tarifini paylaştın (30 XP)
+- 👨‍🍳 **Aşçı Çırağı**: 5 tarif paylaştın (75 XP)
+- 👨‍🍳 **Aşçıbaşı**: 10 tarif paylaştın (150 XP)
+- 👨‍🍳 **Şef**: 25 tarif paylaştın (400 XP)
+- 😋 **Lezzetli**: Tariflerin 10 beğeni aldı (50 XP)
+- 🤤 **Nefis**: Tariflerin 50 beğeni aldı (125 XP)
+- ⭐ **Muhteşem Lezzet**: Tariflerin 100 beğeni aldı (250 XP)
+- 🏆 **Tarif Ustası**: 10+ tarif ve 50+ beğeni (300 XP)
+- 👀 **Merak Uyandıran**: Tariflerin 100 görüntülenme aldı (40 XP)
+- 🔥 **Popüler Tarif**: Tariflerin 500 görüntülenme aldı (80 XP)
+- 💬 **Tartışılan Tarif**: Tariflerin 10 yorum aldı (60 XP)
+- 🗣️ **Konuşulan Tarif**: Tariflerin 25 yorum aldı (120 XP)
+
 #### Özel Rozetler
-- 🚀 **Öncü**: İlk kullanıcılar
-- 🤝 **Yardımsever**: Toplulukta aktif yardım
-- 💪 **Zayıflama Kahramanı**: Hedefe ulaşma
+- 🚀 **Öncü**: İlk kullanıcılar (200 XP)
+- 🤝 **Yardımsever**: Toplulukta aktif yardım (150 XP)
+- 💪 **Zayıflama Kahramanı**: Hedefe ulaşma (500 XP)
+- ✅ **Profil Tamamlandı**: Profilini %100 tamamladın (100 XP)
 
 ### 4. Streak (Ardışık Giriş) Sistemi
 - Her gün giriş yaparak streak'i artır
@@ -66,11 +101,19 @@ Kullanıcılar çeşitli aktivitelerle XP kazanır:
 
 ### 6. Hedefler (Goals)
 Günlük, haftalık ve aylık hedefler:
+
+#### Plan Hedefleri
 - **Günlük Giriş**: Her gün giriş yap (10 XP)
 - **Haftalık Plan**: Haftada 1 plan oluştur (50 XP)
 - **Haftalık Yorum**: Haftada 3 yorum yap (30 XP)
 - **Haftalık Beğeni**: Haftada 5 plan beğen (20 XP)
 - **Aylık Aktif**: Ayda 15 gün aktif ol (100 XP)
+
+#### Tarif Hedefleri
+- **Haftalık Tarif**: Haftada 1 tarif paylaş (40 XP)
+- **Aylık Tarif**: Ayda 3 tarif paylaş (120 XP)
+- **Haftalık Tarif Yorumu**: Haftada tariflere 3 yorum yap (25 XP)
+- **Aylık Tarif Paylaşımı**: Ayda 5 tarif paylaş (200 XP)
 
 ## 🗄️ Veritabanı Şeması
 

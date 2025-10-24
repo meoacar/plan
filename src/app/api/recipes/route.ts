@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import slugify from "slugify";
+import { addXP, checkRecipeBadges, XP_REWARDS } from "@/lib/gamification";
+import { prisma } from "@/lib/prisma";
 
 // Tarifleri listele (onaylı tarifler)
 export async function GET(req: NextRequest) {
@@ -162,6 +163,9 @@ export async function POST(req: NextRequest) {
         images: true,
       },
     });
+
+    // Gamification: Tarif oluşturma XP'si
+    await addXP(session.user.id, XP_REWARDS.RECIPE_CREATED, "Tarif oluşturma");
 
     return NextResponse.json(recipe, { status: 201 });
   } catch (error) {

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function RecipeDetail({
   recipe,
   isLiked: initialIsLiked,
   currentUserId,
+  recipeOwner,
+  ownerRecipeCount,
 }: any) {
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(initialIsLiked);
@@ -148,6 +149,47 @@ export default function RecipeDetail({
         </div>
         <h1 className="text-4xl font-bold text-gray-900">{recipe.title}</h1>
         <p className="mt-3 text-lg text-gray-600">{recipe.description}</p>
+        
+        {/* Tarif Sahibi Bilgileri */}
+        {recipeOwner && (
+          <div className="mt-4 flex items-center gap-4 rounded-lg border bg-gradient-to-r from-green-50 to-blue-50 p-4">
+            <Link href={`/profile/${recipeOwner.username || recipeOwner.id}`}>
+              {recipeOwner.image ? (
+                <img
+                  src={recipeOwner.image}
+                  alt={recipeOwner.name || ""}
+                  className="h-16 w-16 rounded-full border-2 border-green-500 object-cover transition hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-green-100 text-2xl font-bold text-green-700">
+                  {recipeOwner.name?.[0]?.toUpperCase() || "?"}
+                </div>
+              )}
+            </Link>
+            <div className="flex-1">
+              <Link 
+                href={`/profile/${recipeOwner.username || recipeOwner.id}`}
+                className="text-lg font-semibold text-gray-900 hover:text-green-600 transition"
+              >
+                {recipeOwner.name}
+              </Link>
+              <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-gray-600">
+                <span className="flex items-center gap-1">
+                  <span className="text-yellow-500">⭐</span>
+                  Seviye {recipeOwner.level}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-green-600">🍽️</span>
+                  {ownerRecipeCount} Tarif
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-blue-600">📝</span>
+                  {recipeOwner._count.plans} Plan
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* İstatistikler */}

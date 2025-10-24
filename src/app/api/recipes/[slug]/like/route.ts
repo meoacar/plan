@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { addXP, checkRecipeBadges, XP_REWARDS } from "@/lib/gamification";
 
 export async function POST(
   req: NextRequest,
@@ -44,6 +45,13 @@ export async function POST(
           userId: session.user.id,
         },
       });
+
+      // Gamification: Tarif sahibine XP ver
+      if (recipe.userId !== session.user.id) {
+        await addXP(recipe.userId, XP_REWARDS.RECIPE_LIKE_RECEIVED, "Tarif beğenisi aldı");
+        await checkRecipeBadges(recipe.userId);
+      }
+
       return NextResponse.json({ liked: true });
     }
   } catch (error) {

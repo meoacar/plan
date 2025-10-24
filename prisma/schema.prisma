@@ -1,11 +1,770 @@
-// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id               String                      @id @default(cuid())
+  email            String                      @unique
+  passwordHash     String?
+  name             String?
+  image            String?
+  bio              String?
+  startWeight      Int?
+  goalWeight       Int?
+  role             Role                        @default(USER)
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
+  instagram        String?
+  tiktok           String?
+  twitter          String?
+  website          String?
+  youtube          String?
+  lastActiveDate   DateTime?
+  level            Int                         @default(1)
+  streak           Int                         @default(0)
+  xp               Int                         @default(0)
+  city             String?
+  username         String?                     @unique
+  accounts         Account[]
+  partnerReceived  AccountabilityPartnership[] @relation("PartnerReceiver")
+  partnerRequests  AccountabilityPartnership[] @relation("PartnerRequester")
+  activityLogs     ActivityLog[]
+  backups          Backup[]
+  bannedWords      BannedWord[]
+  calorieGoal      CalorieGoal?
+  checkIns         CheckIn[]
+  collections      Collection[]
+  comments         Comment[]
+  commentReactions CommentReaction[]
+  crisisButtons    CrisisButton[]
+  emailCampaigns   EmailCampaign[]
+  favorites        Favorite[]
+  following        Follow[]                    @relation("UserFollowing")
+  followers        Follow[]                    @relation("UserFollowers")
+  likes            Like[]
+  meals            Meal[]
+  measurements     Measurement[]
+  moodLogs         MoodLog[]
+  plans            Plan[]
+  polls            Poll[]
+  pollVotes        PollVote[]
+  progressPhotos   ProgressPhoto[]
+  recipeComments   RecipeComment[]
+  sessions         Session[]
+  siteSettings     SiteSettings[]
+  badges           UserBadge[]
+  goals            UserGoal[]
+  wallPostsWritten WallPost[]                  @relation("WallPostAuthor")
+  wallPosts        WallPost[]                  @relation("WallPostOwner")
+  weightLogs       WeightLog[]
+
+  @@index([xp, level])
+}
+
+model Plan {
+  id              String           @id @default(cuid())
+  userId          String
+  title           String
+  slug            String           @unique
+  startWeight     Int
+  goalWeight      Int
+  durationText    String
+  routine         String
+  diet            String
+  exercise        String
+  motivation      String
+  imageUrl        String?
+  status          PlanStatus       @default(PENDING)
+  views           Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  categoryId      String?
+  rejectionReason String?
+  videoUrl        String?
+  collectionPlans CollectionPlan[]
+  comments        Comment[]
+  favorites       Favorite[]
+  likes           Like[]
+  category        Category?        @relation(fields: [categoryId], references: [id])
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags            PlanTag[]
+
+  @@index([status, createdAt])
+  @@index([slug])
+  @@index([goalWeight, startWeight])
+  @@index([categoryId])
+}
+
+model Comment {
+  id        String            @id @default(cuid())
+  planId    String
+  userId    String
+  body      String
+  createdAt DateTime          @default(now())
+  plan      Plan              @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reactions CommentReaction[]
+}
+
+model CommentReaction {
+  id        String   @id @default(cuid())
+  commentId String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId, emoji])
+  @@index([commentId])
+  @@index([userId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  planId    String
+  userId    String
+  createdAt DateTime @default(now())
+  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, userId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  planId    String
+  userId    String
+  note      String?
+  createdAt DateTime @default(now())
+  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, userId])
+  @@index([userId, createdAt])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model SiteSettings {
+  id              String   @id @default(cuid())
+  siteTitle       String   @default("Zayıflama Planım")
+  siteDescription String
+  logoUrl         String?
+  twitterUrl      String?
+  instagramUrl    String?
+  facebookUrl     String?
+  footerText      String?
+  maintenanceMode Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+  updatedBy       String
+  updatedByUser   User     @relation(fields: [updatedBy], references: [id])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  color       String   @default("#4caf50")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  plans       Plan[]
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  plans     PlanTag[]
+}
+
+model PlanTag {
+  id     String @id @default(cuid())
+  planId String
+  tagId  String
+  plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, tagId])
+}
+
+model BannedWord {
+  id        String   @id @default(cuid())
+  word      String   @unique
+  createdAt DateTime @default(now())
+  createdBy String
+  creator   User     @relation(fields: [createdBy], references: [id])
+}
+
+model ActivityLog {
+  id          String       @id @default(cuid())
+  userId      String
+  type        ActivityType
+  targetId    String?
+  targetType  String?
+  description String
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime     @default(now())
+  user        User         @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([type, createdAt])
+}
+
+model EmailCampaign {
+  id          String      @id @default(cuid())
+  subject     String
+  content     String
+  recipients  String
+  status      EmailStatus @default(DRAFT)
+  sentCount   Int         @default(0)
+  failedCount Int         @default(0)
+  createdBy   String
+  createdAt   DateTime    @default(now())
+  sentAt      DateTime?
+  creator     User        @relation(fields: [createdBy], references: [id])
+
+  @@index([status, createdAt])
+}
+
+model Backup {
+  id        String   @id @default(cuid())
+  filename  String
+  size      Int
+  type      String   @default("manual")
+  createdBy String?
+  createdAt DateTime @default(now())
+  creator   User?    @relation(fields: [createdBy], references: [id])
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  type        BadgeType   @unique
+  name        String
+  description String
+  icon        String
+  xpReward    Int         @default(0)
+  createdAt   DateTime    @default(now())
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId, earnedAt])
+}
+
+model Goal {
+  id          String     @id @default(cuid())
+  type        GoalType   @unique
+  name        String
+  description String
+  target      Int
+  xpReward    Int        @default(0)
+  createdAt   DateTime   @default(now())
+  users       UserGoal[]
+}
+
+model UserGoal {
+  id          String    @id @default(cuid())
+  userId      String
+  goalId      String
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  startDate   DateTime  @default(now())
+  endDate     DateTime
+  goal        Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, goalId, startDate])
+  @@index([userId, completed])
+}
+
+model WeightLog {
+  id        String   @id @default(cuid())
+  userId    String
+  weight    Float
+  note      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model CheckIn {
+  id                  String               @id @default(cuid())
+  userId              String
+  weight              Float?
+  energy              Int?
+  motivation          Int?
+  sleep               Int?
+  water               Int?
+  exercise            Boolean              @default(false)
+  dietPlan            Boolean              @default(false)
+  note                String?
+  createdAt           DateTime             @default(now())
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partnershipCheckIns PartnershipCheckIn[]
+
+  @@index([userId, createdAt])
+}
+
+model ProgressPhoto {
+  id          String   @id @default(cuid())
+  userId      String
+  imageUrl    String
+  weight      Float?
+  description String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Measurement {
+  id        String   @id @default(cuid())
+  userId    String
+  chest     Float?
+  waist     Float?
+  hips      Float?
+  thigh     Float?
+  arm       Float?
+  neck      Float?
+  note      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model MoodLog {
+  id        String   @id @default(cuid())
+  userId    String
+  mood      Int
+  stress    Int?
+  note      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Collection {
+  id          String           @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  isPublic    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plans       CollectionPlan[]
+
+  @@index([userId, createdAt])
+}
+
+model CollectionPlan {
+  id           String     @id @default(cuid())
+  collectionId String
+  planId       String
+  order        Int        @default(0)
+  note         String?
+  createdAt    DateTime   @default(now())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  plan         Plan       @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, planId])
+  @@index([collectionId, order])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model SeoSettings {
+  id        Int      @id @default(1)
+  settings  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AccountabilityPartnership {
+  id          String               @id @default(cuid())
+  requesterId String
+  partnerId   String
+  status      PartnershipStatus    @default(PENDING)
+  message     String?
+  createdAt   DateTime             @default(now())
+  acceptedAt  DateTime?
+  endedAt     DateTime?
+  partner     User                 @relation("PartnerReceiver", fields: [partnerId], references: [id], onDelete: Cascade)
+  requester   User                 @relation("PartnerRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  checkIns    PartnershipCheckIn[]
+  sharedGoals PartnershipGoal[]
+  messages    PartnershipMessage[]
+
+  @@unique([requesterId, partnerId])
+  @@index([requesterId, status])
+  @@index([partnerId, status])
+}
+
+model PartnershipGoal {
+  id            String                    @id @default(cuid())
+  partnershipId String
+  title         String
+  description   String?
+  targetDate    DateTime
+  completed     Boolean                   @default(false)
+  completedAt   DateTime?
+  createdBy     String
+  createdAt     DateTime                  @default(now())
+  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+
+  @@index([partnershipId, completed])
+}
+
+model PartnershipMessage {
+  id            String                    @id @default(cuid())
+  partnershipId String
+  senderId      String
+  content       String
+  isRead        Boolean                   @default(false)
+  readAt        DateTime?
+  createdAt     DateTime                  @default(now())
+  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+
+  @@index([partnershipId, createdAt])
+  @@index([senderId])
+}
+
+model PartnershipCheckIn {
+  id            String                    @id @default(cuid())
+  partnershipId String
+  checkInId     String
+  supportNote   String?
+  createdAt     DateTime                  @default(now())
+  checkIn       CheckIn                   @relation(fields: [checkInId], references: [id], onDelete: Cascade)
+  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+
+  @@index([partnershipId, createdAt])
+}
+
+model Poll {
+  id            String       @id @default(cuid())
+  question      String
+  description   String?
+  isActive      Boolean      @default(true)
+  isPublic      Boolean      @default(true)
+  allowMultiple Boolean      @default(false)
+  endsAt        DateTime?
+  createdBy     String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  creator       User         @relation(fields: [createdBy], references: [id])
+  options       PollOption[]
+  votes         PollVote[]
+
+  @@index([isActive, createdAt])
+  @@index([createdBy])
+}
+
+model PollOption {
+  id        String     @id @default(cuid())
+  pollId    String
+  text      String
+  order     Int        @default(0)
+  createdAt DateTime   @default(now())
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes     PollVote[]
+
+  @@index([pollId, order])
+}
+
+model PollVote {
+  id        String     @id @default(cuid())
+  pollId    String
+  optionId  String
+  userId    String
+  createdAt DateTime   @default(now())
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  voter     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, optionId, userId])
+  @@index([pollId])
+  @@index([userId])
+}
+
+model CrisisButton {
+  id         String    @id @default(cuid())
+  userId     String
+  trigger    String
+  resolved   Boolean   @default(false)
+  resolvedAt DateTime?
+  note       String?
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([trigger])
+}
+
+model WallPost {
+  id        String   @id @default(cuid())
+  userId    String
+  authorId  String
+  content   String
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation("WallPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  user      User     @relation("WallPostOwner", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([authorId])
+}
+
+model Food {
+  id          String      @id @default(cuid())
+  name        String
+  nameEn      String?
+  category    String
+  calories    Float
+  protein     Float?
+  carbs       Float?
+  fat         Float?
+  fiber       Float?
+  servingSize Float       @default(100)
+  isCommon    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  mealEntries MealEntry[]
+
+  @@index([category])
+  @@index([isCommon])
+  @@index([name])
+}
+
+model Meal {
+  id            String      @id @default(cuid())
+  userId        String
+  date          DateTime
+  mealType      String
+  totalCalories Float       @default(0)
+  totalProtein  Float       @default(0)
+  totalCarbs    Float       @default(0)
+  totalFat      Float       @default(0)
+  note          String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries       MealEntry[]
+
+  @@index([userId, date])
+  @@index([mealType])
+}
+
+model MealEntry {
+  id        String   @id @default(cuid())
+  mealId    String
+  foodId    String?
+  foodName  String
+  amount    Float
+  calories  Float
+  protein   Float?
+  carbs     Float?
+  fat       Float?
+  createdAt DateTime @default(now())
+  food      Food?    @relation(fields: [foodId], references: [id])
+  meal      Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  @@index([mealId])
+  @@index([foodId])
+}
+
+model CalorieGoal {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  dailyCalories Int
+  dailyProtein  Int?
+  dailyCarbs    Int?
+  dailyFat      Int?
+  activityLevel String   @default("sedentary")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ShoppingList {
+  id          String             @id @default(cuid())
+  userId      String
+  planId      String?
+  name        String
+  description String?
+  weekNumber  Int?
+  isCompleted Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  items       ShoppingListItem[]
+
+  @@index([userId, createdAt])
+  @@index([planId])
+}
+
+model ShoppingListItem {
+  id             String       @id @default(cuid())
+  shoppingListId String
+  category       String
+  name           String
+  quantity       String
+  isChecked      Boolean      @default(false)
+  note           String?
+  estimatedPrice Float?
+  order          Int          @default(0)
+  createdAt      DateTime     @default(now())
+  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+
+  @@index([shoppingListId, category, order])
+}
+
+model Recipe {
+  id              String           @id @default(cuid())
+  userId          String
+  title           String
+  slug            String           @unique
+  description     String
+  ingredients     String
+  instructions    String
+  prepTime        Int?
+  cookTime        Int?
+  servings        Int?
+  difficulty      String?
+  category        String
+  calories        Float?
+  protein         Float?
+  carbs           Float?
+  fat             Float?
+  status          RecipeStatus     @default(PENDING)
+  rejectionReason String?
+  views           Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  comments        RecipeComment[]
+  favorites       RecipeFavorite[]
+  images          RecipeImage[]
+  likes           RecipeLike[]
+
+  @@index([userId, status])
+  @@index([status, createdAt])
+  @@index([category])
+  @@index([slug])
+}
+
+model RecipeImage {
+  id        String   @id @default(cuid())
+  recipeId  String
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId, order])
+}
+
+model RecipeLike {
+  id        String   @id @default(cuid())
+  recipeId  String
+  userId    String
+  createdAt DateTime @default(now())
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, userId])
+  @@index([userId])
+}
+
+model RecipeComment {
+  id        String   @id @default(cuid())
+  recipeId  String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId, createdAt])
+  @@index([userId])
+}
+
+model RecipeFavorite {
+  id        String   @id @default(cuid())
+  recipeId  String
+  userId    String
+  note      String?
+  createdAt DateTime @default(now())
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, userId])
+  @@index([userId, createdAt])
 }
 
 enum PlanStatus {
@@ -73,6 +832,18 @@ enum BadgeType {
   LONG_TERM_PARTNER
   MOTIVATOR
   PROFILE_COMPLETE
+  FIRST_RECIPE
+  RECIPES_5
+  RECIPES_10
+  RECIPES_25
+  RECIPE_LIKES_10
+  RECIPE_LIKES_50
+  RECIPE_LIKES_100
+  RECIPE_MASTER
+  RECIPE_VIEWS_100
+  RECIPE_VIEWS_500
+  RECIPE_COMMENTS_10
+  RECIPE_COMMENTS_25
 }
 
 enum GoalType {
@@ -81,6 +852,10 @@ enum GoalType {
   WEEKLY_COMMENT
   WEEKLY_LIKE
   MONTHLY_ACTIVE
+  WEEKLY_RECIPE
+  MONTHLY_RECIPE
+  WEEKLY_RECIPE_COMMENT
+  MONTHLY_RECIPE_SHARE
 }
 
 enum PartnershipStatus {
@@ -90,803 +865,8 @@ enum PartnershipStatus {
   REJECTED
 }
 
-model User {
-  id               String            @id @default(cuid())
-  email            String            @unique
-  username         String?           @unique // Kullanıcı adı (profil URL için)
-  passwordHash     String?
-  name             String?
-  image            String? // avatar
-  bio              String?           @db.Text
-  city             String?           // Şehir bilgisi (analytics için)
-  startWeight      Int?
-  goalWeight       Int?
-  instagram        String?
-  twitter          String?
-  youtube          String?
-  tiktok           String?
-  website          String?
-  role             Role              @default(USER)
-  xp               Int               @default(0)
-  level            Int               @default(1)
-  streak           Int               @default(0)
-  lastActiveDate   DateTime?
-  accounts         Account[]
-  sessions         Session[]
-  plans            Plan[]
-  comments         Comment[]
-  commentReactions CommentReaction[]
-  likes            Like[]
-  favorites        Favorite[]
-  collections      Collection[]
-  activityLogs     ActivityLog[]
-  emailCampaigns   EmailCampaign[]
-  bannedWords      BannedWord[]
-  siteSettings     SiteSettings[]
-  backups          Backup[]
-  badges           UserBadge[]
-  goals            UserGoal[]
-  weightLogs       WeightLog[]
-  checkIns         CheckIn[]
-  progressPhotos   ProgressPhoto[]
-  measurements     Measurement[]
-  moodLogs         MoodLog[]
-  following        Follow[]          @relation("UserFollowing")
-  followers        Follow[]          @relation("UserFollowers")
-  polls            Poll[]
-  pollVotes        PollVote[]
-  partnerRequests  AccountabilityPartnership[] @relation("PartnerRequester")
-  partnerReceived  AccountabilityPartnership[] @relation("PartnerReceiver")
-  crisisButtons    CrisisButton[]
-  wallPosts        WallPost[]        @relation("WallPostOwner")
-  wallPostsWritten WallPost[]        @relation("WallPostAuthor")
-  meals            Meal[]
-  calorieGoal      CalorieGoal?
-  recipeComments   RecipeComment[]
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-
-  @@index([xp, level])
-}
-
-model Plan {
-  id              String            @id @default(cuid())
-  userId          String
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title           String
-  slug            String            @unique
-  startWeight     Int
-  goalWeight      Int
-  durationText    String
-  routine         String            @db.Text
-  diet            String            @db.Text
-  exercise        String            @db.Text
-  motivation      String
-  imageUrl        String?
-  videoUrl        String?           // YouTube/Vimeo URL
-  status          PlanStatus        @default(PENDING)
-  rejectionReason String?           @db.Text
-  views           Int               @default(0)
-  categoryId      String?
-  category        Category?         @relation(fields: [categoryId], references: [id])
-  tags            PlanTag[]
-  likes           Like[]
-  favorites       Favorite[]
-  comments        Comment[]
-  collectionPlans CollectionPlan[]
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-
-  @@index([status, createdAt])
-  @@index([slug])
-  @@index([goalWeight, startWeight])
-  @@index([categoryId])
-}
-
-model Comment {
-  id        String            @id @default(cuid())
-  planId    String
-  plan      Plan              @relation(fields: [planId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  body      String            @db.Text
-  reactions CommentReaction[]
-  createdAt DateTime          @default(now())
-}
-
-model CommentReaction {
-  id        String   @id @default(cuid())
-  commentId String
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  emoji     String   // 💪, 🔥, 👏, ❤️, 😊
-  createdAt DateTime @default(now())
-
-  @@unique([commentId, userId, emoji])
-  @@index([commentId])
-  @@index([userId])
-}
-
-model Like {
-  id        String   @id @default(cuid())
-  planId    String
-  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([planId, userId])
-}
-
-model Favorite {
-  id        String   @id @default(cuid())
-  planId    String
-  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  note      String?  @db.Text
-  createdAt DateTime @default(now())
-
-  @@unique([planId, userId])
-  @@index([userId, createdAt])
-}
-
-// NextAuth default models
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expires      DateTime
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-  @@unique([identifier, token])
-}
-
-// Site ayarları
-model SiteSettings {
-  id              String   @id @default(cuid())
-  siteTitle       String   @default("Zayıflama Planım")
-  siteDescription String   @db.Text
-  logoUrl         String?
-  twitterUrl      String?
-  instagramUrl    String?
-  facebookUrl     String?
-  footerText      String?  @db.Text
-  maintenanceMode Boolean  @default(false)
-  updatedAt       DateTime @updatedAt
-  updatedBy       String
-  updatedByUser   User     @relation(fields: [updatedBy], references: [id])
-}
-
-// Kategoriler
-model Category {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  slug        String   @unique
-  description String?  @db.Text
-  color       String   @default("#4caf50")
-  order       Int      @default(0)
-  plans       Plan[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-// Etiketler
-model Tag {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
-  plans     PlanTag[]
-  createdAt DateTime  @default(now())
-}
-
-// Plan-Tag ilişkisi (many-to-many)
-model PlanTag {
-  id     String @id @default(cuid())
-  planId String
-  tagId  String
-  plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
-  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@unique([planId, tagId])
-}
-
-// Yasaklı kelimeler
-model BannedWord {
-  id        String   @id @default(cuid())
-  word      String   @unique
-  createdAt DateTime @default(now())
-  createdBy String
-  creator   User     @relation(fields: [createdBy], references: [id])
-}
-
-// Aktivite logu
-model ActivityLog {
-  id          String       @id @default(cuid())
-  userId      String
-  user        User         @relation(fields: [userId], references: [id])
-  type        ActivityType
-  targetId    String?
-  targetType  String?
-  description String       @db.Text
-  metadata    Json?
-  ipAddress   String?
-  userAgent   String?
-  createdAt   DateTime     @default(now())
-
-  @@index([userId, createdAt])
-  @@index([type, createdAt])
-}
-
-// Email kampanyaları
-model EmailCampaign {
-  id          String      @id @default(cuid())
-  subject     String
-  content     String      @db.Text
-  recipients  String
-  status      EmailStatus @default(DRAFT)
-  sentCount   Int         @default(0)
-  failedCount Int         @default(0)
-  createdBy   String
-  creator     User        @relation(fields: [createdBy], references: [id])
-  createdAt   DateTime    @default(now())
-  sentAt      DateTime?
-
-  @@index([status, createdAt])
-}
-
-// Veritabanı yedekleri
-model Backup {
-  id        String   @id @default(cuid())
-  filename  String
-  size      Int
-  type      String   @default("manual")
-  createdBy String?
-  creator   User?    @relation(fields: [createdBy], references: [id])
-  createdAt DateTime @default(now())
-}
-
-// Gamification - Rozetler
-model Badge {
-  id          String      @id @default(cuid())
-  type        BadgeType   @unique
-  name        String
-  description String      @db.Text
-  icon        String
-  xpReward    Int         @default(0)
-  users       UserBadge[]
-  createdAt   DateTime    @default(now())
-}
-
-// Kullanıcı rozetleri
-model UserBadge {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badgeId   String
-  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
-  earnedAt  DateTime @default(now())
-
-  @@unique([userId, badgeId])
-  @@index([userId, earnedAt])
-}
-
-// Hedefler
-model Goal {
-  id          String     @id @default(cuid())
-  type        GoalType   @unique
-  name        String
-  description String     @db.Text
-  target      Int
-  xpReward    Int        @default(0)
-  users       UserGoal[]
-  createdAt   DateTime   @default(now())
-}
-
-// Kullanıcı hedefleri
-model UserGoal {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  goalId      String
-  goal        Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
-  progress    Int      @default(0)
-  completed   Boolean  @default(false)
-  completedAt DateTime?
-  startDate   DateTime @default(now())
-  endDate     DateTime
-
-  @@unique([userId, goalId, startDate])
-  @@index([userId, completed])
-}
-
-// Analitik & Takip Modelleri
-
-// Kilo takibi
-model WeightLog {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weight    Float    // kg cinsinden
-  note      String?  @db.Text
-  createdAt DateTime @default(now())
-
-  @@index([userId, createdAt])
-}
-
-// Check-in sistemi
-model CheckIn {
-  id                  String                @id @default(cuid())
-  userId              String
-  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weight              Float?                // kg
-  energy              Int?                  // 1-5 arası enerji seviyesi
-  motivation          Int?                  // 1-5 arası motivasyon
-  sleep               Int?                  // saat cinsinden uyku
-  water               Int?                  // bardak cinsinden su tüketimi
-  exercise            Boolean               @default(false)
-  dietPlan            Boolean               @default(false)
-  note                String?               @db.Text
-  partnershipCheckIns PartnershipCheckIn[]
-  createdAt           DateTime              @default(now())
-
-  @@index([userId, createdAt])
-}
-
-// İlerleme fotoğrafları
-model ProgressPhoto {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  imageUrl    String
-  weight      Float?   // fotoğraf çekildiğinde kilo
-  description String?  @db.Text
-  isPublic    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-
-  @@index([userId, createdAt])
-}
-
-// Vücut ölçümleri
-model Measurement {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chest     Float?   // göğüs (cm)
-  waist     Float?   // bel (cm)
-  hips      Float?   // kalça (cm)
-  thigh     Float?   // uyluk (cm)
-  arm       Float?   // kol (cm)
-  neck      Float?   // boyun (cm)
-  note      String?  @db.Text
-  createdAt DateTime @default(now())
-
-  @@index([userId, createdAt])
-}
-
-// Ruh hali takibi
-model MoodLog {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  mood      Int      // 1-5 arası (1: çok kötü, 5: harika)
-  stress    Int?     // 1-5 arası stres seviyesi
-  note      String?  @db.Text
-  createdAt DateTime @default(now())
-
-  @@index([userId, createdAt])
-}
-
-// Plan Koleksiyonları
-model Collection {
-  id          String           @id @default(cuid())
-  userId      String
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name        String
-  description String?          @db.Text
-  isPublic    Boolean          @default(false)
-  plans       CollectionPlan[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-
-  @@index([userId, createdAt])
-}
-
-// Koleksiyon-Plan ilişkisi
-model CollectionPlan {
-  id           String     @id @default(cuid())
-  collectionId String
-  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  planId       String
-  plan         Plan       @relation(fields: [planId], references: [id], onDelete: Cascade)
-  order        Int        @default(0)
-  note         String?    @db.Text
-  createdAt    DateTime   @default(now())
-
-  @@unique([collectionId, planId])
-  @@index([collectionId, order])
-}
-
-// Kullanıcı takip sistemi
-model Follow {
-  id          String   @id @default(cuid())
-  followerId  String   // Takip eden kullanıcı
-  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
-  followingId String   // Takip edilen kullanıcı
-  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-
-  @@unique([followerId, followingId])
-  @@index([followerId])
-  @@index([followingId])
-}
-
-// SEO Ayarları
-model SeoSettings {
-  id        Int      @id @default(1)
-  settings  Json     // SEO ayarlarını JSON olarak sakla
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// Hesap Verebilirlik Partneri Sistemi
-model AccountabilityPartnership {
-  id          String                 @id @default(cuid())
-  requesterId String
-  requester   User                   @relation("PartnerRequester", fields: [requesterId], references: [id], onDelete: Cascade)
-  partnerId   String
-  partner     User                   @relation("PartnerReceiver", fields: [partnerId], references: [id], onDelete: Cascade)
-  status      PartnershipStatus      @default(PENDING)
-  message     String?                @db.Text
-  sharedGoals PartnershipGoal[]
-  messages    PartnershipMessage[]
-  checkIns    PartnershipCheckIn[]
-  createdAt   DateTime               @default(now())
-  acceptedAt  DateTime?
-  endedAt     DateTime?
-
-  @@unique([requesterId, partnerId])
-  @@index([requesterId, status])
-  @@index([partnerId, status])
-}
-
-model PartnershipGoal {
-  id            String                    @id @default(cuid())
-  partnershipId String
-  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
-  title         String
-  description   String?                   @db.Text
-  targetDate    DateTime
-  completed     Boolean                   @default(false)
-  completedAt   DateTime?
-  createdBy     String
-  createdAt     DateTime                  @default(now())
-
-  @@index([partnershipId, completed])
-}
-
-model PartnershipMessage {
-  id            String                    @id @default(cuid())
-  partnershipId String
-  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
-  senderId      String
-  content       String                    @db.Text
-  isRead        Boolean                   @default(false)
-  readAt        DateTime?
-  createdAt     DateTime                  @default(now())
-
-  @@index([partnershipId, createdAt])
-  @@index([senderId])
-}
-
-model PartnershipCheckIn {
-  id            String                    @id @default(cuid())
-  partnershipId String
-  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
-  checkInId     String
-  checkIn       CheckIn                   @relation(fields: [checkInId], references: [id], onDelete: Cascade)
-  supportNote   String?                   @db.Text
-  createdAt     DateTime                  @default(now())
-
-  @@index([partnershipId, createdAt])
-}
-
-// Anket Sistemi
-model Poll {
-  id          String       @id @default(cuid())
-  question    String
-  description String?      @db.Text
-  isActive    Boolean      @default(true)
-  isPublic    Boolean      @default(true)
-  allowMultiple Boolean    @default(false) // Çoklu seçim izni
-  endsAt      DateTime?    // Anket bitiş tarihi (opsiyonel)
-  createdBy   String
-  creator     User         @relation(fields: [createdBy], references: [id])
-  options     PollOption[]
-  votes       PollVote[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-
-  @@index([isActive, createdAt])
-  @@index([createdBy])
-}
-
-model PollOption {
-  id        String     @id @default(cuid())
-  pollId    String
-  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  text      String
-  order     Int        @default(0)
-  votes     PollVote[]
-  createdAt DateTime   @default(now())
-
-  @@index([pollId, order])
-}
-
-model PollVote {
-  id        String     @id @default(cuid())
-  pollId    String
-  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  optionId  String
-  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
-  userId    String
-  voter     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime   @default(now())
-
-  @@unique([pollId, optionId, userId])
-  @@index([pollId])
-  @@index([userId])
-}
-
-// Kriz Anı Sistemi
-model CrisisButton {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trigger     String   // "food_craving", "motivation_low", "stress_eating", "boredom"
-  resolved    Boolean  @default(false)
-  resolvedAt  DateTime?
-  note        String?  @db.Text
-  createdAt   DateTime @default(now())
-
-  @@index([userId, createdAt])
-  @@index([trigger])
-}
-
-// Duvar Yazıları Sistemi
-model WallPost {
-  id        String   @id @default(cuid())
-  userId    String   // Duvarın sahibi
-  user      User     @relation("WallPostOwner", fields: [userId], references: [id], onDelete: Cascade)
-  authorId  String   // Mesajı yazan
-  author    User     @relation("WallPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  content   String   @db.Text
-  isPublic  Boolean  @default(true) // Herkes görebilir mi?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId, createdAt])
-  @@index([authorId])
-}
-
-// Kalori Takibi Sistemi
-
-// Yemek veritabanı (önceden tanımlı yemekler)
-model Food {
-  id          String       @id @default(cuid())
-  name        String
-  nameEn      String?      // İngilizce isim
-  category    String       // "Kahvaltı", "Ana Yemek", "Atıştırmalık", "İçecek", "Meyve", "Sebze"
-  calories    Float        // 100g için kalori
-  protein     Float?       // 100g için protein (g)
-  carbs       Float?       // 100g için karbonhidrat (g)
-  fat         Float?       // 100g için yağ (g)
-  fiber       Float?       // 100g için lif (g)
-  servingSize Float        @default(100) // Standart porsiyon (g)
-  isCommon    Boolean      @default(false) // Sık kullanılan yemekler
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  mealEntries MealEntry[]
-
-  @@index([category])
-  @@index([isCommon])
-  @@index([name])
-}
-
-// Kullanıcı öğün kayıtları
-model Meal {
-  id          String      @id @default(cuid())
-  userId      String
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date        DateTime    // Öğün tarihi
-  mealType    String      // "Kahvaltı", "Öğle", "Akşam", "Atıştırmalık"
-  totalCalories Float     @default(0)
-  totalProtein  Float     @default(0)
-  totalCarbs    Float     @default(0)
-  totalFat      Float     @default(0)
-  note        String?     @db.Text
-  entries     MealEntry[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  @@index([userId, date])
-  @@index([mealType])
-}
-
-// Öğün içindeki yemekler
-model MealEntry {
-  id        String   @id @default(cuid())
-  mealId    String
-  meal      Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
-  foodId    String?  // Veritabanından seçilmişse
-  food      Food?    @relation(fields: [foodId], references: [id])
-  foodName  String   // Özel yemek adı (veritabanında yoksa)
-  amount    Float    // Miktar (g)
-  calories  Float    // Hesaplanan kalori
-  protein   Float?   // Hesaplanan protein
-  carbs     Float?   // Hesaplanan karbonhidrat
-  fat       Float?   // Hesaplanan yağ
-  createdAt DateTime @default(now())
-
-  @@index([mealId])
-  @@index([foodId])
-}
-
-// Günlük kalori hedefi
-model CalorieGoal {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dailyCalories Int      // Günlük kalori hedefi
-  dailyProtein  Int?     // Günlük protein hedefi (g)
-  dailyCarbs    Int?     // Günlük karbonhidrat hedefi (g)
-  dailyFat      Int?     // Günlük yağ hedefi (g)
-  activityLevel String   @default("sedentary") // "sedentary", "light", "moderate", "active", "very_active"
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
-
-// Alışveriş Listesi Sistemi
-model ShoppingList {
-  id          String              @id @default(cuid())
-  userId      String
-  planId      String?             // Hangi plana göre oluşturuldu (opsiyonel)
-  name        String
-  description String?             @db.Text
-  weekNumber  Int?                // Kaçıncı hafta için (opsiyonel)
-  isCompleted Boolean             @default(false)
-  items       ShoppingListItem[]
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-
-  @@index([userId, createdAt])
-  @@index([planId])
-}
-
-model ShoppingListItem {
-  id             String       @id @default(cuid())
-  shoppingListId String
-  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
-  category       String       // "Protein", "Sebze", "Meyve", "Tahıl", "Süt Ürünleri", "İçecek", "Diğer"
-  name           String
-  quantity       String       // "500g", "2 adet", "1 paket"
-  isChecked      Boolean      @default(false)
-  note           String?      @db.Text
-  estimatedPrice Float?       // Tahmini fiyat (opsiyonel)
-  order          Int          @default(0)
-  createdAt      DateTime     @default(now())
-
-  @@index([shoppingListId, category, order])
-}
-
-// Tarif Paylaşımı Sistemi
 enum RecipeStatus {
   PENDING
   APPROVED
   REJECTED
-}
-
-model Recipe {
-  id              String       @id @default(cuid())
-  userId          String
-  title           String
-  slug            String       @unique
-  description     String       @db.Text
-  ingredients     String       @db.Text // JSON array olarak saklanacak
-  instructions    String       @db.Text // Adım adım talimatlar
-  prepTime        Int?         // Hazırlık süresi (dakika)
-  cookTime        Int?         // Pişirme süresi (dakika)
-  servings        Int?         // Kaç kişilik
-  difficulty      String?      // "Kolay", "Orta", "Zor"
-  category        String       // "Ana Yemek", "Çorba", "Salata", "Tatlı", "Atıştırmalık", "İçecek"
-  calories        Float?       // Porsiyon başı kalori
-  protein         Float?       // Porsiyon başı protein (g)
-  carbs           Float?       // Porsiyon başı karbonhidrat (g)
-  fat             Float?       // Porsiyon başı yağ (g)
-  images          RecipeImage[]
-  status          RecipeStatus @default(PENDING)
-  rejectionReason String?      @db.Text
-  views           Int          @default(0)
-  likes           RecipeLike[]
-  comments        RecipeComment[]
-  favorites       RecipeFavorite[]
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-
-  @@index([userId, status])
-  @@index([status, createdAt])
-  @@index([category])
-  @@index([slug])
-}
-
-model RecipeImage {
-  id        String   @id @default(cuid())
-  recipeId  String
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  url       String
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-
-  @@index([recipeId, order])
-}
-
-model RecipeLike {
-  id        String   @id @default(cuid())
-  recipeId  String
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  userId    String
-  createdAt DateTime @default(now())
-
-  @@unique([recipeId, userId])
-  @@index([userId])
-}
-
-model RecipeComment {
-  id        String   @id @default(cuid())
-  recipeId  String
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  content   String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([recipeId, createdAt])
-  @@index([userId])
-}
-
-model RecipeFavorite {
-  id        String   @id @default(cuid())
-  recipeId  String
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  userId    String
-  note      String?  @db.Text
-  createdAt DateTime @default(now())
-
-  @@unique([recipeId, userId])
-  @@index([userId, createdAt])
 }

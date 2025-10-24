@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { logActivity } from "@/lib/activity-logger";
+import { addXP, checkRecipeBadges, XP_REWARDS } from "@/lib/gamification";
 
 export async function POST(
   req: NextRequest,
@@ -28,6 +29,10 @@ export async function POST(
         rejectionReason: null,
       },
     });
+
+    // Gamification: Tarif onaylanma XP'si ve rozet kontrolü
+    await addXP(recipe.userId, XP_REWARDS.RECIPE_APPROVED, "Tarif onaylandı");
+    await checkRecipeBadges(recipe.userId);
 
     // Aktivite logu
     await logActivity({

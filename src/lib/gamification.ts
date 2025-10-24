@@ -14,6 +14,11 @@ export const XP_REWARDS = {
   PROFILE_COMPLETE: 25,
   PROFILE_COMPLETE_100: 100, // %100 tamamlama bonusu
   VIEW_MILESTONE: 20,
+  RECIPE_CREATED: 30,
+  RECIPE_APPROVED: 75,
+  RECIPE_LIKE_RECEIVED: 3,
+  RECIPE_COMMENT_RECEIVED: 8,
+  RECIPE_COMMENT_GIVEN: 3,
 };
 
 // Seviye hesaplama (her seviye için gereken XP)
@@ -172,6 +177,97 @@ export async function checkBadges(userId: string) {
   }
   if (user.comments.length >= 50) {
     const badge = await checkAndAwardBadge(userId, "COMMENTS_50");
+    if (badge) newBadges.push(badge);
+  }
+
+  return newBadges;
+}
+
+// Tarif rozetlerini kontrol et
+export async function checkRecipeBadges(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      badges: true,
+    },
+  });
+
+  if (!user) return [];
+
+  const newBadges = [];
+
+  // Onaylı tarifleri al
+  const recipes = await prisma.recipe.findMany({
+    where: { 
+      userId,
+      status: "APPROVED" 
+    },
+    include: {
+      likes: true,
+      comments: true,
+    },
+  });
+
+  // İlk tarif
+  if (recipes.length >= 1) {
+    const badge = await checkAndAwardBadge(userId, "FIRST_RECIPE");
+    if (badge) newBadges.push(badge);
+  }
+
+  // 5, 10, 25 tarif
+  if (recipes.length >= 5) {
+    const badge = await checkAndAwardBadge(userId, "RECIPES_5");
+    if (badge) newBadges.push(badge);
+  }
+  if (recipes.length >= 10) {
+    const badge = await checkAndAwardBadge(userId, "RECIPES_10");
+    if (badge) newBadges.push(badge);
+  }
+  if (recipes.length >= 25) {
+    const badge = await checkAndAwardBadge(userId, "RECIPES_25");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Toplam tarif beğeni sayısı
+  const totalRecipeLikes = recipes.reduce((sum, recipe) => sum + recipe.likes.length, 0);
+  if (totalRecipeLikes >= 10) {
+    const badge = await checkAndAwardBadge(userId, "RECIPE_LIKES_10");
+    if (badge) newBadges.push(badge);
+  }
+  if (totalRecipeLikes >= 50) {
+    const badge = await checkAndAwardBadge(userId, "RECIPE_LIKES_50");
+    if (badge) newBadges.push(badge);
+  }
+  if (totalRecipeLikes >= 100) {
+    const badge = await checkAndAwardBadge(userId, "RECIPE_LIKES_100");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Toplam tarif görüntülenme
+  const totalRecipeViews = recipes.reduce((sum, recipe) => sum + recipe.views, 0);
+  if (totalRecipeViews >= 100) {
+    const badge = await checkAndAwardBadge(userId, "RECIPE_VIEWS_100");
+    if (badge) newBadges.push(badge);
+  }
+  if (totalRecipeViews >= 500) {
+    const badge = await checkAndAwardBadge(userId, "RECIPE_VIEWS_500");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Toplam tarif yorum sayısı
+  const totalRecipeComments = recipes.reduce((sum, recipe) => sum + recipe.comments.length, 0);
+  if (totalRecipeComments >= 10) {
+    const badge = await checkAndAwardBadge(userId, "RECIPE_COMMENTS_10");
+    if (badge) newBadges.push(badge);
+  }
+  if (totalRecipeComments >= 25) {
+    const badge = await checkAndAwardBadge(userId, "RECIPE_COMMENTS_25");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Tarif Ustası (10+ tarif + 50+ beğeni)
+  if (recipes.length >= 10 && totalRecipeLikes >= 50) {
+    const badge = await checkAndAwardBadge(userId, "RECIPE_MASTER");
     if (badge) newBadges.push(badge);
   }
 

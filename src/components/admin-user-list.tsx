@@ -312,31 +312,31 @@ export function AdminUserList({ users }: AdminUserListProps) {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold text-blue-900">{stats.total}</div>
+            <div className="text-3xl font-bold text-blue-900" suppressHydrationWarning>{stats.total}</div>
             <div className="text-sm text-blue-700 mt-1">Toplam Kullanıcı</div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold text-purple-900">{stats.admins}</div>
+            <div className="text-3xl font-bold text-purple-900" suppressHydrationWarning>{stats.admins}</div>
             <div className="text-sm text-purple-700 mt-1">👑 Admin</div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold text-green-900">{stats.activeUsers}</div>
+            <div className="text-3xl font-bold text-green-900" suppressHydrationWarning>{stats.activeUsers}</div>
             <div className="text-sm text-green-700 mt-1">Aktif Kullanıcı</div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold text-orange-900">{stats.newThisWeek}</div>
+            <div className="text-3xl font-bold text-orange-900" suppressHydrationWarning>{stats.newThisWeek}</div>
             <div className="text-sm text-orange-700 mt-1">Bu Hafta</div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-pink-50 to-pink-100 border-pink-200">
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold text-pink-900">{stats.newThisMonth}</div>
+            <div className="text-3xl font-bold text-pink-900" suppressHydrationWarning>{stats.newThisMonth}</div>
             <div className="text-sm text-pink-700 mt-1">Bu Ay</div>
           </CardContent>
         </Card>
@@ -526,7 +526,7 @@ export function AdminUserList({ users }: AdminUserListProps) {
                       </div>
                     </div>
 
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-sm text-gray-500 mt-2" suppressHydrationWarning>
                       📅 Üyelik: {formatDate(user.createdAt)}
                     </p>
                   </div>
@@ -709,7 +709,7 @@ export function AdminUserList({ users }: AdminUserListProps) {
                       <span className="text-gray-600">Beğeniler:</span>{" "}
                       <span className="font-semibold">{userToEdit._count.likes}</span>
                     </div>
-                    <div>
+                    <div suppressHydrationWarning>
                       <span className="text-gray-600">Üyelik:</span>{" "}
                       <span className="font-semibold">
                         {formatDate(userToEdit.createdAt)}

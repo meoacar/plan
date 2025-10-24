@@ -1,8 +1,20 @@
 import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
 const resend = process.env.RESEND_API_KEY 
   ? new Resend(process.env.RESEND_API_KEY)
   : null
+
+// Nodemailer transporter (SMTP)
+const transporter = process.env.SMTP_HOST ? nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+}) : null
 
 export interface EmailOptions {
   to: string | string[]
@@ -11,29 +23,48 @@ export interface EmailOptions {
 }
 
 export async function sendEmail({ to, subject, html }: EmailOptions) {
-  if (!resend) {
-    console.warn('RESEND_API_KEY not configured, skipping email send')
-    return { success: false, error: 'Email service not configured' }
-  }
+  // Önce Nodemailer'ı dene (SMTP)
+  if (transporter) {
+    try {
+      const info = await transporter.sendMail({
+        from: process.env.EMAIL_FROM || '"Zayıflama Planım" <noreply@zayiflamaplanim.com>',
+        to: Array.isArray(to) ? to.join(', ') : to,
+        subject,
+        html,
+      })
 
-  try {
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'Zayıflama Planım <noreply@zayiflamaplanim.com>',
-      to: Array.isArray(to) ? to : [to],
-      subject,
-      html,
-    })
-
-    if (error) {
-      console.error('Email send error:', error)
-      return { success: false, error: error.message }
+      console.log('Email sent via SMTP:', info.messageId)
+      return { success: true, data: info }
+    } catch (error) {
+      console.error('SMTP email send error:', error)
+      // SMTP başarısız olursa Resend'i dene
     }
-
-    return { success: true, data }
-  } catch (error) {
-    console.error('Email send exception:', error)
-    return { success: false, error: 'Failed to send email' }
   }
+
+  // Resend'i dene
+  if (resend) {
+    try {
+      const { data, error } = await resend.emails.send({
+        from: process.env.EMAIL_FROM || 'Zayıflama Planım <noreply@zayiflamaplanim.com>',
+        to: Array.isArray(to) ? to : [to],
+        subject,
+        html,
+      })
+
+      if (error) {
+        console.error('Resend email send error:', error)
+        return { success: false, error: error.message }
+      }
+
+      console.log('Email sent via Resend')
+      return { success: true, data }
+    } catch (error) {
+      console.error('Resend email send exception:', error)
+    }
+  }
+
+  console.warn('No email service configured (SMTP or Resend)')
+  return { success: false, error: 'Email service not configured' }
 }
 
 export interface EmailTemplate {

@@ -1,37 +1,35 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 
 export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  req: NextRequest,
+  { params }: { params: { slug: string } }
 ) {
   try {
-    const { slug } = await params;
-    
-    const plan = await prisma.plan.findUnique({
-      where: { slug },
+    const recipe = await prisma.recipe.findUnique({
+      where: { slug: params.slug },
       select: { id: true, status: true },
     });
 
-    if (!plan || plan.status !== "APPROVED") {
-      return NextResponse.json({ error: "Plan bulunamadı" }, { status: 404 });
+    if (!recipe || recipe.status !== "APPROVED") {
+      return NextResponse.json({ error: "Tarif bulunamadı" }, { status: 404 });
     }
 
-    // Cookie kontrolü - bu planı daha önce görüntüledi mi?
+    // Cookie kontrolü - bu tarifi daha önce görüntüledi mi?
     const cookieStore = await cookies();
-    const viewedPlans = cookieStore.get(`viewed_plan_${plan.id}`);
+    const viewedRecipes = cookieStore.get(`viewed_recipe_${recipe.id}`);
 
-    if (!viewedPlans) {
+    if (!viewedRecipes) {
       // İlk kez görüntülüyor, sayıyı artır
-      await prisma.plan.update({
-        where: { id: plan.id },
+      await prisma.recipe.update({
+        where: { id: recipe.id },
         data: { views: { increment: 1 } },
       });
 
       // Cookie set et (30 gün)
       const response = NextResponse.json({ success: true, counted: true });
-      response.cookies.set(`viewed_plan_${plan.id}`, "1", {
+      response.cookies.set(`viewed_recipe_${recipe.id}`, "1", {
         maxAge: 60 * 60 * 24 * 30, // 30 gün
         httpOnly: true,
         sameSite: "lax",
@@ -44,7 +42,7 @@ export async function POST(
   } catch (error) {
     console.error("Görüntülenme sayma hatası:", error);
     return NextResponse.json(
-      { error: "Görüntülenme sayısı güncellenemedi" },
+      { error: "Bir hata oluştu" },
       { status: 500 }
     );
   }

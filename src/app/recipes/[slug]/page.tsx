@@ -110,14 +110,6 @@ export default async function RecipePage({
     }
   }
 
-  // Görüntülenme sayısını artır (sadece onaylı tarifler için)
-  if (recipe.status === "APPROVED") {
-    await prisma.recipe.update({
-      where: { id: recipe.id },
-      data: { views: { increment: 1 } },
-    });
-  }
-
   const isLiked = session?.user?.id
     ? recipe.likes.some((like: { userId: string }) => like.userId === session.user.id)
     : false;

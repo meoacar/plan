@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function RecipeDetail({
@@ -18,6 +18,21 @@ export default function RecipeDetail({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const ingredients = JSON.parse(recipe.ingredients);
+
+  // Görüntülenme sayısını artır (sadece bir kez)
+  useEffect(() => {
+    const trackView = async () => {
+      try {
+        await fetch(`/api/recipes/${recipe.slug}/view`, {
+          method: "POST",
+        });
+      } catch (error) {
+        console.error("Görüntülenme sayma hatası:", error);
+      }
+    };
+
+    trackView();
+  }, [recipe.slug]);
 
   const handleLike = async () => {
     if (!currentUserId) {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 
 type LeaderboardType = "xp" | "likes" | "views";
 
@@ -94,11 +93,10 @@ export function LeaderboardTable() {
 
                 <div className="relative h-10 w-10 overflow-hidden rounded-full bg-gray-200">
                   {user.image ? (
-                    <Image
+                    <img
                       src={user.image}
                       alt={user.name || "User"}
-                      fill
-                      className="object-cover"
+                      className="h-full w-full object-cover"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-gray-500">

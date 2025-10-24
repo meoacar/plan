@@ -64,6 +64,9 @@ model User {
   wallPostsWritten WallPost[]                  @relation("WallPostAuthor")
   wallPosts        WallPost[]                  @relation("WallPostOwner")
   weightLogs       WeightLog[]
+  notifications    Notification[]
+  notificationPreference NotificationPreference?
+  pushSubscriptions PushSubscription[]
 
   @@index([xp, level])
 }
@@ -1090,4 +1093,80 @@ model FriendSuggestion {
   @@unique([userId, suggestedId])
   @@index([userId, dismissed])
   @@index([score])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  actionUrl String?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  actorId   String?
+  relatedId String?
+  metadata  Json?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, isRead, createdAt])
+  @@index([userId, createdAt])
+  @@index([type])
+}
+
+model NotificationPreference {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  emailNewFollower      Boolean  @default(true)
+  emailComment          Boolean  @default(true)
+  emailLike             Boolean  @default(true)
+  emailBadge            Boolean  @default(true)
+  emailPartnerRequest   Boolean  @default(true)
+  emailWeeklyDigest     Boolean  @default(true)
+  pushNewFollower       Boolean  @default(true)
+  pushComment           Boolean  @default(true)
+  pushLike              Boolean  @default(false)
+  pushBadge             Boolean  @default(true)
+  pushPartnerRequest    Boolean  @default(true)
+  inAppNewFollower      Boolean  @default(true)
+  inAppComment          Boolean  @default(true)
+  inAppLike             Boolean  @default(true)
+  inAppBadge            Boolean  @default(true)
+  inAppPartnerRequest   Boolean  @default(true)
+  quietHoursStart       Int?
+  quietHoursEnd         Int?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model PushSubscription {
+  id         String   @id @default(cuid())
+  userId     String
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum NotificationType {
+  NEW_FOLLOWER
+  COMMENT
+  LIKE
+  BADGE_EARNED
+  PARTNER_REQUEST
+  PARTNER_ACCEPTED
+  RECIPE_APPROVED
+  RECIPE_REJECTED
+  PLAN_APPROVED
+  PLAN_REJECTED
+  GROUP_INVITE
+  CHALLENGE_INVITE
+  WALL_POST
+  MENTION
+  LEVEL_UP
+  COMMENT_REACTION
 }

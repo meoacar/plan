@@ -16,12 +16,15 @@ export async function GET(request: NextRequest) {
         goalWeight: true,
         startWeight: true,
         city: true,
+        image: true,
       },
     });
 
     if (!user) {
       return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 });
     }
+
+    console.log('Current user:', { id: session.user.id, image: user.image });
 
     // Zaten takip ettiği kullanıcıları al
     const following = await prisma.follow.findMany({
@@ -30,6 +33,7 @@ export async function GET(request: NextRequest) {
     });
 
     const followingIds = following.map((f) => f.followingId);
+    console.log('Following IDs:', followingIds);
 
     // Benzer hedeflere sahip kullanıcıları bul
     const suggestions = await prisma.user.findMany({
@@ -82,6 +86,9 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    console.log('Found suggestions:', suggestions.length);
+    console.log('Sample suggestion:', suggestions[0]);
+
     // Önerileri skorla
     const scoredSuggestions = suggestions.map((suggestion) => {
       let score = 0;
@@ -118,12 +125,14 @@ export async function GET(request: NextRequest) {
       return {
         ...suggestion,
         score,
-        reason: reasons.join(', '),
+        reason: reasons.join(', ') || 'Yeni kullanıcı',
       };
     });
 
     // Skora göre sırala
     scoredSuggestions.sort((a, b) => b.score - a.score);
+
+    console.log('Returning suggestions with images:', scoredSuggestions.map(s => ({ name: s.name, image: s.image })));
 
     return NextResponse.json(scoredSuggestions);
   } catch (error) {

@@ -8,6 +8,7 @@ import { StreakTracker } from "@/components/gamification/StreakTracker";
 import { CrisisButton } from "@/components/crisis-button";
 import { prisma } from "@/lib/prisma";
 import { Logo } from "@/components/logo";
+import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -106,6 +107,17 @@ export default async function RootLayout({
   return (
     <html lang="tr">
       <body className={inter.className}>
+        <NextTopLoader
+          color="#9333ea"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #9333ea,0 0 5px #9333ea"
+        />
         <Providers>
           <MaintenanceChecker />
           <StreakTracker />

@@ -456,6 +456,7 @@ export function PlanEditForm({ plan, categories, tags }: PlanEditFormProps) {
                           alt="Plan görseli önizleme"
                           fill
                           className="object-cover"
+                          unoptimized={formData.imageUrl.startsWith('/uploads/')}
                           onError={() => {
                             setError("Görsel yüklenemedi. Lütfen geçerli bir URL girin.")
                           }}

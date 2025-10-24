@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { sendPasswordResetEmail } from "@/lib/email"
 import crypto from "crypto"
 
 export async function POST(req: Request) {
@@ -38,12 +39,16 @@ export async function POST(req: Request) {
       },
     })
 
-    // Email gönderme işlemi (şimdilik konsola yazdır)
+    // Email gönderme işlemi
     const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`
-    console.log("Şifre sıfırlama linki:", resetUrl)
-
-    // TODO: Gerçek email gönderme işlemi buraya eklenecek
-    // await sendPasswordResetEmail(email, resetUrl)
+    
+    // Email gönder
+    const emailResult = await sendPasswordResetEmail(email, resetUrl)
+    
+    // Email gönderilemezse konsola yazdır (geliştirme için)
+    if (!emailResult.success) {
+      console.log("Email gönderilemedi, şifre sıfırlama linki:", resetUrl)
+    }
 
     return NextResponse.json({
       message: "Şifre sıfırlama linki email adresinize gönderildi",

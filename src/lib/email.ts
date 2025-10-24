@@ -133,3 +133,32 @@ export const emailTemplates: EmailTemplate[] = [
 export function getEmailTemplate(templateId: string): EmailTemplate | undefined {
   return emailTemplates.find(t => t.id === templateId)
 }
+
+export async function sendPasswordResetEmail(email: string, resetUrl: string) {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h1 style="color: #2d7a4a; text-align: center;">🔐 Şifre Sıfırlama</h1>
+      <p>Merhaba,</p>
+      <p>Şifrenizi sıfırlamak için bir talepte bulundunuz. Aşağıdaki butona tıklayarak yeni şifrenizi belirleyebilirsiniz:</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${resetUrl}" style="background-color: #2d7a4a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Şifremi Sıfırla</a>
+      </div>
+      <p style="color: #666; font-size: 14px;">
+        Bu link 1 saat boyunca geçerlidir. Eğer şifre sıfırlama talebinde bulunmadıysanız, bu e-postayı görmezden gelebilirsiniz.
+      </p>
+      <p style="color: #666; font-size: 14px;">
+        Buton çalışmıyorsa, aşağıdaki linki tarayıcınıza kopyalayabilirsiniz:<br/>
+        <a href="${resetUrl}" style="color: #2d7a4a; word-break: break-all;">${resetUrl}</a>
+      </p>
+      <p style="color: #666; font-size: 14px; text-align: center; margin-top: 30px;">
+        Zayıflama Planım Ekibi
+      </p>
+    </div>
+  `
+
+  return sendEmail({
+    to: email,
+    subject: '🔐 Şifre Sıfırlama - Zayıflama Planım',
+    html,
+  })
+}

@@ -12,7 +12,7 @@ interface User {
   name: string | null
   email: string
   role: string
-  createdAt: Date
+  createdAt: string | Date
   goalWeight?: number | null
   startWeight?: number | null
   city?: string | null
@@ -33,7 +33,7 @@ type SortField = "name" | "email" | "createdAt" | "plans" | "activity"
 type SortOrder = "asc" | "desc"
 
 // Helper function to format date consistently on server and client
-function formatDate(date: Date): string {
+function formatDate(date: string | Date): string {
   const d = new Date(date)
   const day = d.getDate().toString().padStart(2, '0')
   const month = (d.getMonth() + 1).toString().padStart(2, '0')

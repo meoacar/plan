@@ -14,7 +14,7 @@ export default async function AdminUsersPage() {
     redirect("/")
   }
 
-  const users = await prisma.user.findMany({
+  const usersData = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -36,6 +36,12 @@ export default async function AdminUsersPage() {
       },
     },
   })
+
+  // Serialize dates to avoid hydration issues
+  const users = usersData.map(user => ({
+    ...user,
+    createdAt: user.createdAt.toISOString(),
+  }))
 
   return (
     <div>

@@ -185,6 +185,32 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                         <Users className="w-4 h-4 text-[#2d7a4a]" />
                         <span>Partnerler</span>
                       </Link>
+                      <div className="border-t border-gray-100 my-2"></div>
+                      <Link
+                        href="/groups"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <span className="text-lg">👥</span>
+                        <span>Gruplar</span>
+                      </Link>
+                      <Link
+                        href="/challenges"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <span className="text-lg">🏆</span>
+                        <span>Challenge'lar</span>
+                      </Link>
+                      <Link
+                        href="/friend-suggestions"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <span className="text-lg">🦋</span>
+                        <span>Arkadaş Önerileri</span>
+                      </Link>
+                      <div className="border-t border-gray-100 my-2"></div>
                       <Link
                         href="/crisis-stats"
                         onClick={() => setFeaturesMenuOpen(false)}
@@ -389,6 +415,37 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                       }`}
                   >
                     🤝 Partnerler
+                  </Link>
+                  <div className="border-t border-gray-200 my-2"></div>
+                  <Link
+                    href="/groups"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/groups"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    👥 Gruplar
+                  </Link>
+                  <Link
+                    href="/challenges"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/challenges"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    🏆 Challenge'lar
+                  </Link>
+                  <Link
+                    href="/friend-suggestions"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/friend-suggestions"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    🦋 Arkadaş Önerileri
                   </Link>
                 </>
               )}

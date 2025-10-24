@@ -49,6 +49,15 @@ export async function PATCH(
     const user = await prisma.user.update({
       where: { id },
       data: updateData,
+      include: {
+        _count: {
+          select: {
+            plans: true,
+            comments: true,
+            likes: true,
+          },
+        },
+      },
     })
 
     // Activity log

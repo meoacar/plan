@@ -218,14 +218,19 @@ export function AdminUserList({ users: initialUsers }: AdminUserListProps) {
         const data = await res.json()
         const updatedUser = data.user
         
+        console.log("API Response:", updatedUser)
+        console.log("Form Data:", editForm)
+        
         // Local state'i güncelle
-        setUsers(prevUsers => 
-          prevUsers.map(u => 
+        setUsers(prevUsers => {
+          const newUsers = prevUsers.map(u => 
             u.id === updatedUser.id 
               ? { ...u, ...updatedUser }
               : u
           )
-        )
+          console.log("Updated Users:", newUsers.find(u => u.id === updatedUser.id))
+          return newUsers
+        })
         
         setShowEditModal(false)
         setUserToEdit(null)

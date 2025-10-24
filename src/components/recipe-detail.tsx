@@ -166,41 +166,76 @@ export default function RecipeDetail({
         
         {/* Tarif Sahibi Bilgileri */}
         {recipeOwner && (
-          <div className="mt-4 flex items-center gap-4 rounded-lg border bg-gradient-to-r from-green-50 to-blue-50 p-4">
-            <Link href={`/profile/${recipeOwner.username || recipeOwner.id}`}>
-              {recipeOwner.image ? (
-                <img
-                  src={recipeOwner.image}
-                  alt={recipeOwner.name || ""}
-                  className="h-16 w-16 rounded-full border-2 border-green-500 object-cover transition hover:scale-105"
-                />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-green-100 text-2xl font-bold text-green-700">
-                  {recipeOwner.name?.[0]?.toUpperCase() || "?"}
-                </div>
-              )}
-            </Link>
-            <div className="flex-1">
+          <div className="mt-6 overflow-hidden rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white via-green-50/30 to-blue-50/30 shadow-lg transition-all hover:shadow-xl">
+            <div className="flex items-center gap-5 p-5">
               <Link 
                 href={`/profile/${recipeOwner.username || recipeOwner.id}`}
-                className="text-lg font-semibold text-gray-900 hover:text-green-600 transition"
+                className="group relative flex-shrink-0"
               >
-                {recipeOwner.name}
+                {recipeOwner.image ? (
+                  <div className="relative">
+                    <img
+                      src={recipeOwner.image}
+                      alt={recipeOwner.name || ""}
+                      className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md transition-all group-hover:scale-105 group-hover:border-green-400"
+                    />
+                    <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-sm font-bold text-white shadow-md">
+                      {recipeOwner.level}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-green-400 to-green-600 text-3xl font-bold text-white shadow-md transition-all group-hover:scale-105">
+                      {recipeOwner.name?.[0]?.toUpperCase() || "?"}
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-sm font-bold text-white shadow-md">
+                      {recipeOwner.level}
+                    </div>
+                  </div>
+                )}
               </Link>
-              <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-gray-600">
-                <span className="flex items-center gap-1">
-                  <span className="text-yellow-500">⭐</span>
-                  Seviye {recipeOwner.level}
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="text-green-600">🍽️</span>
-                  {ownerRecipeCount} Tarif
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="text-blue-600">📝</span>
-                  {recipeOwner._count.plans} Plan
-                </span>
+              
+              <div className="flex-1 min-w-0">
+                <div className="mb-2 flex items-center gap-2">
+                  <Link 
+                    href={`/profile/${recipeOwner.username || recipeOwner.id}`}
+                    className="text-xl font-bold text-gray-900 hover:text-green-600 transition-colors"
+                  >
+                    {recipeOwner.name}
+                  </Link>
+                  <span className="rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm">
+                    Seviye {recipeOwner.level}
+                  </span>
+                </div>
+                
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-1.5 rounded-lg bg-white/80 px-3 py-1.5 shadow-sm">
+                    <span className="text-lg">🍽️</span>
+                    <span className="text-sm font-semibold text-gray-700">{ownerRecipeCount}</span>
+                    <span className="text-xs text-gray-500">Tarif</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5 rounded-lg bg-white/80 px-3 py-1.5 shadow-sm">
+                    <span className="text-lg">📝</span>
+                    <span className="text-sm font-semibold text-gray-700">{recipeOwner._count.plans}</span>
+                    <span className="text-xs text-gray-500">Plan</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1.5 shadow-sm">
+                    <span className="text-lg">✨</span>
+                    <span className="text-sm font-semibold text-white">{recipeOwner.xp}</span>
+                    <span className="text-xs text-white/90">XP</span>
+                  </div>
+                </div>
               </div>
+              
+              <Link 
+                href={`/profile/${recipeOwner.username || recipeOwner.id}`}
+                className="hidden sm:flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:from-green-600 hover:to-green-700 hover:shadow-lg"
+              >
+                <span>Profili Gör</span>
+                <span>→</span>
+              </Link>
             </div>
           </div>
         )}

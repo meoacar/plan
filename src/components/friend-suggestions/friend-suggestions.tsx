@@ -33,9 +33,10 @@ export default function FriendSuggestions() {
       setLoading(true);
       const res = await fetch('/api/friend-suggestions');
       const data = await res.json();
+      console.log('Friend suggestions data:', data);
       setSuggestions(data || []);
     } catch (error) {
-      console.error('Öneriler yüklenemedi');
+      console.error('Öneriler yüklenemedi', error);
     } finally {
       setLoading(false);
     }
@@ -44,7 +45,7 @@ export default function FriendSuggestions() {
   const handleFollow = async (userId: string) => {
     try {
       setFollowingIds(prev => new Set(prev).add(userId));
-      
+
       const res = await fetch('/api/follow', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -121,7 +122,7 @@ export default function FriendSuggestions() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {suggestions.map((suggestion, index) => {
           const isFollowing = followingIds.has(suggestion.id);
-          
+
           return (
             <div
               key={suggestion.id}
@@ -138,18 +139,36 @@ export default function FriendSuggestions() {
                     <span className="text-sm font-bold text-purple-600">{suggestion.score}%</span>
                   </div>
                 </div>
-                
+
                 {/* Avatar */}
                 <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-                  {suggestion.image ? (
-                    <img
-                      src={suggestion.image}
-                      alt={suggestion.name || 'Kullanıcı'}
-                      className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
-                    />
+                  {suggestion.image && suggestion.image.trim() !== '' ? (
+                    <div className="relative w-24 h-24">
+                      <img
+                        src={suggestion.image}
+                        alt={suggestion.name || 'Kullanıcı'}
+                        className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
+                        onError={(e) => {
+                          // Resim yüklenemezse default avatar göster
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `
+                              <div class="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center border-4 border-white shadow-lg">
+                                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                              </div>
+                            `;
+                          }
+                        }}
+                      />
+                    </div>
                   ) : (
                     <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center border-4 border-white shadow-lg">
-                      <Users className="w-12 h-12 text-white" />
+                      <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
                     </div>
                   )}
                 </div>
@@ -217,11 +236,10 @@ export default function FriendSuggestions() {
                   <button
                     onClick={() => handleFollow(suggestion.id)}
                     disabled={isFollowing}
-                    className={`flex-1 py-2.5 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
-                      isFollowing
-                        ? 'bg-green-500 text-white cursor-not-allowed'
-                        : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-lg hover:scale-105'
-                    }`}
+                    className={`flex-1 py-2.5 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${isFollowing
+                      ? 'bg-green-500 text-white cursor-not-allowed'
+                      : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-lg hover:scale-105'
+                      }`}
                   >
                     {isFollowing ? (
                       <>

@@ -37,18 +37,28 @@ export async function GET(request: NextRequest) {
         id: {
           notIn: [...followingIds, session.user.id],
         },
-        OR: [
-          // Benzer hedef kilo
-          user.goalWeight
-            ? {
-                goalWeight: {
-                  gte: user.goalWeight - 10,
-                  lte: user.goalWeight + 10,
+        AND: [
+          {
+            OR: [
+              // Benzer hedef kilo
+              user.goalWeight
+                ? {
+                    goalWeight: {
+                      gte: user.goalWeight - 10,
+                      lte: user.goalWeight + 10,
+                    },
+                  }
+                : {},
+              // Aynı şehir
+              user.city ? { city: user.city } : {},
+              // Aktif kullanıcılar (en az 1 plan var)
+              {
+                plans: {
+                  some: {},
                 },
-              }
-            : {},
-          // Aynı şehir
-          user.city ? { city: user.city } : {},
+              },
+            ],
+          },
         ],
       },
       select: {
@@ -66,7 +76,10 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      take: 10,
+      take: 20,
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     // Önerileri skorla

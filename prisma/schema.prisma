@@ -95,6 +95,7 @@ model Plan {
   tags            PlanTag[]
 
   @@index([status, createdAt])
+  @@index([status, views])
   @@index([slug])
   @@index([goalWeight, startWeight])
   @@index([categoryId])

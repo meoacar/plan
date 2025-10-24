@@ -128,31 +128,21 @@ export async function GET(req: Request) {
         orderBy,
         skip: (page - 1) * limit,
         take: limit,
-        include: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          startWeight: true,
+          goalWeight: true,
+          durationText: true,
+          imageUrl: true,
+          views: true,
+          createdAt: true,
           user: {
             select: {
               id: true,
               name: true,
               image: true,
-            }
-          },
-          category: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              color: true,
-            }
-          },
-          tags: {
-            include: {
-              tag: {
-                select: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                }
-              }
             }
           },
           _count: {
@@ -178,7 +168,7 @@ export async function GET(req: Request) {
       },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
         },
       }
     )

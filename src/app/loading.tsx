@@ -1,25 +1,13 @@
-import { SkeletonPlanCard } from '@/components/ui/skeleton';
-
 export default function Loading() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Hero Skeleton */}
-      <div className="mb-12 animate-pulse">
-        <div className="h-12 bg-gray-200 rounded-lg w-3/4 mx-auto mb-4"></div>
-        <div className="h-6 bg-gray-200 rounded-lg w-1/2 mx-auto"></div>
-      </div>
-
-      {/* Tabs Skeleton */}
-      <div className="flex gap-4 mb-12">
-        <div className="h-16 bg-gray-200 rounded-2xl w-48"></div>
-        <div className="h-16 bg-gray-200 rounded-2xl w-48"></div>
-      </div>
-
-      {/* Plans Grid Skeleton */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, i) => (
-          <SkeletonPlanCard key={i} />
-        ))}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50">
+      <div className="text-center">
+        <div className="relative w-20 h-20 mx-auto mb-6">
+          <div className="absolute inset-0 border-4 border-purple-200 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-purple-600 rounded-full border-t-transparent animate-spin"></div>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Yükleniyor...</h2>
+        <p className="text-gray-600">Başarı hikayeleri getiriliyor</p>
       </div>
     </div>
   );

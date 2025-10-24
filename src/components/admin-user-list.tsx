@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent } from "./ui/card"
@@ -61,6 +61,11 @@ export function AdminUserList({ users }: AdminUserListProps) {
     startWeight: "",
     city: "",
   })
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Filtreleme ve sıralama
   const filteredAndSortedUsers = useMemo(() => {
@@ -241,7 +246,7 @@ export function AdminUserList({ users }: AdminUserListProps) {
           })
         )
       )
-      
+
       setSelectedUsers(new Set())
       router.refresh()
     } catch (error) {
@@ -276,18 +281,30 @@ export function AdminUserList({ users }: AdminUserListProps) {
   }
 
   const stats = useMemo(() => {
-    const now = new Date()
-    const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-    const lastMonth = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    if (!isMounted) {
+      // Return static values during SSR to avoid hydration mismatch
+      return {
+        total: users.length,
+        admins: users.filter((u) => u.role === "ADMIN").length,
+        newThisWeek: 0,
+        newThisMonth: 0,
+        activeUsers: users.filter((u) => u._count.plans > 0 || u._count.comments > 0).length,
+      }
+    }
+
+    // Calculate time-based stats only on client
+    const now = Date.now()
+    const lastWeek = now - 7 * 24 * 60 * 60 * 1000
+    const lastMonth = now - 30 * 24 * 60 * 60 * 1000
 
     return {
       total: users.length,
       admins: users.filter((u) => u.role === "ADMIN").length,
-      newThisWeek: users.filter((u) => new Date(u.createdAt) > lastWeek).length,
-      newThisMonth: users.filter((u) => new Date(u.createdAt) > lastMonth).length,
+      newThisWeek: users.filter((u) => new Date(u.createdAt).getTime() > lastWeek).length,
+      newThisMonth: users.filter((u) => new Date(u.createdAt).getTime() > lastMonth).length,
       activeUsers: users.filter((u) => u._count.plans > 0 || u._count.comments > 0).length,
     }
-  }, [users])
+  }, [users, isMounted])
 
   return (
     <div className="space-y-6">

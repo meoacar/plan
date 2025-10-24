@@ -10,7 +10,6 @@ export default function RecipeDetail({
   recipeOwner,
   ownerRecipeCount,
 }: any) {
-  const router = useRouter();
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [likeCount, setLikeCount] = useState(recipe._count.likes);
   const [comments, setComments] = useState(recipe.comments);

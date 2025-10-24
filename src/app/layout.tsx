@@ -64,24 +64,34 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function getFooterPages() {
+async function getFooterData() {
   try {
-    const pages = await prisma.page.findMany({
-      where: {
-        isPublished: true,
-        showInFooter: true,
-      },
-      orderBy: { order: "asc" },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-      },
-    });
-    return pages;
+    const [pages, settings] = await Promise.all([
+      prisma.page.findMany({
+        where: {
+          isPublished: true,
+          showInFooter: true,
+        },
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      }),
+      prisma.siteSettings.findFirst({
+        orderBy: { updatedAt: "desc" },
+        include: {
+          footerLinks: {
+            orderBy: { order: "asc" },
+          },
+        },
+      }),
+    ]);
+    return { pages, footerLinks: settings?.footerLinks || [] };
   } catch (error) {
-    console.error("Error fetching footer pages:", error);
-    return [];
+    console.error("Error fetching footer data:", error);
+    return { pages: [], footerLinks: [] };
   }
 }
 
@@ -91,7 +101,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const settings = await getSiteSettings();
-  const footerPages = await getFooterPages();
+  const { pages: footerPages, footerLinks } = await getFooterData();
 
   return (
     <html lang="tr">
@@ -128,12 +138,20 @@ export default async function RootLayout({
                       {settings?.footerLinksTitle || "Hızlı Bağlantılar"}
                     </h4>
                     <div className="flex flex-col gap-2">
-                      <a href="/" className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm">
-                        Ana Sayfa
-                      </a>
-                      <a href="/submit" className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm">
-                        Plan Ekle
-                      </a>
+                      {/* Custom Footer Links */}
+                      {footerLinks.map((link) => (
+                        <a
+                          key={link.id}
+                          href={link.url}
+                          target={link.openInNewTab ? "_blank" : undefined}
+                          rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                          className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm"
+                        >
+                          {link.title}
+                        </a>
+                      ))}
+
+                      {/* Dynamic Pages */}
                       {footerPages.map((page) => (
                         <a
                           key={page.id}
@@ -143,9 +161,6 @@ export default async function RootLayout({
                           {page.title}
                         </a>
                       ))}
-                      <a href="/login" className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm">
-                        Giriş Yap
-                      </a>
                     </div>
                   </div>
 

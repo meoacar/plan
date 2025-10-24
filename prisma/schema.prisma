@@ -184,22 +184,37 @@ model VerificationToken {
 }
 
 model SiteSettings {
-  id                String   @id @default(cuid())
-  siteTitle         String   @default("Zayıflama Planım")
+  id                String       @id @default(cuid())
+  siteTitle         String       @default("Zayıflama Planım")
   siteDescription   String
   logoUrl           String?
   twitterUrl        String?
   instagramUrl      String?
   facebookUrl       String?
   footerText        String?
-  footerAboutTitle  String?  @default("Hakkımızda")
-  footerAboutText   String?  @default("Gerçek insanların gerçek başarı hikayeleri. Sağlıklı yaşam için ilham alın.")
-  footerLinksTitle  String?  @default("Hızlı Bağlantılar")
-  footerSocialTitle String?  @default("Bizi Takip Edin")
-  maintenanceMode   Boolean  @default(false)
-  updatedAt         DateTime @updatedAt
+  footerAboutTitle  String?      @default("Hakkımızda")
+  footerAboutText   String?      @default("Gerçek insanların gerçek başarı hikayeleri. Sağlıklı yaşam için ilham alın.")
+  footerLinksTitle  String?      @default("Hızlı Bağlantılar")
+  footerSocialTitle String?      @default("Bizi Takip Edin")
+  maintenanceMode   Boolean      @default(false)
+  updatedAt         DateTime     @updatedAt
   updatedBy         String
-  updatedByUser     User     @relation(fields: [updatedBy], references: [id])
+  updatedByUser     User         @relation(fields: [updatedBy], references: [id])
+  footerLinks       FooterLink[]
+}
+
+model FooterLink {
+  id             String       @id @default(cuid())
+  settingsId     String
+  title          String
+  url            String
+  order          Int          @default(0)
+  openInNewTab   Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  settings       SiteSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+
+  @@index([settingsId, order])
 }
 
 model Category {

@@ -26,24 +26,53 @@ export async function POST(req: NextRequest) {
     }
 
     // Dosya boyutu kontrolü (5MB)
+    const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
     if (file.size > 5 * 1024 * 1024) {
+      console.error(`Dosya boyutu çok büyük: ${file.name} - ${fileSizeMB}MB`);
       return NextResponse.json(
-        { error: "Dosya boyutu 5MB'dan küçük olmalıdır" },
+        { error: `Dosya boyutu 5MB'dan küçük olmalıdır (Mevcut: ${fileSizeMB}MB)` },
         { status: 400 }
       );
     }
 
     // Dosya tipi kontrolü
     if (!file.type.startsWith("image/")) {
+      console.error(`Geçersiz dosya tipi: ${file.name} - ${file.type}`);
       return NextResponse.json(
-        { error: "Sadece resim dosyaları yüklenebilir" },
+        { error: `Sadece resim dosyaları yüklenebilir (Mevcut tip: ${file.type})` },
         { status: 400 }
       );
     }
 
+    // Dosya adı kontrolü - özel karakterler
+    const fileName = file.name;
+    console.log(`Yüklenen dosya: ${fileName}, Boyut: ${fileSizeMB}MB, Tip: ${file.type}`);
+
     // Dosyayı buffer'a çevir
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    let bytes: ArrayBuffer;
+    let buffer: Buffer;
+    
+    try {
+      bytes = await file.arrayBuffer();
+      buffer = Buffer.from(bytes);
+      
+      // Buffer boş mu kontrol et
+      if (buffer.length === 0) {
+        console.error("Dosya içeriği boş");
+        return NextResponse.json(
+          { error: "Dosya içeriği okunamadı veya boş" },
+          { status: 400 }
+        );
+      }
+      
+      console.log(`Buffer boyutu: ${buffer.length} bytes`);
+    } catch (bufferError) {
+      console.error("Buffer oluşturma hatası:", bufferError);
+      return NextResponse.json(
+        { error: "Dosya içeriği işlenirken hata oluştu" },
+        { status: 500 }
+      );
+    }
 
     // Uploads klasörünü oluştur
     const uploadsDir = join(process.cwd(), "public", "uploads", "recipes");
@@ -63,9 +92,29 @@ export async function POST(req: NextRequest) {
     // Benzersiz dosya adı oluştur
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(7);
-    const extension = file.name.split(".").pop();
+    
+    // Dosya uzantısını güvenli şekilde al
+    let extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    
+    // Geçerli resim uzantıları
+    const validExtensions = ["jpg", "jpeg", "png", "gif", "webp", "bmp"];
+    if (!validExtensions.includes(extension)) {
+      console.error(`Geçersiz dosya uzantısı: ${extension}`);
+      // MIME type'dan uzantı çıkar
+      const mimeToExt: Record<string, string> = {
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/gif": "gif",
+        "image/webp": "webp",
+        "image/bmp": "bmp",
+      };
+      extension = mimeToExt[file.type] || "jpg";
+    }
+    
     const filename = `${session.user.id}-${timestamp}-${randomStr}.${extension}`;
     const filepath = join(uploadsDir, filename);
+    
+    console.log(`Kaydedilecek dosya: ${filename}`);
 
     // Dosyayı kaydet
     try {

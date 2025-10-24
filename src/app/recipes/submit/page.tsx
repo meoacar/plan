@@ -108,6 +108,16 @@ export default function SubmitRecipePage() {
 
     try {
       const uploadPromises = Array.from(files).map(async (file) => {
+        // Dosya boyutu kontrolü (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          throw new Error(`"${file.name}" dosyası 5MB'dan büyük (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+        }
+
+        // Dosya tipi kontrolü
+        if (!file.type.startsWith("image/")) {
+          throw new Error(`"${file.name}" bir resim dosyası değil (${file.type})`);
+        }
+
         const formData = new FormData();
         formData.append("file", file);
 
@@ -117,7 +127,8 @@ export default function SubmitRecipePage() {
         });
 
         if (!res.ok) {
-          throw new Error("Yükleme başarısız");
+          const errorData = await res.json();
+          throw new Error(errorData.error || `"${file.name}" yüklenemedi`);
         }
 
         const data = await res.json();
@@ -126,8 +137,9 @@ export default function SubmitRecipePage() {
 
       const uploadedUrls = await Promise.all(uploadPromises);
       setImages([...images, ...uploadedUrls]);
-    } catch (error) {
-      alert("Resim yüklenirken bir hata oluştu");
+    } catch (error: any) {
+      console.error("Resim yükleme hatası:", error);
+      alert(`Resim yüklenirken hata: ${error.message}`);
     } finally {
       setUploadingImage(false);
     }

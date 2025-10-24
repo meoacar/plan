@@ -136,6 +136,16 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                     <span>Sağlıklı Tarifler</span>
                   </Link>
                   {session && (
+                    <Link
+                      href="/recipes/my-recipes"
+                      onClick={() => setFeaturesMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="text-lg">📖</span>
+                      <span>Tariflerim</span>
+                    </Link>
+                  )}
+                  {session && (
                     <>
                       <Link
                         href="/collections"
@@ -354,8 +364,28 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
               >
                 📊 Anketler
               </Link>
+              <Link
+                href="/recipes"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/recipes"
+                  ? "bg-[#2d7a4a] text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                🍽️ Sağlıklı Tarifler
+              </Link>
               {session && (
                 <>
+                  <Link
+                    href="/recipes/my-recipes"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/recipes/my-recipes"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    📖 Tariflerim
+                  </Link>
                   <Link
                     href="/collections"
                     onClick={() => setMobileMenuOpen(false)}

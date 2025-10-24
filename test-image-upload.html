@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resim Yükleme Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .file-info {
+            text-align: left;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🖼️ Tarif Resim Yükleme Test</h1>
+    <p>Bu sayfa ile resimlerinizi test edebilir ve hangi resimde sorun olduğunu görebilirsiniz.</p>
+
+    <div class="upload-area">
+        <input type="file" id="fileInput" accept="image/*" multiple>
+        <p>Resim seçin (birden fazla seçebilirsiniz)</p>
+    </div>
+
+    <div id="fileInfo"></div>
+    <button id="uploadBtn" disabled>Yükle</button>
+    <div id="result"></div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileInfo = document.getElementById('fileInfo');
+        const result = document.getElementById('result');
+        let selectedFiles = [];
+
+        fileInput.addEventListener('change', (e) => {
+            selectedFiles = Array.from(e.target.files);
+            uploadBtn.disabled = selectedFiles.length === 0;
+
+            // Dosya bilgilerini göster
+            fileInfo.innerHTML = '<h3>Seçilen Dosyalar:</h3>';
+            selectedFiles.forEach((file, index) => {
+                const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                const isTooBig = file.size > 5 * 1024 * 1024;
+                const isValidType = file.type.startsWith('image/');
+
+                const div = document.createElement('div');
+                div.className = 'file-info';
+                div.innerHTML = `
+                    <strong>Dosya ${index + 1}:</strong> ${file.name}<br>
+                    <strong>Boyut:</strong> ${sizeMB} MB ${isTooBig ? '❌ (5MB\'dan büyük!)' : '✅'}<br>
+                    <strong>Tip:</strong> ${file.type} ${isValidType ? '✅' : '❌ (Resim değil!)'}<br>
+                    <strong>Son Değişiklik:</strong> ${new Date(file.lastModified).toLocaleString('tr-TR')}
+                `;
+                fileInfo.appendChild(div);
+            });
+        });
+
+        uploadBtn.addEventListener('click', async () => {
+            result.innerHTML = '';
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Yükleniyor...';
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result info';
+                resultDiv.textContent = `${file.name} yükleniyor...`;
+                result.appendChild(resultDiv);
+
+                try {
+                    // Önce dosya kontrolü
+                    const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                    if (file.size > 5 * 1024 * 1024) {
+                        throw new Error(`Dosya boyutu 5MB'dan büyük (${sizeMB}MB)`);
+                    }
+
+                    if (!file.type.startsWith('image/')) {
+                        throw new Error(`Dosya bir resim değil (${file.type})`);
+                    }
+
+                    // Yükleme
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await fetch('/api/upload/recipe', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Yükleme başarısız');
+                    }
+
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        ✅ ${file.name} başarıyla yüklendi!<br>
+                        <strong>URL:</strong> ${data.url}<br>
+                        <img src="${data.url}" style="max-width: 200px; margin-top: 10px;">
+                    `;
+                } catch (error) {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ ${file.name} yüklenemedi:<br><strong>${error.message}</strong>`;
+                    console.error('Yükleme hatası:', error);
+                }
+            }
+
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Yükle';
+        });
+    </script>
+</body>
+
+</html>

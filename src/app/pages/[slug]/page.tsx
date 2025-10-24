@@ -228,6 +228,7 @@ export default async function PageDetail({ params }: PageProps) {
                     prose-th:text-white prose-th:font-bold prose-th:p-4 prose-th:text-left
                     prose-td:border prose-td:border-gray-200 prose-td:p-4
                     prose-tr:even:bg-gray-50"
+                  style={{ whiteSpace: 'pre-line' }}
                   dangerouslySetInnerHTML={{ __html: page.content }}
                 />
               </div>

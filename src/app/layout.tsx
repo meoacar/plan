@@ -135,9 +135,9 @@ export default async function RootLayout({
                         Plan Ekle
                       </a>
                       {footerPages.map((page) => (
-                        <a 
+                        <a
                           key={page.id}
-                          href={`/pages/${page.slug}`} 
+                          href={`/pages/${page.slug}`}
                           className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm"
                         >
                           {page.title}

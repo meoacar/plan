@@ -184,18 +184,22 @@ model VerificationToken {
 }
 
 model SiteSettings {
-  id              String   @id @default(cuid())
-  siteTitle       String   @default("Zayıflama Planım")
-  siteDescription String
-  logoUrl         String?
-  twitterUrl      String?
-  instagramUrl    String?
-  facebookUrl     String?
-  footerText      String?
-  maintenanceMode Boolean  @default(false)
-  updatedAt       DateTime @updatedAt
-  updatedBy       String
-  updatedByUser   User     @relation(fields: [updatedBy], references: [id])
+  id                String   @id @default(cuid())
+  siteTitle         String   @default("Zayıflama Planım")
+  siteDescription   String
+  logoUrl           String?
+  twitterUrl        String?
+  instagramUrl      String?
+  facebookUrl       String?
+  footerText        String?
+  footerAboutTitle  String?  @default("Hakkımızda")
+  footerAboutText   String?  @default("Gerçek insanların gerçek başarı hikayeleri. Sağlıklı yaşam için ilham alın.")
+  footerLinksTitle  String?  @default("Hızlı Bağlantılar")
+  footerSocialTitle String?  @default("Bizi Takip Edin")
+  maintenanceMode   Boolean  @default(false)
+  updatedAt         DateTime @updatedAt
+  updatedBy         String
+  updatedByUser     User     @relation(fields: [updatedBy], references: [id])
 }
 
 model Category {

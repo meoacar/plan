@@ -105,7 +105,7 @@ export default async function PageDetail({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
         {/* Hero Section with Gradient Background */}
         <div className="relative overflow-hidden bg-gradient-to-br from-[#2d7a4a] via-[#4caf50] to-[#66bb6a] py-20 md:py-32">
@@ -114,7 +114,7 @@ export default async function PageDetail({ params }: PageProps) {
             <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
           </div>
-          
+
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto">
               {/* Breadcrumb */}
@@ -140,7 +140,7 @@ export default async function PageDetail({ params }: PageProps) {
                 <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
                   {page.title}
                 </h1>
-                
+
                 {page.excerpt && (
                   <p className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto mb-8 drop-shadow">
                     {page.excerpt}
@@ -189,7 +189,7 @@ export default async function PageDetail({ params }: PageProps) {
             <article className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
               {/* Decorative Top Border */}
               <div className="h-2 bg-gradient-to-r from-[#2d7a4a] via-[#4caf50] to-[#66bb6a]"></div>
-              
+
               <div className="p-8 md:p-16">
                 <div
                   className="prose prose-lg max-w-none
@@ -246,7 +246,7 @@ export default async function PageDetail({ params }: PageProps) {
                       <p className="text-lg font-bold text-gray-900">Zayıflama Planım</p>
                     </div>
                   </div>
-                  
+
                   <Link
                     href="/"
                     className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#4caf50] to-[#2d7a4a] text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"

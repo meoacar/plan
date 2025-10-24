@@ -12,6 +12,10 @@ interface SiteSettings {
   instagramUrl: string | null
   facebookUrl: string | null
   footerText: string | null
+  footerAboutTitle: string | null
+  footerAboutText: string | null
+  footerLinksTitle: string | null
+  footerSocialTitle: string | null
   maintenanceMode: boolean
   updatedAt: Date
   updatedBy: string
@@ -35,6 +39,10 @@ export function SettingsForm({ initialSettings, onSuccess }: SettingsFormProps) 
     instagramUrl: initialSettings.instagramUrl || "",
     facebookUrl: initialSettings.facebookUrl || "",
     footerText: initialSettings.footerText || "",
+    footerAboutTitle: initialSettings.footerAboutTitle || "",
+    footerAboutText: initialSettings.footerAboutText || "",
+    footerLinksTitle: initialSettings.footerLinksTitle || "",
+    footerSocialTitle: initialSettings.footerSocialTitle || "",
     maintenanceMode: initialSettings.maintenanceMode,
   })
 
@@ -78,6 +86,10 @@ export function SettingsForm({ initialSettings, onSuccess }: SettingsFormProps) 
         instagramUrl: formData.instagramUrl.trim() || undefined,
         facebookUrl: formData.facebookUrl.trim() || undefined,
         footerText: formData.footerText.trim() || undefined,
+        footerAboutTitle: formData.footerAboutTitle.trim() || undefined,
+        footerAboutText: formData.footerAboutText.trim() || undefined,
+        footerLinksTitle: formData.footerLinksTitle.trim() || undefined,
+        footerSocialTitle: formData.footerSocialTitle.trim() || undefined,
       }
 
       // Client-side validation
@@ -277,25 +289,87 @@ export function SettingsForm({ initialSettings, onSuccess }: SettingsFormProps) 
 
       {/* Footer Content Section */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">Footer İçeriği</h2>
-        <div>
-          <label htmlFor="footerText" className="block text-sm font-medium text-gray-700 mb-1">
-            Footer Metni
-          </label>
-          <textarea
-            id="footerText"
-            name="footerText"
-            value={formData.footerText}
-            onChange={handleChange}
-            rows={4}
-            placeholder="Footer'da görünecek metin..."
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.footerText ? "border-red-500" : "border-gray-300"
-            }`}
-          />
-          {errors.footerText && (
-            <p className="mt-1 text-sm text-red-600">{errors.footerText}</p>
-          )}
+        <h2 className="text-xl font-semibold mb-4">Footer Ayarları</h2>
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="footerAboutTitle" className="block text-sm font-medium text-gray-700 mb-1">
+              Footer Sol Bölüm Başlığı
+            </label>
+            <input
+              type="text"
+              id="footerAboutTitle"
+              name="footerAboutTitle"
+              value={formData.footerAboutTitle}
+              onChange={handleChange}
+              placeholder="Hakkımızda"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">Varsayılan: "Hakkımızda"</p>
+          </div>
+
+          <div>
+            <label htmlFor="footerAboutText" className="block text-sm font-medium text-gray-700 mb-1">
+              Footer Sol Bölüm Metni
+            </label>
+            <textarea
+              id="footerAboutText"
+              name="footerAboutText"
+              value={formData.footerAboutText}
+              onChange={handleChange}
+              rows={3}
+              placeholder="Gerçek insanların gerçek başarı hikayeleri..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">Footer'ın sol bölümünde görünecek açıklama metni</p>
+          </div>
+
+          <div>
+            <label htmlFor="footerLinksTitle" className="block text-sm font-medium text-gray-700 mb-1">
+              Footer Orta Bölüm Başlığı
+            </label>
+            <input
+              type="text"
+              id="footerLinksTitle"
+              name="footerLinksTitle"
+              value={formData.footerLinksTitle}
+              onChange={handleChange}
+              placeholder="Hızlı Bağlantılar"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">Varsayılan: "Hızlı Bağlantılar"</p>
+          </div>
+
+          <div>
+            <label htmlFor="footerSocialTitle" className="block text-sm font-medium text-gray-700 mb-1">
+              Footer Sağ Bölüm Başlığı
+            </label>
+            <input
+              type="text"
+              id="footerSocialTitle"
+              name="footerSocialTitle"
+              value={formData.footerSocialTitle}
+              onChange={handleChange}
+              placeholder="Bizi Takip Edin"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">Varsayılan: "Bizi Takip Edin"</p>
+          </div>
+
+          <div className="border-t pt-4">
+            <label htmlFor="footerText" className="block text-sm font-medium text-gray-700 mb-1">
+              Footer Alt Metni (Copyright)
+            </label>
+            <textarea
+              id="footerText"
+              name="footerText"
+              value={formData.footerText}
+              onChange={handleChange}
+              rows={2}
+              placeholder="© 2024 Zayıflama Planım. Tüm hakları saklıdır."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">Footer'ın en altında görünecek copyright metni</p>
+          </div>
         </div>
       </div>
 

@@ -114,17 +114,19 @@ export default async function RootLayout({
                     <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
                       <Logo size={36} />
                       <h3 className="text-xl font-bold text-white">
-                        {settings?.siteTitle || "Zayıflama Planım"}
+                        {settings?.footerAboutTitle || settings?.siteTitle || "Zayıflama Planım"}
                       </h3>
                     </div>
                     <p className="text-gray-400 text-sm leading-relaxed">
-                      Gerçek insanların gerçek başarı hikayeleri. Sağlıklı yaşam için ilham alın.
+                      {settings?.footerAboutText || "Gerçek insanların gerçek başarı hikayeleri. Sağlıklı yaşam için ilham alın."}
                     </p>
                   </div>
 
                   {/* Quick Links */}
                   <div className="text-center">
-                    <h4 className="text-white font-semibold mb-4">Hızlı Bağlantılar</h4>
+                    <h4 className="text-white font-semibold mb-4">
+                      {settings?.footerLinksTitle || "Hızlı Bağlantılar"}
+                    </h4>
                     <div className="flex flex-col gap-2">
                       <a href="/" className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm">
                         Ana Sayfa
@@ -149,7 +151,9 @@ export default async function RootLayout({
 
                   {/* Social Links */}
                   <div className="text-center md:text-right">
-                    <h4 className="text-white font-semibold mb-4">Bizi Takip Edin</h4>
+                    <h4 className="text-white font-semibold mb-4">
+                      {settings?.footerSocialTitle || "Bizi Takip Edin"}
+                    </h4>
                     {(settings?.twitterUrl || settings?.instagramUrl || settings?.facebookUrl) ? (
                       <div className="flex justify-center md:justify-end gap-4">
                         {settings.twitterUrl && (

@@ -817,6 +817,11 @@ enum ActivityType {
   RECIPE_APPROVED
   RECIPE_REJECTED
   RECIPE_DELETED
+  GROUP_APPROVED
+  GROUP_REJECTED
+  GROUP_DELETED
+  CHALLENGE_CREATED
+  CHALLENGE_DELETED
 }
 
 enum EmailStatus {
@@ -864,6 +869,11 @@ enum BadgeType {
   RECIPE_VIEWS_500
   RECIPE_COMMENTS_10
   RECIPE_COMMENTS_25
+  GROUP_CREATOR
+  GROUP_ADMIN
+  CHALLENGE_WINNER
+  CHALLENGE_PARTICIPANT
+  SOCIAL_BUTTERFLY
 }
 
 enum GoalType {
@@ -889,6 +899,33 @@ enum RecipeStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum GroupStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum GroupMemberRole {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+enum JoinRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ChallengeType {
+  WEIGHT_LOSS
+  ACTIVITY
+  STREAK
+  CHECK_IN
+  RECIPE_SHARE
+  PLAN_SHARE
 }
 
 model Page {
@@ -917,4 +954,138 @@ model Page {
   @@index([showInFooter, order])
   @@index([showInNavbar, order])
   @@index([showInTopNavbar, order])
+}
+
+model Group {
+  id              String            @id @default(cuid())
+  name            String
+  slug            String            @unique
+  description     String
+  imageUrl        String?
+  goalType        String
+  targetWeight    Int?
+  isPrivate       Boolean           @default(false)
+  maxMembers      Int?
+  status          GroupStatus       @default(PENDING)
+  rejectionReason String?
+  createdBy       String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  approvedAt      DateTime?
+  members         GroupMember[]
+  challenges      Challenge[]
+  posts           GroupPost[]
+  joinRequests    GroupJoinRequest[]
+
+  @@index([status, createdAt])
+  @@index([goalType])
+  @@index([slug])
+}
+
+model GroupMember {
+  id        String           @id @default(cuid())
+  groupId   String
+  userId    String
+  role      GroupMemberRole  @default(MEMBER)
+  joinedAt  DateTime         @default(now())
+  group     Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@index([groupId, role])
+}
+
+model GroupJoinRequest {
+  id        String              @id @default(cuid())
+  groupId   String
+  userId    String
+  message   String?
+  status    JoinRequestStatus   @default(PENDING)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  group     Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId, status])
+  @@index([groupId, status])
+}
+
+model GroupPost {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  content   String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, createdAt])
+  @@index([userId])
+}
+
+model Challenge {
+  id          String                @id @default(cuid())
+  groupId     String?
+  title       String
+  description String
+  type        ChallengeType
+  target      Float
+  unit        String
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean               @default(true)
+  createdBy   String
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  group       Group?                @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  participants ChallengeParticipant[]
+  leaderboard  ChallengeLeaderboard[]
+
+  @@index([groupId, isActive])
+  @@index([type, isActive])
+  @@index([startDate, endDate])
+}
+
+model ChallengeParticipant {
+  id          String    @id @default(cuid())
+  challengeId String
+  userId      String
+  progress    Float     @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  joinedAt    DateTime  @default(now())
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([userId])
+  @@index([challengeId, completed])
+}
+
+model ChallengeLeaderboard {
+  id          String    @id @default(cuid())
+  challengeId String
+  userId      String
+  score       Float
+  rank        Int
+  updatedAt   DateTime  @updatedAt
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([challengeId, rank])
+  @@index([userId])
+}
+
+model FriendSuggestion {
+  id          String   @id @default(cuid())
+  userId      String
+  suggestedId String
+  reason      String
+  score       Float
+  dismissed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, suggestedId])
+  @@index([userId, dismissed])
+  @@index([score])
 }

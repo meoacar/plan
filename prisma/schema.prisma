@@ -870,3 +870,31 @@ enum RecipeStatus {
   APPROVED
   REJECTED
 }
+
+model Page {
+  id               String       @id @default(cuid())
+  title            String
+  slug             String       @unique
+  content          String       @db.Text
+  excerpt          String?
+  metaTitle        String?
+  metaDescription  String?
+  metaKeywords     String?
+  ogImage          String?
+  isPublished      Boolean      @default(false)
+  showInFooter     Boolean      @default(false)
+  showInNavbar     Boolean      @default(false)
+  showInTopNavbar  Boolean      @default(false)
+  order            Int          @default(0)
+  views            Int          @default(0)
+  createdBy        String
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  publishedAt      DateTime?
+
+  @@index([slug])
+  @@index([isPublished, order])
+  @@index([showInFooter, order])
+  @@index([showInNavbar, order])
+  @@index([showInTopNavbar, order])
+}

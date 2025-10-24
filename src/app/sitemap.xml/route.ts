@@ -3,14 +3,24 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {
-    const plans = await prisma.plan.findMany({
-      where: { status: "APPROVED" },
-      select: {
-        id: true,
-        slug: true,
-        updatedAt: true
-      }
-    })
+    const [plans, pages] = await Promise.all([
+      prisma.plan.findMany({
+        where: { status: "APPROVED" },
+        select: {
+          id: true,
+          slug: true,
+          updatedAt: true
+        }
+      }),
+      prisma.page.findMany({
+        where: { isPublished: true },
+        select: {
+          slug: true,
+          updatedAt: true,
+          publishedAt: true
+        }
+      })
+    ])
 
     const baseUrl = process.env.NEXTAUTH_URL || "https://zayiflamaplanim.com"
     const currentDate = new Date().toISOString()
@@ -31,6 +41,18 @@ export async function GET() {
   </url>
 `
 
+    // Dynamic pages
+    pages.forEach(page => {
+      sitemap += `  <url>
+    <loc>${baseUrl}/pages/${page.slug}</loc>
+    <lastmod>${page.updatedAt.toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+`
+    })
+
+    // Plans
     plans.forEach(plan => {
       sitemap += `  <url>
     <loc>${baseUrl}/plan/${plan.slug}</loc>

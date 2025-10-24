@@ -109,11 +109,10 @@ export default function RecipeDetail({
     <div className="container mx-auto max-w-6xl px-4 py-8">
       {/* Durum Badge'i (Admin veya kendi tarifi için) */}
       {recipe.status !== "APPROVED" && (
-        <div className={`mb-6 rounded-xl p-6 border-2 shadow-lg ${
-          recipe.status === "PENDING" 
-            ? "bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300" 
+        <div className={`mb-6 rounded-xl p-6 border-2 shadow-lg ${recipe.status === "PENDING"
+            ? "bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300"
             : "bg-gradient-to-r from-red-50 to-pink-50 border-red-300"
-        }`}>
+          }`}>
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0 text-4xl">
               {recipe.status === "PENDING" ? "⏳" : "❌"}
@@ -122,9 +121,8 @@ export default function RecipeDetail({
               <div className="mb-2 flex items-center gap-3">
                 {getStatusBadge()}
               </div>
-              <p className={`text-base font-medium ${
-                recipe.status === "PENDING" ? "text-yellow-900" : "text-red-900"
-              }`}>
+              <p className={`text-base font-medium ${recipe.status === "PENDING" ? "text-yellow-900" : "text-red-900"
+                }`}>
                 {recipe.status === "PENDING" && (
                   <>
                     <strong>Bu tarif henüz admin onayı bekliyor.</strong>
@@ -163,12 +161,12 @@ export default function RecipeDetail({
         </div>
         <h1 className="text-4xl font-bold text-gray-900">{recipe.title}</h1>
         <p className="mt-3 text-lg text-gray-600">{recipe.description}</p>
-        
+
         {/* Tarif Sahibi Bilgileri */}
         {recipeOwner && (
           <div className="mt-6 overflow-hidden rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white via-green-50/30 to-blue-50/30 shadow-lg transition-all hover:shadow-xl">
             <div className="flex items-center gap-5 p-5">
-              <Link 
+              <Link
                 href={`/profile/${recipeOwner.username || recipeOwner.id}`}
                 className="group relative flex-shrink-0"
               >
@@ -194,10 +192,10 @@ export default function RecipeDetail({
                   </div>
                 )}
               </Link>
-              
+
               <div className="flex-1 min-w-0">
                 <div className="mb-2 flex items-center gap-2">
-                  <Link 
+                  <Link
                     href={`/profile/${recipeOwner.username || recipeOwner.id}`}
                     className="text-xl font-bold text-gray-900 hover:text-green-600 transition-colors"
                   >
@@ -207,20 +205,20 @@ export default function RecipeDetail({
                     Seviye {recipeOwner.level}
                   </span>
                 </div>
-                
+
                 <div className="flex flex-wrap items-center gap-4">
                   <div className="flex items-center gap-1.5 rounded-lg bg-white/80 px-3 py-1.5 shadow-sm">
                     <span className="text-lg">🍽️</span>
                     <span className="text-sm font-semibold text-gray-700">{ownerRecipeCount}</span>
                     <span className="text-xs text-gray-500">Tarif</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-1.5 rounded-lg bg-white/80 px-3 py-1.5 shadow-sm">
                     <span className="text-lg">📝</span>
                     <span className="text-sm font-semibold text-gray-700">{recipeOwner._count.plans}</span>
                     <span className="text-xs text-gray-500">Plan</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1.5 shadow-sm">
                     <span className="text-lg">✨</span>
                     <span className="text-sm font-semibold text-white">{recipeOwner.xp}</span>
@@ -228,8 +226,8 @@ export default function RecipeDetail({
                   </div>
                 </div>
               </div>
-              
-              <Link 
+
+              <Link
                 href={`/profile/${recipeOwner.username || recipeOwner.id}`}
                 className="hidden sm:flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:from-green-600 hover:to-green-700 hover:shadow-lg"
               >
@@ -326,11 +324,10 @@ export default function RecipeDetail({
                     <button
                       key={img.id}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`h-16 w-16 overflow-hidden rounded border-2 ${
-                        index === currentImageIndex
+                      className={`h-16 w-16 overflow-hidden rounded border-2 ${index === currentImageIndex
                           ? "border-green-600"
                           : "border-gray-200"
-                      }`}
+                        }`}
                     >
                       <img
                         src={img.url}
@@ -376,11 +373,10 @@ export default function RecipeDetail({
           {/* Beğen Butonu */}
           <button
             onClick={handleLike}
-            className={`mt-4 w-full rounded-lg py-3 font-medium transition ${
-              isLiked
+            className={`mt-4 w-full rounded-lg py-3 font-medium transition ${isLiked
                 ? "bg-red-100 text-red-600 hover:bg-red-200"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+              }`}
           >
             {isLiked ? "❤️" : "🤍"} {likeCount} Beğeni
           </button>

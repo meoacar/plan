@@ -8,12 +8,21 @@ import { useState, useRef, useEffect } from "react"
 import { Menu, X, User, LogOut, Settings, ChevronDown, FolderOpen, Camera, Trophy, BarChart3, Users, BarChart2, Utensils } from "lucide-react"
 import { Logo } from "./logo"
 
+interface NavbarPage {
+  id: string
+  title: string
+  slug: string
+  showInNavbar: boolean
+  showInTopNavbar: boolean
+}
+
 interface NavbarClientProps {
   siteTitle: string
   logoUrl?: string | null
+  navbarPages: NavbarPage[]
 }
 
-export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
+export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientProps) {
   const pathname = usePathname()
   const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -70,6 +79,20 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
               Plan Ekle
             </Link>
 
+            {/* Dynamic Top Navbar Pages */}
+            {navbarPages.filter(p => p.showInTopNavbar).map((page) => (
+              <Link
+                key={page.id}
+                href={`/pages/${page.slug}`}
+                className={`text-base font-medium transition-colors ${pathname === `/pages/${page.slug}`
+                  ? "text-[#2d7a4a] font-semibold"
+                  : "text-gray-700 hover:text-[#2d7a4a]"
+                  }`}
+              >
+                {page.title}
+              </Link>
+            ))}
+
             <div className="relative" ref={featuresMenuRef}>
               <button
                 onClick={() => setFeaturesMenuOpen(!featuresMenuOpen)}
@@ -81,6 +104,21 @@ export function NavbarClient({ siteTitle, logoUrl }: NavbarClientProps) {
               
               {featuresMenuOpen && (
                 <div className="absolute top-full mt-2 right-0 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  {/* Dynamic Navbar Pages */}
+                  {navbarPages.filter(p => p.showInNavbar).map((page) => (
+                    <Link
+                      key={page.id}
+                      href={`/pages/${page.slug}`}
+                      onClick={() => setFeaturesMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="text-lg">📄</span>
+                      <span>{page.title}</span>
+                    </Link>
+                  ))}
+                  {navbarPages.filter(p => p.showInNavbar).length > 0 && (
+                    <div className="border-t border-gray-100 my-2"></div>
+                  )}
                   <Link
                     href="/polls"
                     onClick={() => setFeaturesMenuOpen(false)}

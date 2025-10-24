@@ -64,12 +64,34 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+async function getFooterPages() {
+  try {
+    const pages = await prisma.page.findMany({
+      where: {
+        isPublished: true,
+        showInFooter: true,
+      },
+      orderBy: { order: "asc" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+      },
+    });
+    return pages;
+  } catch (error) {
+    console.error("Error fetching footer pages:", error);
+    return [];
+  }
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const settings = await getSiteSettings();
+  const footerPages = await getFooterPages();
 
   return (
     <html lang="tr">
@@ -110,6 +132,15 @@ export default async function RootLayout({
                       <a href="/submit" className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm">
                         Plan Ekle
                       </a>
+                      {footerPages.map((page) => (
+                        <a 
+                          key={page.id}
+                          href={`/pages/${page.slug}`} 
+                          className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm"
+                        >
+                          {page.title}
+                        </a>
+                      ))}
                       <a href="/login" className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm">
                         Giriş Yap
                       </a>

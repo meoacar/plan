@@ -56,6 +56,28 @@ async function transferAndDeleteFakeAdmin() {
       console.log('✓ Plans transferred!');
     }
 
+    // ActivityLog'ları transfer et
+    const activityLogs = await prisma.activityLog.count({ where: { userId: fakeAdmin.id } });
+    console.log(`\nActivityLogs: ${activityLogs}`);
+
+    if (activityLogs > 0) {
+      await prisma.activityLog.updateMany({
+        where: { userId: fakeAdmin.id },
+        data: { userId: realAdmin.id }
+      });
+      console.log('✓ ActivityLogs transferred!');
+    }
+
+    // Diğer tüm ilişkileri sil (cascade delete için)
+    console.log('\nDeleting related records...');
+    
+    await prisma.comment.deleteMany({ where: { userId: fakeAdmin.id } });
+    await prisma.like.deleteMany({ where: { userId: fakeAdmin.id } });
+    await prisma.favorite.deleteMany({ where: { userId: fakeAdmin.id } });
+    await prisma.follow.deleteMany({ where: { OR: [{ followerId: fakeAdmin.id }, { followingId: fakeAdmin.id }] } });
+    
+    console.log('✓ Related records deleted!');
+
     // Şimdi sahte admin'i sil
     await prisma.user.delete({
       where: { id: fakeAdmin.id }

@@ -32,6 +32,15 @@ interface AdminUserListProps {
 type SortField = "name" | "email" | "createdAt" | "plans" | "activity"
 type SortOrder = "asc" | "desc"
 
+// Helper function to format date consistently on server and client
+function formatDate(date: Date): string {
+  const d = new Date(date)
+  const day = d.getDate().toString().padStart(2, '0')
+  const month = (d.getMonth() + 1).toString().padStart(2, '0')
+  const year = d.getFullYear()
+  return `${day}.${month}.${year}`
+}
+
 export function AdminUserList({ users }: AdminUserListProps) {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
@@ -253,7 +262,7 @@ export function AdminUserList({ users }: AdminUserListProps) {
         user._count.plans,
         user._count.comments,
         user._count.likes,
-        new Date(user.createdAt).toLocaleDateString("tr-TR"),
+        formatDate(user.createdAt),
       ]),
     ]
       .map((row) => row.join(","))
@@ -501,11 +510,7 @@ export function AdminUserList({ users }: AdminUserListProps) {
                     </div>
 
                     <p className="text-sm text-gray-500 mt-2">
-                      📅 Üyelik: {new Date(user.createdAt).toLocaleDateString("tr-TR", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      📅 Üyelik: {formatDate(user.createdAt)}
                     </p>
                   </div>
 
@@ -690,7 +695,7 @@ export function AdminUserList({ users }: AdminUserListProps) {
                     <div>
                       <span className="text-gray-600">Üyelik:</span>{" "}
                       <span className="font-semibold">
-                        {new Date(userToEdit.createdAt).toLocaleDateString("tr-TR")}
+                        {formatDate(userToEdit.createdAt)}
                       </span>
                     </div>
                   </div>

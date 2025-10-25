@@ -20,6 +20,7 @@ const adminNavItems: NavItem[] = [
   { href: "/admin/users", label: "Kullanıcılar", icon: "👤" },
   { href: "/admin/comments", label: "Yorumlar", icon: "💬" },
   { href: "/admin/analytics", label: "Analitik", icon: "📈" },
+  { href: "/admin/analytics/web-vitals", label: "Web Vitals", icon: "⚡" },
   { href: "/admin/categories", label: "Kategoriler", icon: "🏷️" },
   { href: "/admin/pages", label: "Sayfalar", icon: "📄" },
   { href: "/admin/moderation", label: "Moderasyon", icon: "🛡️" },

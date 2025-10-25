@@ -12,6 +12,10 @@ import { getToken } from "next-auth/jwt"
  * Edge Runtime uyumlu olması için getToken kullanıyoruz
  */
 export async function middleware(request: NextRequest) {
+  // Debug: Cookie'leri kontrol et
+  const cookies = request.cookies.getAll()
+  console.log("Cookies:", cookies.map(c => c.name))
+  
   const token = await getToken({ 
     req: request,
     secret: process.env.NEXTAUTH_SECRET 
@@ -25,7 +29,8 @@ export async function middleware(request: NextRequest) {
       pathname,
       hasToken: !!token,
       role: token?.role,
-      tokenKeys: token ? Object.keys(token) : []
+      tokenKeys: token ? Object.keys(token) : [],
+      hasCookies: cookies.length
     })
   }
 

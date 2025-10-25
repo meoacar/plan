@@ -95,6 +95,7 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get("limit") || "12")
     const minWeight = searchParams.get("minWeight")
     const maxWeight = searchParams.get("maxWeight")
+    const duration = searchParams.get("duration")
     const categoryId = searchParams.get("categoryId")
 
     const where: any = {
@@ -122,12 +123,16 @@ export async function GET(req: Request) {
       ? [{ views: "desc" }, { likes: { _count: "desc" } }]
       : { createdAt: "desc" }
 
-    const [plans, total] = await Promise.all([
+    // Süre filtresi varsa, daha fazla plan çek ve sonra filtrele
+    const fetchLimit = duration ? limit * 3 : limit
+    const fetchSkip = duration ? 0 : (page - 1) * limit
+
+    let [allPlans, totalBeforeFilter] = await Promise.all([
       prisma.plan.findMany({
         where,
         orderBy,
-        skip: (page - 1) * limit,
-        take: limit,
+        skip: fetchSkip,
+        take: fetchLimit,
         select: {
           id: true,
           title: true,
@@ -155,6 +160,64 @@ export async function GET(req: Request) {
       }),
       prisma.plan.count({ where })
     ])
+
+    // Süre filtreleme fonksiyonu
+    const parseDurationToDays = (durationText: string): number => {
+      const text = durationText.toLowerCase()
+      const numberMatch = text.match(/(\d+)/)
+      if (!numberMatch) return 0
+      
+      const num = parseInt(numberMatch[1])
+      
+      if (text.includes('yıl') || text.includes('year')) {
+        return num * 365
+      } else if (text.includes('ay') || text.includes('month')) {
+        return num * 30
+      } else if (text.includes('hafta') || text.includes('week')) {
+        return num * 7
+      } else if (text.includes('gün') || text.includes('day')) {
+        return num
+      }
+      
+      return num // Varsayılan olarak gün kabul et
+    }
+
+    // Süre filtreleme uygula
+    let plans = allPlans
+    let total = totalBeforeFilter
+
+    if (duration) {
+      const targetDays = parseInt(duration)
+      
+      // Süre aralıklarını belirle
+      let minDays = 0
+      let maxDays = Infinity
+      
+      if (targetDays === 30) {
+        minDays = 1
+        maxDays = 60 // 1-2 ay arası
+      } else if (targetDays === 90) {
+        minDays = 61
+        maxDays = 150 // 2-5 ay arası
+      } else if (targetDays === 180) {
+        minDays = 151
+        maxDays = 270 // 5-9 ay arası
+      } else if (targetDays === 365) {
+        minDays = 271 // 9 ay ve üzeri
+        maxDays = Infinity
+      }
+      
+      plans = allPlans.filter(plan => {
+        const planDays = parseDurationToDays(plan.durationText)
+        return planDays >= minDays && planDays <= maxDays
+      })
+      
+      total = plans.length
+      
+      // Sayfalama uygula
+      const startIndex = (page - 1) * limit
+      plans = plans.slice(startIndex, startIndex + limit)
+    }
 
     return NextResponse.json(
       {

@@ -16,10 +16,11 @@ type Category = {
 export function SearchFilter() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  
+
   const [search, setSearch] = useState(searchParams.get("search") || "")
   const [minWeight, setMinWeight] = useState(searchParams.get("minWeight") || "")
   const [maxWeight, setMaxWeight] = useState(searchParams.get("maxWeight") || "")
+  const [duration, setDuration] = useState(searchParams.get("duration") || "")
   const [categoryId, setCategoryId] = useState(searchParams.get("categoryId") || "")
   const [categories, setCategories] = useState<Category[]>([])
   const [showFilters, setShowFilters] = useState(false)
@@ -46,8 +47,9 @@ export function SearchFilter() {
     if (search) params.set("search", search)
     if (minWeight) params.set("minWeight", minWeight)
     if (maxWeight) params.set("maxWeight", maxWeight)
+    if (duration) params.set("duration", duration)
     if (categoryId) params.set("categoryId", categoryId)
-    
+
     router.push(`/?${params.toString()}`)
   }
 
@@ -55,6 +57,7 @@ export function SearchFilter() {
     setSearch("")
     setMinWeight("")
     setMaxWeight("")
+    setDuration("")
     setCategoryId("")
     router.push("/")
   }
@@ -65,8 +68,9 @@ export function SearchFilter() {
     if (search) params.set("search", search)
     if (minWeight) params.set("minWeight", minWeight)
     if (maxWeight) params.set("maxWeight", maxWeight)
+    if (duration) params.set("duration", duration)
     if (id !== categoryId) params.set("categoryId", id)
-    
+
     router.push(`/?${params.toString()}`)
   }
 
@@ -87,11 +91,10 @@ export function SearchFilter() {
                 <div className="flex flex-wrap gap-3">
                   <button
                     onClick={() => handleCategoryClick("")}
-                    className={`rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 ${
-                      !categoryId
+                    className={`rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 ${!categoryId
                         ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105"
                         : "bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-300 hover:bg-purple-50"
-                    }`}
+                      }`}
                   >
                     ✨ Tümü
                   </button>
@@ -99,11 +102,10 @@ export function SearchFilter() {
                     <button
                       key={category.id}
                       onClick={() => handleCategoryClick(category.id)}
-                      className={`rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 ${
-                        categoryId === category.id
+                      className={`rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 ${categoryId === category.id
                           ? "text-white shadow-lg scale-105"
                           : "bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-300 hover:bg-purple-50"
-                      }`}
+                        }`}
                       style={{
                         backgroundColor: categoryId === category.id ? category.color : undefined,
                         borderColor: categoryId === category.id ? `${category.color}80` : undefined,
@@ -130,14 +132,14 @@ export function SearchFilter() {
                   className="h-16 bg-white border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl focus:border-purple-400 focus:ring-4 focus:ring-purple-100 text-lg pl-14 pr-4 transition-all font-medium"
                 />
               </div>
-              <Button 
-                onClick={handleSearch} 
+              <Button
+                onClick={handleSearch}
                 className="h-16 px-10 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg hover:shadow-xl hover:scale-105 transition-all"
               >
                 🔍 Ara
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
                 className="h-16 px-8 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-bold hover:border-purple-300 hover:bg-purple-50 transition-all"
               >
@@ -182,15 +184,70 @@ export function SearchFilter() {
                     className="h-14 bg-white border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 font-medium"
                   />
                 </div>
+                <div className="md:col-span-2">
+                  <label className="flex items-center gap-2 text-sm font-bold mb-3 text-gray-900">
+                    <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-md">
+                      <span className="text-sm">⏳</span>
+                    </div>
+                    Plan Süresi
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <button
+                      onClick={() => setDuration("")}
+                      className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${!duration
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        }`}
+                    >
+                      Tümü
+                    </button>
+                    <button
+                      onClick={() => setDuration("30")}
+                      className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${duration === "30"
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        }`}
+                    >
+                      1 Ay
+                    </button>
+                    <button
+                      onClick={() => setDuration("90")}
+                      className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${duration === "90"
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        }`}
+                    >
+                      3 Ay
+                    </button>
+                    <button
+                      onClick={() => setDuration("180")}
+                      className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${duration === "180"
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        }`}
+                    >
+                      6 Ay
+                    </button>
+                    <button
+                      onClick={() => setDuration("365")}
+                      className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${duration === "365"
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        }`}
+                    >
+                      1 Yıl+
+                    </button>
+                  </div>
+                </div>
                 <div className="md:col-span-2 flex gap-4 flex-wrap">
-                  <Button 
-                    onClick={handleSearch} 
+                  <Button
+                    onClick={handleSearch}
                     className="flex-1 min-w-[200px] h-14 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold hover:shadow-xl hover:scale-105 transition-all"
                   >
                     🔍 Filtrele
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={handleReset}
                     className="h-14 px-10 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-bold hover:border-rose-400 hover:bg-rose-50 transition-all"
                   >

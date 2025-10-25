@@ -1,6 +1,6 @@
-import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { getToken } from "next-auth/jwt"
 
 /**
  * Middleware - Auth kontrolü
@@ -8,9 +8,15 @@ import type { NextRequest } from "next/server"
  * 
  * NOT: Bakım modu kontrolü layout.tsx'te yapılıyor
  * çünkü Edge Runtime'da Prisma desteklenmiyor
+ * 
+ * Edge Runtime uyumlu olması için getToken kullanıyoruz
  */
 export async function middleware(request: NextRequest) {
-  const session = await auth()
+  const token = await getToken({ 
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET 
+  })
+  
   const { pathname } = request.nextUrl
 
   // Auth kontrolü - korumalı sayfalar için
@@ -19,14 +25,14 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith(path)
   )
 
-  if (isProtectedPath && !session) {
+  if (isProtectedPath && !token) {
     const loginUrl = new URL("/login", request.url)
     loginUrl.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(loginUrl)
   }
 
   // Admin sayfaları için admin kontrolü
-  if (pathname.startsWith("/admin") && session?.user?.role !== "ADMIN") {
+  if (pathname.startsWith("/admin") && token?.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", request.url))
   }
 

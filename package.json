@@ -11,7 +11,9 @@
     "db:seed:gamification": "tsx prisma/seed-gamification.ts",
     "db:seed:polls": "tsx prisma/seed-polls.ts",
     "db:seed:foods": "tsx prisma/seed-foods.ts",
-    "db:seed:foods-mega": "tsx prisma/seed-foods-mega.ts"
+    "db:seed:foods-mega": "tsx prisma/seed-foods-mega.ts",
+    "lighthouse": "lighthouse https://zayiflamaplanim.com --view",
+    "lighthouse:mobile": "lighthouse https://zayiflamaplanim.com --preset=perf --view"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -49,6 +51,7 @@
     "tailwind-merge": "^3.3.1",
     "uploadthing": "^7.7.4",
     "web-push": "^3.6.7",
+    "web-vitals": "^4.2.4",
     "zod": "^4.1.12"
   },
   "devDependencies": {

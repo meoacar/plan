@@ -9,6 +9,7 @@ import { CrisisButton } from "@/components/crisis-button";
 import { prisma } from "@/lib/prisma";
 import { Logo } from "@/components/logo";
 import NextTopLoader from 'nextjs-toploader';
+import { WebVitalsReporter } from "@/components/web-vitals-reporter";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -119,6 +120,7 @@ export default async function RootLayout({
           shadow="0 0 10px #9333ea,0 0 5px #9333ea"
         />
         <Providers>
+          <WebVitalsReporter />
           <MaintenanceChecker />
           <StreakTracker />
           <CrisisButton />

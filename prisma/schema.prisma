@@ -459,16 +459,21 @@ model CollectionPlan {
 }
 
 model Follow {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   followerId  String
   followingId String
-  createdAt   DateTime @default(now())
-  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
-  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  status      FollowStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  acceptedAt  DateTime?
+  rejectedAt  DateTime?
+  follower    User         @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User         @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
   @@index([followerId])
   @@index([followingId])
+  @@index([status])
+  @@index([followingId, status])
 }
 
 model SeoSettings {
@@ -1161,8 +1166,16 @@ enum ChallengeType {
   PLAN_SHARE
 }
 
+enum FollowStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 enum NotificationType {
   NEW_FOLLOWER
+  FOLLOW_REQUEST
+  FOLLOW_ACCEPTED
   COMMENT
   LIKE
   BADGE_EARNED
@@ -1170,8 +1183,12 @@ enum NotificationType {
   PARTNER_ACCEPTED
   RECIPE_APPROVED
   RECIPE_REJECTED
+  RECIPE_COMMENT
+  RECIPE_LIKE
   PLAN_APPROVED
   PLAN_REJECTED
+  PLAN_COMMENT
+  PLAN_LIKE
   GROUP_INVITE
   CHALLENGE_INVITE
   WALL_POST

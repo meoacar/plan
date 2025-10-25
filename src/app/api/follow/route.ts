@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { createNotification } from '@/lib/notifications';
 
-// POST /api/follow - Kullanıcıyı takip et
+// POST /api/follow - Takip isteği gönder
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Zaten takip ediliyor mu kontrol et
+    // Zaten bir istek var mı kontrol et
     const existingFollow = await prisma.follow.findUnique({
       where: {
         followerId_followingId: {
@@ -44,14 +44,19 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingFollow) {
-      return NextResponse.json({ error: 'Already following', message: 'Zaten takip ediyorsunuz' }, { status: 400 });
+      if (existingFollow.status === 'ACCEPTED') {
+        return NextResponse.json({ error: 'Already following', message: 'Zaten takip ediyorsunuz' }, { status: 400 });
+      } else if (existingFollow.status === 'PENDING') {
+        return NextResponse.json({ error: 'Request pending', message: 'İstek beklemede' }, { status: 400 });
+      }
     }
 
-    // Takip et
+    // Takip isteği oluştur
     const follow = await prisma.follow.create({
       data: {
         followerId: session.user.id,
         followingId: followingId,
+        status: 'PENDING',
       },
     });
 
@@ -59,18 +64,23 @@ export async function POST(req: NextRequest) {
     try {
       await createNotification({
         userId: followingId,
-        type: 'NEW_FOLLOWER',
-        title: 'Yeni Takipçi',
-        message: `${session.user.name} sizi takip etmeye başladı`,
+        type: 'FOLLOW_REQUEST',
+        title: 'Yeni Takip İsteği',
+        message: `${session.user.name} sizi takip etmek istiyor`,
         actionUrl: `/profile/${session.user.id}`,
         actorId: session.user.id,
+        relatedId: follow.id,
       });
     } catch (notifError) {
       console.error('Notification error:', notifError);
-      // Bildirim hatası takip işlemini engellemez
     }
 
-    return NextResponse.json({ success: true, follow, message: 'Takip edildi' });
+    return NextResponse.json({ 
+      success: true, 
+      follow, 
+      message: 'Takip isteği gönderildi',
+      status: 'PENDING'
+    });
   } catch (error) {
     console.error('Follow error:', error);
     return NextResponse.json({ error: 'Internal server error', message: 'Bir hata oluştu' }, { status: 500 });

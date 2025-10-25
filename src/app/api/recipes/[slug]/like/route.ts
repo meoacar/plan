@@ -15,6 +15,7 @@ export async function POST(
 
     const recipe = await prisma.recipe.findUnique({
       where: { slug: params.slug },
+      select: { id: true, userId: true, title: true, slug: true },
     });
 
     if (!recipe) {
@@ -50,6 +51,22 @@ export async function POST(
       if (recipe.userId !== session.user.id) {
         await addXP(recipe.userId, XP_REWARDS.RECIPE_LIKE_RECEIVED, "Tarif beğenisi aldı");
         await checkRecipeBadges(recipe.userId);
+
+        // Bildirim gönder
+        try {
+          const { createNotification } = await import('@/lib/notifications');
+          await createNotification({
+            userId: recipe.userId,
+            type: 'RECIPE_LIKE',
+            title: 'Tarifiniz Beğenildi',
+            message: `${session.user.name} "${recipe.title}" tarifinizi beğendi`,
+            actionUrl: `/tarifler/${recipe.slug}`,
+            actorId: session.user.id,
+            relatedId: recipe.id,
+          });
+        } catch (notifError) {
+          console.error('Notification error:', notifError);
+        }
       }
 
       return NextResponse.json({ liked: true });

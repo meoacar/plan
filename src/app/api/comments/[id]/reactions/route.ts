@@ -32,6 +32,14 @@ export async function POST(
     // Yorum var mı kontrol et
     const comment = await prisma.comment.findUnique({
       where: { id },
+      include: {
+        user: {
+          select: { id: true, name: true },
+        },
+        plan: {
+          select: { slug: true, title: true },
+        },
+      },
     })
 
     if (!comment) {
@@ -72,6 +80,24 @@ export async function POST(
           emoji,
         },
       })
+
+      // Yorum sahibine bildirim gönder (kendi yorumuna reaksiyon vermiyorsa)
+      if (comment.userId !== session.user.id) {
+        try {
+          const { createNotification } = await import('@/lib/notifications');
+          await createNotification({
+            userId: comment.userId,
+            type: 'COMMENT_REACTION',
+            title: 'Yorumunuza Reaksiyon',
+            message: `${session.user.name} yorumunuza ${emoji} reaksiyonu verdi`,
+            actionUrl: `/plan/${comment.plan.slug}#comments`,
+            actorId: session.user.id,
+            relatedId: id,
+          });
+        } catch (notifError) {
+          console.error('Notification error:', notifError);
+        }
+      }
 
       return NextResponse.json({ 
         success: true, 

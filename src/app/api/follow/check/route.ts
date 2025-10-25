@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/follow/check?userId=xxx - Kullanıcıyı takip ediyor mu kontrol et
+// GET /api/follow/check?userId=xxx - Takip durumunu kontrol et
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ isFollowing: false });
+      return NextResponse.json({ 
+        isFollowing: false, 
+        status: null,
+        followId: null 
+      });
     }
 
     const { searchParams } = new URL(req.url);
@@ -26,7 +30,13 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ isFollowing: !!follow });
+    return NextResponse.json({ 
+      isFollowing: follow?.status === 'ACCEPTED',
+      status: follow?.status || null,
+      followId: follow?.id || null,
+      isPending: follow?.status === 'PENDING',
+      isRejected: follow?.status === 'REJECTED',
+    });
   } catch (error) {
     console.error('Check follow error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

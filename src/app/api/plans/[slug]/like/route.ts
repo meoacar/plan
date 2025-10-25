@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { addXP, checkBadges, XP_REWARDS } from "@/lib/gamification"
+import { createNotification } from "@/lib/notifications"
 
 export async function POST(
   req: Request,
@@ -22,7 +23,7 @@ export async function POST(
     // Slug'dan plan ID'sini bul
     const plan = await prisma.plan.findUnique({
       where: { slug },
-      select: { id: true, userId: true }
+      select: { id: true, userId: true, title: true }
     })
 
     if (!plan) {
@@ -61,6 +62,21 @@ export async function POST(
       if (plan.userId !== session.user.id) {
         await addXP(plan.userId, XP_REWARDS.LIKE_RECEIVED, "Plan beğeni aldı");
         await checkBadges(plan.userId);
+
+        // Bildirim gönder
+        try {
+          await createNotification({
+            userId: plan.userId,
+            type: 'PLAN_LIKE',
+            title: 'Planınız Beğenildi',
+            message: `${session.user.name} "${plan.title}" planınızı beğendi`,
+            actionUrl: `/plan/${slug}`,
+            actorId: session.user.id,
+            relatedId: plan.id,
+          });
+        } catch (notifError) {
+          console.error('Notification error:', notifError);
+        }
       }
 
       return NextResponse.json({ liked: true })

@@ -75,8 +75,14 @@ function shouldSendInApp(type: NotificationType, preferences: any): boolean {
 
   const mapping: Record<NotificationType, keyof typeof preferences> = {
     NEW_FOLLOWER: 'inAppNewFollower',
+    FOLLOW_REQUEST: 'inAppNewFollower',
+    FOLLOW_ACCEPTED: 'inAppNewFollower',
     COMMENT: 'inAppComment',
+    PLAN_COMMENT: 'inAppComment',
+    RECIPE_COMMENT: 'inAppComment',
     LIKE: 'inAppLike',
+    PLAN_LIKE: 'inAppLike',
+    RECIPE_LIKE: 'inAppLike',
     BADGE_EARNED: 'inAppBadge',
     PARTNER_REQUEST: 'inAppPartnerRequest',
     PARTNER_ACCEPTED: 'inAppPartnerRequest',
@@ -101,8 +107,14 @@ function shouldSendPushNotification(type: NotificationType, preferences: any): b
 
   const mapping: Record<NotificationType, keyof typeof preferences> = {
     NEW_FOLLOWER: 'pushNewFollower',
+    FOLLOW_REQUEST: 'pushNewFollower',
+    FOLLOW_ACCEPTED: 'pushNewFollower',
     COMMENT: 'pushComment',
+    PLAN_COMMENT: 'pushComment',
+    RECIPE_COMMENT: 'pushComment',
     LIKE: 'pushLike',
+    PLAN_LIKE: 'pushLike',
+    RECIPE_LIKE: 'pushLike',
     BADGE_EARNED: 'pushBadge',
     PARTNER_REQUEST: 'pushPartnerRequest',
     PARTNER_ACCEPTED: 'pushPartnerRequest',
@@ -127,8 +139,14 @@ function shouldSendEmailNotification(type: NotificationType, preferences: any): 
 
   const mapping: Record<NotificationType, keyof typeof preferences> = {
     NEW_FOLLOWER: 'emailNewFollower',
+    FOLLOW_REQUEST: 'emailNewFollower',
+    FOLLOW_ACCEPTED: 'emailNewFollower',
     COMMENT: 'emailComment',
+    PLAN_COMMENT: 'emailComment',
+    RECIPE_COMMENT: 'emailComment',
     LIKE: 'emailLike',
+    PLAN_LIKE: 'emailLike',
+    RECIPE_LIKE: 'emailLike',
     BADGE_EARNED: 'emailBadge',
     PARTNER_REQUEST: 'emailPartnerRequest',
     PARTNER_ACCEPTED: 'emailPartnerRequest',

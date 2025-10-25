@@ -71,6 +71,8 @@ export async function POST(req: Request) {
         plan: {
           select: {
             userId: true,
+            title: true,
+            slug: true,
           }
         }
       }
@@ -83,6 +85,22 @@ export async function POST(req: Request) {
     // Gamification: Plan sahibine XP
     if (comment.plan.userId !== session.user.id) {
       await addXP(comment.plan.userId, XP_REWARDS.COMMENT_RECEIVED, "Plana yorum yapıldı");
+
+      // Bildirim gönder
+      try {
+        const { createNotification } = await import('@/lib/notifications');
+        await createNotification({
+          userId: comment.plan.userId,
+          type: 'PLAN_COMMENT',
+          title: 'Planınıza Yorum Yapıldı',
+          message: `${session.user.name} "${comment.plan.title}" planınıza yorum yaptı`,
+          actionUrl: `/plan/${comment.plan.slug}#comments`,
+          actorId: session.user.id,
+          relatedId: comment.id,
+        });
+      } catch (notifError) {
+        console.error('Notification error:', notifError);
+      }
     }
 
     return NextResponse.json({ comment })

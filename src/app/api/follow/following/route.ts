@@ -32,7 +32,10 @@ export async function GET(req: NextRequest) {
 
     const [following, total] = await Promise.all([
       prisma.follow.findMany({
-        where: { followerId: user.id },
+        where: { 
+          followerId: user.id,
+          status: 'ACCEPTED', // Sadece kabul edilmiş takipler
+        },
         include: {
           following: {
             select: {
@@ -57,7 +60,10 @@ export async function GET(req: NextRequest) {
         take: limit,
       }),
       prisma.follow.count({
-        where: { followerId: user.id },
+        where: { 
+          followerId: user.id,
+          status: 'ACCEPTED',
+        },
       }),
     ]);
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { Check, CheckCheck, Trash2, Loader2 } from 'lucide-react';
+import { Check, CheckCheck, Trash2, Loader2, UserPlus, Heart, MessageCircle, Award, X } from 'lucide-react';
 import Link from 'next/link';
 
 interface Notification {
@@ -14,6 +14,8 @@ interface Notification {
   actionUrl: string | null;
   isRead: boolean;
   createdAt: string;
+  relatedId: string | null;
+  metadata: any;
 }
 
 export function NotificationsList() {
@@ -92,6 +94,46 @@ export function NotificationsList() {
     }
   }
 
+  async function handleFollowRequest(followId: string, action: 'accept' | 'reject', notificationId: string) {
+    try {
+      const response = await fetch('/api/follow/request', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ followId, action }),
+      });
+
+      if (response.ok) {
+        // Bildirimi sil
+        deleteNotification(notificationId);
+      }
+    } catch (error) {
+      console.error('Failed to handle follow request:', error);
+    }
+  }
+
+  function getNotificationIcon(type: string) {
+    switch (type) {
+      case 'FOLLOW_REQUEST':
+      case 'FOLLOW_ACCEPTED':
+      case 'NEW_FOLLOWER':
+        return <UserPlus className="w-5 h-5 text-purple-600" />;
+      case 'PLAN_LIKE':
+      case 'RECIPE_LIKE':
+      case 'LIKE':
+        return <Heart className="w-5 h-5 text-red-600" />;
+      case 'PLAN_COMMENT':
+      case 'RECIPE_COMMENT':
+      case 'COMMENT':
+      case 'COMMENT_REACTION':
+        return <MessageCircle className="w-5 h-5 text-blue-600" />;
+      case 'BADGE_EARNED':
+      case 'LEVEL_UP':
+        return <Award className="w-5 h-5 text-yellow-600" />;
+      default:
+        return <Check className="w-5 h-5 text-gray-600" />;
+    }
+  }
+
   function loadMore() {
     if (page < totalPages) {
       setPage((prev) => prev + 1);
@@ -136,6 +178,11 @@ export function NotificationsList() {
               }`}
             >
               <div className="flex items-start gap-4">
+                {/* Icon */}
+                <div className="flex-shrink-0 mt-1">
+                  {getNotificationIcon(notification.type)}
+                </div>
+
                 <div className="flex-1 min-w-0">
                   {notification.actionUrl ? (
                     <Link
@@ -171,6 +218,26 @@ export function NotificationsList() {
                         })}
                       </p>
                     </>
+                  )}
+
+                  {/* Takip isteği için özel butonlar */}
+                  {notification.type === 'FOLLOW_REQUEST' && notification.relatedId && (
+                    <div className="flex gap-2 mt-3">
+                      <button
+                        onClick={() => handleFollowRequest(notification.relatedId!, 'accept', notification.id)}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors"
+                      >
+                        <Check className="w-4 h-4" />
+                        Kabul Et
+                      </button>
+                      <button
+                        onClick={() => handleFollowRequest(notification.relatedId!, 'reject', notification.id)}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                        Reddet
+                      </button>
+                    </div>
                   )}
                 </div>
 

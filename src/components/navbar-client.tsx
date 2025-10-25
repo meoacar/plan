@@ -283,6 +283,14 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                       <Users className="w-4 h-4" />
                       <span>Takip Edilenler</span>
                     </Link>
+                    <Link
+                      href="/takip-istekleri"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                    >
+                      <User className="w-4 h-4" />
+                      <span>Takip İstekleri</span>
+                    </Link>
                     {session.user?.role === "ADMIN" && (
                       <Link
                         href="/admin"

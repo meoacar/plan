@@ -12,27 +12,18 @@ import { getToken } from "next-auth/jwt"
  * Edge Runtime uyumlu olması için getToken kullanıyoruz
  */
 export async function middleware(request: NextRequest) {
-  // Debug: Cookie'leri kontrol et
-  const cookies = request.cookies.getAll()
-  console.log("Cookies:", cookies.map(c => c.name))
-  
   const token = await getToken({ 
     req: request,
-    secret: process.env.NEXTAUTH_SECRET 
+    secret: process.env.NEXTAUTH_SECRET,
+    secureCookie: process.env.NODE_ENV === "production",
+    cookieName: process.env.NODE_ENV === "production" 
+      ? "__Secure-authjs.session-token" 
+      : "authjs.session-token"
   })
   
   const { pathname } = request.nextUrl
 
-  // Debug için log (production'da kaldırılabilir)
-  if (pathname.startsWith("/admin")) {
-    console.log("Admin access attempt:", {
-      pathname,
-      hasToken: !!token,
-      role: token?.role,
-      tokenKeys: token ? Object.keys(token) : [],
-      hasCookies: cookies.length
-    })
-  }
+
 
   // Auth kontrolü - korumalı sayfalar için
   const protectedPaths = ["/submit", "/admin", "/profile/edit"]

@@ -19,6 +19,16 @@ export async function middleware(request: NextRequest) {
   
   const { pathname } = request.nextUrl
 
+  // Debug için log (production'da kaldırılabilir)
+  if (pathname.startsWith("/admin")) {
+    console.log("Admin access attempt:", {
+      pathname,
+      hasToken: !!token,
+      role: token?.role,
+      tokenKeys: token ? Object.keys(token) : []
+    })
+  }
+
   // Auth kontrolü - korumalı sayfalar için
   const protectedPaths = ["/submit", "/admin", "/profile/edit"]
   const isProtectedPath = protectedPaths.some((path) =>
@@ -33,6 +43,7 @@ export async function middleware(request: NextRequest) {
 
   // Admin sayfaları için admin kontrolü
   if (pathname.startsWith("/admin") && token?.role !== "ADMIN") {
+    console.log("Admin access denied - redirecting to home")
     return NextResponse.redirect(new URL("/", request.url))
   }
 

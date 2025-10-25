@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Auth kontrolü - korumalı sayfalar için
-  const protectedPaths = ["/submit", "/admin", "/profile"]
+  const protectedPaths = ["/submit", "/admin", "/profile/edit"]
   const isProtectedPath = protectedPaths.some((path) =>
     pathname.startsWith(path)
   )

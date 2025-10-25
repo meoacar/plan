@@ -14,6 +14,7 @@ import { PdfExportButton } from "./pdf-export-button"
 import { VideoEmbed } from "./video-embed"
 import { CommentReactions } from "./comment-reactions"
 import { ShoppingList } from "./shopping-list"
+import { PlanReactions } from "./plan-reactions"
 
 interface PlanDetailProps {
   plan: any
@@ -420,34 +421,57 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
               )}
 
               {/* Interaction Buttons */}
-              <div className="flex flex-wrap items-center gap-4">
-                <button
-                  onClick={handleLike}
-                  className={`group flex items-center gap-3 px-6 py-3 rounded-xl font-bold text-lg transition-all shadow-lg ${liked
-                    ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-red-500/30 scale-105"
-                    : "bg-gray-800/50 text-gray-300 border border-gray-700 hover:border-red-500/50 hover:bg-gray-800"
-                    }`}
-                >
-                  <Heart className={`w-6 h-6 ${liked ? "fill-current animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
-                  <span>{likeCount}</span>
-                </button>
-                <FavoriteButton planId={plan.id} showLabel />
-                {session && <AddToCollectionButton planId={plan.id} />}
-                <PdfExportButton slug={plan.slug} title={plan.title} />
-                <div className="flex items-center gap-3 px-6 py-3 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-xl font-bold text-lg">
-                  <Eye className="w-6 h-6" />
-                  <span>{plan.views}</span>
+              <div className="space-y-6">
+                {/* Hızlı Reaksiyon Butonları */}
+                <div className="relative">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-lg opacity-20" />
+                  <div className="relative bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xl p-6 rounded-2xl border border-purple-500/30">
+                    <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                      <span className="text-xl">💫</span>
+                      Bu plana nasıl tepki vermek istersin?
+                    </h4>
+                    <PlanReactions
+                      planId={plan.id}
+                      planSlug={plan.slug}
+                      initialReactions={plan.reactions?.map((r: any) => ({
+                        emoji: r.emoji,
+                        userId: r.userId,
+                        user: r.user
+                      })) || []}
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 px-6 py-3 bg-green-500/20 border border-green-500/30 text-green-300 rounded-xl font-bold text-lg">
-                  <MessageCircle className="w-6 h-6" />
-                  <span>{comments.length}</span>
-                </div>
-                <div className="ml-auto">
-                  <ShareButtons
-                    title={plan.title}
-                    url={`/plan/${plan.slug}`}
-                    description={`${plan.startWeight}kg → ${plan.goalWeight}kg | ${plan.durationText} | ${plan.routine.substring(0, 100)}...`}
-                  />
+
+                {/* Diğer Etkileşim Butonları */}
+                <div className="flex flex-wrap items-center gap-4">
+                  <button
+                    onClick={handleLike}
+                    className={`group flex items-center gap-3 px-6 py-3 rounded-xl font-bold text-lg transition-all shadow-lg ${liked
+                      ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-red-500/30 scale-105"
+                      : "bg-gray-800/50 text-gray-300 border border-gray-700 hover:border-red-500/50 hover:bg-gray-800"
+                      }`}
+                  >
+                    <Heart className={`w-6 h-6 ${liked ? "fill-current animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
+                    <span>{likeCount}</span>
+                  </button>
+                  <FavoriteButton planId={plan.id} showLabel />
+                  {session && <AddToCollectionButton planId={plan.id} />}
+                  <PdfExportButton slug={plan.slug} title={plan.title} />
+                  <div className="flex items-center gap-3 px-6 py-3 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-xl font-bold text-lg">
+                    <Eye className="w-6 h-6" />
+                    <span>{plan.views}</span>
+                  </div>
+                  <div className="flex items-center gap-3 px-6 py-3 bg-green-500/20 border border-green-500/30 text-green-300 rounded-xl font-bold text-lg">
+                    <MessageCircle className="w-6 h-6" />
+                    <span>{comments.length}</span>
+                  </div>
+                  <div className="ml-auto">
+                    <ShareButtons
+                      title={plan.title}
+                      url={`/plan/${plan.slug}`}
+                      description={`${plan.startWeight}kg → ${plan.goalWeight}kg | ${plan.durationText} | ${plan.routine.substring(0, 100)}...`}
+                    />
+                  </div>
                 </div>
               </div>
 

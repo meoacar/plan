@@ -462,10 +462,10 @@ model Follow {
   id          String       @id @default(cuid())
   followerId  String
   followingId String
-  status      FollowStatus @default(PENDING)
   createdAt   DateTime     @default(now())
   acceptedAt  DateTime?
   rejectedAt  DateTime?
+  status      FollowStatus @default(PENDING)
   follower    User         @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
   following   User         @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
 
@@ -1025,6 +1025,23 @@ model PushSubscription {
   @@index([userId])
 }
 
+model WebVitals {
+  id             String   @id @default(cuid())
+  metricName     String
+  value          Int
+  rating         String
+  delta          Int
+  metricId       String
+  navigationType String?
+  userAgent      String
+  url            String
+  createdAt      DateTime @default(now())
+
+  @@index([metricName])
+  @@index([createdAt])
+  @@index([rating])
+}
+
 enum PlanStatus {
   PENDING
   APPROVED
@@ -1174,8 +1191,6 @@ enum FollowStatus {
 
 enum NotificationType {
   NEW_FOLLOWER
-  FOLLOW_REQUEST
-  FOLLOW_ACCEPTED
   COMMENT
   LIKE
   BADGE_EARNED
@@ -1183,33 +1198,18 @@ enum NotificationType {
   PARTNER_ACCEPTED
   RECIPE_APPROVED
   RECIPE_REJECTED
-  RECIPE_COMMENT
-  RECIPE_LIKE
   PLAN_APPROVED
   PLAN_REJECTED
-  PLAN_COMMENT
-  PLAN_LIKE
   GROUP_INVITE
   CHALLENGE_INVITE
   WALL_POST
   MENTION
   LEVEL_UP
   COMMENT_REACTION
-}
-
-model WebVitals {
-  id             String   @id @default(cuid())
-  metricName     String
-  value          Int
-  rating         String
-  delta          Int
-  metricId       String
-  navigationType String?
-  userAgent      String
-  url            String
-  createdAt      DateTime @default(now())
-
-  @@index([metricName])
-  @@index([createdAt])
-  @@index([rating])
+  FOLLOW_REQUEST
+  FOLLOW_ACCEPTED
+  RECIPE_COMMENT
+  RECIPE_LIKE
+  PLAN_COMMENT
+  PLAN_LIKE
 }

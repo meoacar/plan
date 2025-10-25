@@ -4,11 +4,11 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 
 const EMOJIS = [
-  { emoji: "💪", label: "Güçlü" },
-  { emoji: "🔥", label: "Harika" },
-  { emoji: "👏", label: "Alkış" },
-  { emoji: "❤️", label: "Sevdim" },
-  { emoji: "😊", label: "Mutlu" },
+  { emoji: "💪", label: "Destekle", color: "from-blue-500 to-cyan-500" },
+  { emoji: "🎉", label: "Tebrik et", color: "from-yellow-500 to-orange-500" },
+  { emoji: "❤️", label: "Sevdim", color: "from-red-500 to-pink-500" },
+  { emoji: "🔥", label: "Harika", color: "from-orange-500 to-red-500" },
+  { emoji: "👏", label: "Alkış", color: "from-purple-500 to-pink-500" },
 ]
 
 interface CommentReactionsProps {
@@ -96,7 +96,7 @@ export function CommentReactions({ commentId, initialReactions = [] }: CommentRe
 
   return (
     <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-700/50">
-      {EMOJIS.map(({ emoji, label }) => {
+      {EMOJIS.map(({ emoji, label, color }) => {
         const count = reactions[emoji] || 0
         const isActive = userReactions.has(emoji)
         const hasReactions = count > 0
@@ -109,29 +109,30 @@ export function CommentReactions({ commentId, initialReactions = [] }: CommentRe
             title={label}
             className={`
               group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full 
-              transition-all duration-200 font-semibold text-sm
+              transition-all duration-300 font-bold text-sm
               ${isActive
-                ? "bg-gradient-to-r from-purple-500/30 to-pink-500/30 border-2 border-purple-500/50 scale-105 shadow-lg shadow-purple-500/20"
+                ? `bg-gradient-to-r ${color} text-white scale-105 shadow-lg`
                 : hasReactions
-                  ? "bg-gray-700/50 border border-gray-600 hover:border-purple-500/50 hover:bg-gray-700"
-                  : "bg-gray-800/30 border border-gray-700/50 hover:border-gray-600 hover:bg-gray-800/50"
+                  ? "bg-gray-700/50 border border-gray-600 text-gray-300 hover:border-gray-500 hover:bg-gray-700"
+                  : "bg-gray-800/30 border border-gray-700/50 text-gray-400 hover:border-gray-600 hover:bg-gray-800/50"
               }
               disabled:opacity-50 disabled:cursor-not-allowed
               hover:scale-105
             `}
           >
-            <span className={`text-lg transition-transform ${isActive ? "animate-bounce" : "group-hover:scale-110"}`}>
+            <span className={`text-base transition-transform ${isActive ? "animate-bounce" : "group-hover:scale-125"}`}>
               {emoji}
             </span>
             {hasReactions && (
-              <span className={`text-xs font-bold ${isActive ? "text-purple-300" : "text-gray-400"}`}>
+              <span className={`text-xs font-bold ${isActive ? "text-white" : "text-gray-400"}`}>
                 {count}
               </span>
             )}
             
             {/* Tooltip */}
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-              {label}
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl border border-gray-700 z-10">
+              {isActive ? `${label} verdin` : label}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900" />
             </span>
           </button>
         )

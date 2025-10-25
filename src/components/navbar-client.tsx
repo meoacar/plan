@@ -50,9 +50,10 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 text-xl md:text-2xl font-bold text-[#2d7a4a] hover:text-[#236038] transition-all hover:scale-105 group">
-            <Logo size={40} className="transition-transform group-hover:rotate-12" />
-            <span className="hidden sm:inline bg-gradient-to-r from-[#2d7a4a] to-[#4caf50] bg-clip-text text-transparent">
+          <Link href="/" className="flex items-center gap-2 md:gap-3 text-base sm:text-xl md:text-2xl font-bold text-[#2d7a4a] hover:text-[#236038] transition-all hover:scale-105 group">
+            <Logo size={32} className="sm:hidden transition-transform group-hover:rotate-12" />
+            <Logo size={40} className="hidden sm:block transition-transform group-hover:rotate-12" />
+            <span className="bg-gradient-to-r from-[#2d7a4a] to-[#4caf50] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none">
               {siteTitle}
             </span>
           </Link>
@@ -101,7 +102,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                 Özellikler
                 <ChevronDown className={`w-4 h-4 transition-transform ${featuresMenuOpen ? 'rotate-180' : ''}`} />
               </button>
-              
+
               {featuresMenuOpen && (
                 <div className="absolute top-full mt-2 right-0 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                   {/* Dynamic Navbar Pages */}
@@ -245,9 +246,9 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                 >
                   <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center text-white font-bold text-sm shadow-md">
                     {session.user?.image ? (
-                      <img 
-                        src={session.user.image} 
-                        alt={session.user.name || "Profil"} 
+                      <img
+                        src={session.user.image}
+                        alt={session.user.name || "Profil"}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -340,64 +341,95 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
-            <div className="flex flex-col gap-3">
+          <div className="md:hidden py-4 border-t border-gray-200 max-h-[calc(100vh-80px)] overflow-y-auto">
+            <div className="flex flex-col gap-2">
+              {/* Giriş Yap Butonu - En Üstte */}
+              {status === "loading" ? (
+                <div className="px-4 py-2">
+                  <div className="w-full h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                </div>
+              ) : !session ? (
+                <div className="px-4 pb-3 mb-2 border-b border-gray-200">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Button className="w-full h-12 flex items-center justify-center gap-2 text-base font-bold">
+                      <User className="w-5 h-5" />
+                      Giriş Yap
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="px-4 pb-3 mb-2 border-b border-gray-200">
+                  <Link
+                    href={`/profile/${session.user?.username || session.user?.id}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-[#2d7a4a]/10 to-[#4caf50]/10 hover:from-[#2d7a4a]/20 hover:to-[#4caf50]/20 transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
+                      {session.user?.image ? (
+                        <img
+                          src={session.user.image}
+                          alt={session.user.name || "Profil"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-lg">{session.user?.name?.[0]?.toUpperCase() || "?"}</span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-gray-900 truncate">
+                        {session.user?.name || "Kullanıcı"}
+                      </p>
+                      <p className="text-xs text-gray-600">Profili Görüntüle →</p>
+                    </div>
+                  </Link>
+                </div>
+              )}
+
+              {/* Ana Menü Öğeleri */}
               <Link
                 href="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/"
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/"
                   ? "bg-[#2d7a4a] text-white"
                   : "text-gray-700 hover:bg-gray-100"
                   }`}
               >
-                Ana Sayfa
+                🏠 Ana Sayfa
               </Link>
               <Link
                 href="/submit"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/submit"
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/submit"
                   ? "bg-[#2d7a4a] text-white"
                   : "text-gray-700 hover:bg-gray-100"
                   }`}
               >
-                Plan Ekle
+                ➕ Plan Ekle
               </Link>
-              <Link
-                href="/polls"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/polls"
-                  ? "bg-[#2d7a4a] text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-                  }`}
-              >
-                📊 Anketler
-              </Link>
-              <Link
-                href="/recipes"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/recipes"
-                  ? "bg-[#2d7a4a] text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-                  }`}
-              >
-                🍽️ Sağlıklı Tarifler
-              </Link>
+
+              {/* Sadece Giriş Yapanlar İçin */}
               {session && (
                 <>
+                  <div className="px-4 py-2 mt-2">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Özellikler</p>
+                  </div>
                   <Link
-                    href="/recipes/my-recipes"
+                    href="/recipes"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/recipes/my-recipes"
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/recipes"
                       ? "bg-[#2d7a4a] text-white"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
                   >
-                    📖 Tariflerim
+                    🍽️ Tarifler
                   </Link>
                   <Link
                     href="/collections"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/collections"
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/collections"
                       ? "bg-[#2d7a4a] text-white"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
@@ -407,7 +439,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   <Link
                     href="/progress"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/progress"
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/progress"
                       ? "bg-[#2d7a4a] text-white"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
@@ -415,29 +447,19 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                     📸 Galeri
                   </Link>
                   <Link
-                    href="/gamification"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/gamification"
-                      ? "bg-[#2d7a4a] text-white"
-                      : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                  >
-                    🎮 Gamification
-                  </Link>
-                  <Link
                     href="/analytics"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/analytics"
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/analytics"
                       ? "bg-[#2d7a4a] text-white"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
                   >
-                    📊 İlerleme Takibi
+                    📊 İlerleme
                   </Link>
                   <Link
                     href="/calories"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/calories"
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/calories"
                       ? "bg-[#2d7a4a] text-white"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
@@ -445,112 +467,57 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                     🍽️ Kalori Takibi
                   </Link>
                   <Link
-                    href="/partnerships"
+                    href="/gamification"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/partnerships"
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/gamification"
                       ? "bg-[#2d7a4a] text-white"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
                   >
-                    🤝 Partnerler
+                    🏆 Rozetler
                   </Link>
-                  <div className="border-t border-gray-200 my-2"></div>
                   <Link
                     href="/groups"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/groups"
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/groups"
                       ? "bg-[#2d7a4a] text-white"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
                   >
                     👥 Gruplar
                   </Link>
-                  <Link
-                    href="/challenges"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/challenges"
-                      ? "bg-[#2d7a4a] text-white"
-                      : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                  >
-                    🏆 Challenge'lar
-                  </Link>
-                  <Link
-                    href="/friend-suggestions"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname === "/friend-suggestions"
-                      ? "bg-[#2d7a4a] text-white"
-                      : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                  >
-                    🦋 Arkadaş Önerileri
-                  </Link>
-                </>
-              )}
 
-              {status === "loading" ? (
-                <div className="px-4 py-2">
-                  <div className="w-full h-9 bg-gray-200 rounded-lg animate-pulse"></div>
-                </div>
-              ) : session ? (
-                <>
+                  {/* Admin */}
                   {session.user?.role === "ADMIN" && (
-                    <Link
-                      href="/admin"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-base font-medium transition-colors ${pathname.startsWith("/admin")
-                        ? "bg-[#2d7a4a] text-white"
-                        : "text-gray-700 hover:bg-gray-100"
-                        }`}
-                    >
-                      <Settings className="w-4 h-4" />
-                      Admin Panel
-                    </Link>
+                    <>
+                      <div className="border-t border-gray-200 my-2"></div>
+                      <Link
+                        href="/admin"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname.startsWith("/admin")
+                          ? "bg-[#2d7a4a] text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                      >
+                        <Settings className="w-4 h-4" />
+                        Admin Panel
+                      </Link>
+                    </>
                   )}
-                  <Link
-                    href={`/profile/${session.user?.username || session.user?.id}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center text-white font-bold shadow-md">
-                      {session.user?.image ? (
-                        <img 
-                          src={session.user.image} 
-                          alt={session.user.name || "Profil"} 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span>{session.user?.name?.[0]?.toUpperCase() || "?"}</span>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-gray-800">
-                        {session.user?.name || "Kullanıcı"}
-                      </p>
-                      <p className="text-xs text-gray-500">Profili Görüntüle</p>
-                    </div>
-                  </Link>
+
+                  {/* Çıkış */}
+                  <div className="border-t border-gray-200 my-2"></div>
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false)
                       signOut({ callbackUrl: "/" })
                     }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-base font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors w-full text-left"
                   >
                     <LogOut className="w-4 h-4" />
                     Çıkış Yap
                   </button>
                 </>
-              ) : (
-                <Link
-                  href="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Button className="w-full flex items-center justify-center gap-2">
-                    <User className="w-4 h-4" />
-                    Giriş Yap
-                  </Button>
-                </Link>
               )}
             </div>
           </div>

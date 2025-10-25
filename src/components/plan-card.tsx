@@ -58,7 +58,7 @@ export function PlanCard({ plan }: PlanCardProps) {
 
   return (
     <Link href={`/plan/${plan.slug}`} className="block h-full">
-      <article className="group relative h-full bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-purple-400 hover:-translate-y-2">
+      <article className="group relative h-full bg-white rounded-xl sm:rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-purple-400 hover:-translate-y-1">
         
         {/* Background Pattern */}
         <div className={`absolute inset-0 ${patterns[patternIndex]} opacity-100`}></div>
@@ -67,19 +67,19 @@ export function PlanCard({ plan }: PlanCardProps) {
         {/* Gradient Background Accent */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500"></div>
         
-        <div className="relative p-6">
+        <div className="relative p-3 sm:p-5">
           
           {/* Header - User Info */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3 gap-2">
             <div
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
                 router.push(`/profile/${plan.user.id}`)
               }}
-              className="flex items-center gap-3 cursor-pointer group/user flex-1 min-w-0"
+              className="flex items-center gap-2 cursor-pointer group/user flex-1 min-w-0"
             >
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold ring-2 ring-purple-100 group-hover/user:ring-purple-300 transition-all flex-shrink-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-purple-100 group-hover/user:ring-purple-300 transition-all flex-shrink-0">
                 {plan.user.image ? (
                   <img 
                     src={plan.user.image} 
@@ -91,14 +91,14 @@ export function PlanCard({ plan }: PlanCardProps) {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-gray-900 group-hover/user:text-purple-600 transition-colors truncate">
+                <p className="text-xs font-bold text-gray-900 group-hover/user:text-purple-600 transition-colors truncate">
                   {plan.user.name || "Anonim"}
                 </p>
-                <p className="text-xs text-gray-500 truncate">{plan.durationText}</p>
+                <p className="text-[10px] text-gray-500 truncate">{plan.durationText}</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-1.5 flex-shrink-0">
               {/* Follow Button */}
               {session?.user?.id && session.user.id !== plan.user.id && (
                 <div
@@ -112,52 +112,52 @@ export function PlanCard({ plan }: PlanCardProps) {
               )}
               
               {/* Views Badge */}
-              <div className="flex items-center gap-1 px-2 py-1 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
+              <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
                 <Eye className="w-3 h-3 text-gray-600" />
-                <span className="text-xs font-bold text-gray-700">{plan.views}</span>
+                <span className="text-[10px] font-bold text-gray-700">{plan.views}</span>
               </div>
             </div>
           </div>
 
           {/* Title */}
-          <h3 className="font-bold text-lg text-gray-900 line-clamp-2 mb-4 leading-tight group-hover:text-purple-600 transition-colors min-h-[56px]">
+          <h3 className="font-bold text-sm sm:text-base text-gray-900 line-clamp-2 mb-2.5 sm:mb-3 leading-snug group-hover:text-purple-600 transition-colors">
             {plan.title}
           </h3>
 
           {/* Main Stats - Business Card Style */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 mb-4 border border-purple-100 shadow-sm">
-            <div className="flex items-center justify-between">
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl p-2.5 sm:p-3 mb-2.5 sm:mb-3 border border-purple-100 shadow-sm">
+            <div className="flex items-center justify-around">
               
               {/* Weight Loss */}
-              <div className="text-center flex-1">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <TrendingDown className="w-5 h-5 text-purple-600" />
-                  <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-0.5 mb-0.5">
+                  <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600" />
+                  <span className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
                     {weightLoss}
                   </span>
-                  <span className="text-sm font-bold text-gray-600">kg</span>
+                  <span className="text-[10px] sm:text-xs font-bold text-gray-600">kg</span>
                 </div>
-                <p className="text-xs text-gray-500 font-medium">Verilen Kilo</p>
+                <p className="text-[9px] sm:text-[10px] text-gray-500 font-medium">Verilen Kilo</p>
               </div>
 
               {/* Divider */}
-              <div className="w-px h-12 bg-gradient-to-b from-transparent via-purple-200 to-transparent mx-3"></div>
+              <div className="w-px h-8 sm:h-10 bg-gradient-to-b from-transparent via-purple-200 to-transparent"></div>
 
               {/* Before/After */}
-              <div className="text-center flex-1">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <span className="text-xl font-black text-gray-700">{plan.startWeight}</span>
-                  <span className="text-gray-400">→</span>
-                  <span className="text-xl font-black text-emerald-600">{plan.goalWeight}</span>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 mb-0.5">
+                  <span className="text-base sm:text-lg font-black text-gray-700">{plan.startWeight}</span>
+                  <span className="text-gray-400 text-xs">→</span>
+                  <span className="text-base sm:text-lg font-black text-emerald-600">{plan.goalWeight}</span>
                 </div>
-                <p className="text-xs text-gray-500 font-medium">Başlangıç → Hedef</p>
+                <p className="text-[9px] sm:text-[10px] text-gray-500 font-medium">Başlangıç → Hedef</p>
               </div>
             </div>
           </div>
 
           {/* Image Preview - Optional */}
           {plan.imageUrl && (
-            <div className="relative h-32 rounded-lg overflow-hidden mb-4 bg-gradient-to-br from-purple-100 to-pink-100">
+            <div className="relative h-24 sm:h-28 rounded-lg overflow-hidden mb-2.5 sm:mb-3 bg-gradient-to-br from-purple-100 to-pink-100">
               <img
                 src={plan.imageUrl}
                 alt={plan.title}
@@ -167,21 +167,22 @@ export function PlanCard({ plan }: PlanCardProps) {
           )}
 
           {/* Footer Stats */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-200/50">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <Heart className="w-4 h-4 text-rose-500" />
-                <span className="text-sm font-bold text-gray-700">{plan._count.likes}</span>
+          <div className="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-gray-200/50">
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <div className="flex items-center gap-0.5">
+                <Heart className="w-3.5 h-3.5 text-rose-500" />
+                <span className="text-xs font-bold text-gray-700">{plan._count.likes}</span>
               </div>
-              <div className="flex items-center gap-1">
-                <MessageCircle className="w-4 h-4 text-emerald-500" />
-                <span className="text-sm font-bold text-gray-700">{plan._count.comments}</span>
+              <div className="flex items-center gap-0.5">
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-xs font-bold text-gray-700">{plan._count.comments}</span>
               </div>
             </div>
             
-            <div className="text-xs font-semibold text-purple-600 group-hover:text-purple-700 flex items-center gap-1">
-              Detayları Gör
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            <div className="text-[10px] sm:text-xs font-semibold text-purple-600 group-hover:text-purple-700 flex items-center gap-0.5">
+              <span className="hidden xs:inline sm:hidden md:inline">Detayları Gör</span>
+              <span className="xs:hidden sm:inline md:hidden">Detay</span>
+              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
             </div>
           </div>
         </div>

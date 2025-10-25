@@ -41,6 +41,12 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords: ["zayıflama", "diyet", "egzersiz", "kilo verme", "sağlıklı yaşam"],
     metadataBase: new URL(baseUrl),
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+      maximumScale: 5,
+      userScalable: true,
+    },
     openGraph: {
       title,
       description,

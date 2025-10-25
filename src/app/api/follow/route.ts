@@ -75,9 +75,9 @@ export async function POST(req: NextRequest) {
       console.error('Notification error:', notifError);
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      follow, 
+    return NextResponse.json({
+      success: true,
+      follow,
       message: 'Takip isteği gönderildi',
       status: 'PENDING'
     });

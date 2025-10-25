@@ -52,18 +52,21 @@ export default function FriendSuggestions() {
         body: JSON.stringify({ followingId: userId }),
       });
 
+      const data = await res.json();
+
       if (res.ok) {
         // Başarılı takip sonrası öneriyi listeden kaldır
         setTimeout(() => {
           setSuggestions(suggestions.filter((s) => s.id !== userId));
-        }, 500);
+        }, 1000);
       } else {
         setFollowingIds(prev => {
           const newSet = new Set(prev);
           newSet.delete(userId);
           return newSet;
         });
-        alert('Takip edilemedi');
+        const errorMessage = data.message || 'Takip edilemedi';
+        alert(errorMessage);
       }
     } catch (error) {
       setFollowingIds(prev => {
@@ -237,14 +240,14 @@ export default function FriendSuggestions() {
                     onClick={() => handleFollow(suggestion.id)}
                     disabled={isFollowing}
                     className={`flex-1 py-2.5 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${isFollowing
-                      ? 'bg-green-500 text-white cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white cursor-wait'
                       : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-lg hover:scale-105'
                       }`}
                   >
                     {isFollowing ? (
                       <>
-                        <span className="animate-pulse">✓</span>
-                        <span>Takip Edildi</span>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>İşleniyor...</span>
                       </>
                     ) : (
                       <>

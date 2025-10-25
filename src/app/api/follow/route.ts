@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { createNotification } from '@/lib/notifications';
 
 // POST /api/follow - Kullanıcıyı takip et
 export async function POST(req: NextRequest) {
@@ -10,23 +11,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { userId } = await req.json();
+    const body = await req.json();
+    const followingId = body.followingId || body.userId;
 
-    if (!userId) {
+    if (!followingId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
     // Kendini takip edemez
-    if (userId === session.user.id) {
+    if (followingId === session.user.id) {
       return NextResponse.json({ error: 'Cannot follow yourself' }, { status: 400 });
     }
 
     // Kullanıcının var olup olmadığını kontrol et
-    const userExists = await prisma.user.findUnique({
-      where: { id: userId },
+    const targetUser = await prisma.user.findUnique({
+      where: { id: followingId },
+      select: { id: true, name: true, username: true },
     });
 
-    if (!userExists) {
+    if (!targetUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -35,27 +38,42 @@ export async function POST(req: NextRequest) {
       where: {
         followerId_followingId: {
           followerId: session.user.id,
-          followingId: userId,
+          followingId: followingId,
         },
       },
     });
 
     if (existingFollow) {
-      return NextResponse.json({ error: 'Already following' }, { status: 400 });
+      return NextResponse.json({ error: 'Already following', message: 'Zaten takip ediyorsunuz' }, { status: 400 });
     }
 
     // Takip et
     const follow = await prisma.follow.create({
       data: {
         followerId: session.user.id,
-        followingId: userId,
+        followingId: followingId,
       },
     });
 
-    return NextResponse.json({ success: true, follow });
+    // Bildirim gönder
+    try {
+      await createNotification({
+        userId: followingId,
+        type: 'NEW_FOLLOWER',
+        title: 'Yeni Takipçi',
+        message: `${session.user.name} sizi takip etmeye başladı`,
+        actionUrl: `/profile/${session.user.id}`,
+        actorId: session.user.id,
+      });
+    } catch (notifError) {
+      console.error('Notification error:', notifError);
+      // Bildirim hatası takip işlemini engellemez
+    }
+
+    return NextResponse.json({ success: true, follow, message: 'Takip edildi' });
   } catch (error) {
     console.error('Follow error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', message: 'Bir hata oluştu' }, { status: 500 });
   }
 }
 

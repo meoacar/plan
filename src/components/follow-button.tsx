@@ -58,7 +58,11 @@ export default function FollowButton({
                     method: 'DELETE',
                 });
 
-                if (!res.ok) throw new Error('Unfollow failed');
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || 'Takipten çıkılamadı');
+                }
 
                 setIsFollowing(false);
                 onFollowChange?.(false);
@@ -67,17 +71,21 @@ export default function FollowButton({
                 const res = await fetch('/api/follow', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId }),
+                    body: JSON.stringify({ followingId: userId }),
                 });
 
-                if (!res.ok) throw new Error('Follow failed');
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || 'Takip edilemedi');
+                }
 
                 setIsFollowing(true);
                 onFollowChange?.(true);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Follow/Unfollow error:', error);
-            alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+            alert(error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
         } finally {
             setIsLoading(false);
         }

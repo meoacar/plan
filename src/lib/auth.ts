@@ -6,65 +6,26 @@ import FacebookProvider from "next-auth/providers/facebook"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
 
-// OAuth ayarlarını cache'le (her request'te DB'ye gitmemek için)
-let oauthCache: {
-  settings: any
-  timestamp: number
-} | null = null
-
-const CACHE_TTL = 60000 // 1 dakika
-
-async function getOAuthSettings() {
-  const now = Date.now()
-  
-  // Cache varsa ve geçerli ise kullan
-  if (oauthCache && (now - oauthCache.timestamp) < CACHE_TTL) {
-    return oauthCache.settings
-  }
-
-  // Yeni ayarları getir
-  const settings = await prisma.siteSettings.findFirst({
-    orderBy: { updatedAt: "desc" },
-    select: {
-      googleOAuthEnabled: true,
-      googleClientId: true,
-      googleClientSecret: true,
-      facebookOAuthEnabled: true,
-      facebookAppId: true,
-      facebookAppSecret: true,
-    },
-  })
-
-  // Cache'e kaydet
-  oauthCache = {
-    settings,
-    timestamp: now,
-  }
-
-  return settings
-}
-
-// Provider'ları dinamik olarak oluştur
-async function buildProviders() {
-  const settings = await getOAuthSettings()
+// OAuth provider'ları dinamik olarak oluştur
+function buildProviders() {
   const providers: any[] = []
 
-  // Google OAuth
-  if (settings?.googleOAuthEnabled && settings.googleClientId && settings.googleClientSecret) {
+  // Google OAuth - environment variable'lardan oku
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     providers.push(
       GoogleProvider({
-        clientId: settings.googleClientId,
-        clientSecret: settings.googleClientSecret,
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       })
     )
   }
 
-  // Facebook OAuth
-  if (settings?.facebookOAuthEnabled && settings.facebookAppId && settings.facebookAppSecret) {
+  // Facebook OAuth - environment variable'lardan oku
+  if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
     providers.push(
       FacebookProvider({
-        clientId: settings.facebookAppId,
-        clientSecret: settings.facebookAppSecret,
+        clientId: process.env.FACEBOOK_APP_ID,
+        clientSecret: process.env.FACEBOOK_APP_SECRET,
       })
     )
   }
@@ -112,43 +73,34 @@ async function buildProviders() {
   return providers
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth(async () => {
-  const providers = await buildProviders()
-  
-  return {
-    adapter: PrismaAdapter(prisma),
-    session: { strategy: "jwt" },
-    trustHost: true,
-    pages: {
-      signIn: "/login",
-    },
-    providers,
-    callbacks: {
-      async jwt({ token, user }) {
-        if (user) {
-          token.id = user.id
-          const dbUser = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { role: true, username: true }
-          })
-          token.role = dbUser?.role
-          token.username = dbUser?.username
-        }
-        return token
-      },
-      async session({ session, token }) {
-        if (session.user) {
-          session.user.id = token.id as string
-          session.user.role = token.role as string
-          session.user.username = token.username as string | null
-        }
-        return session
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
+  trustHost: true,
+  pages: {
+    signIn: "/login",
+  },
+  providers: buildProviders(),
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { role: true, username: true }
+        })
+        token.role = dbUser?.role
+        token.username = dbUser?.username
       }
+      return token
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string
+        session.user.role = token.role as string
+        session.user.username = token.username as string | null
+      }
+      return session
     }
   }
 })
-
-// Cache'i temizlemek için export edilen fonksiyon
-export function clearOAuthCache() {
-  oauthCache = null
-}

@@ -5,7 +5,8 @@ import { logActivity } from "@/lib/activity-logger"
 import { siteSettingsSchema } from "@/lib/validations"
 import { revalidatePath } from "next/cache"
 import { clearMaintenanceCache } from "@/lib/maintenance"
-import { clearOAuthCache } from "@/lib/auth"
+import { writeFile } from "fs/promises"
+import { join } from "path"
 
 /**
  * GET /api/admin/settings
@@ -103,16 +104,46 @@ export async function PATCH(request: NextRequest) {
       request,
     })
 
+    // OAuth ayarlarını .env dosyasına yaz
+    try {
+      const envPath = join(process.cwd(), ".env")
+      const envContent = await import("fs").then(fs => fs.promises.readFile(envPath, "utf-8"))
+      
+      let newEnvContent = envContent
+
+      // Google OAuth ayarlarını güncelle
+      if (updatedSettings.googleOAuthEnabled && updatedSettings.googleClientId && updatedSettings.googleClientSecret) {
+        newEnvContent = updateEnvVariable(newEnvContent, "GOOGLE_CLIENT_ID", updatedSettings.googleClientId)
+        newEnvContent = updateEnvVariable(newEnvContent, "GOOGLE_CLIENT_SECRET", updatedSettings.googleClientSecret)
+      } else {
+        newEnvContent = updateEnvVariable(newEnvContent, "GOOGLE_CLIENT_ID", "")
+        newEnvContent = updateEnvVariable(newEnvContent, "GOOGLE_CLIENT_SECRET", "")
+      }
+
+      // Facebook OAuth ayarlarını güncelle
+      if (updatedSettings.facebookOAuthEnabled && updatedSettings.facebookAppId && updatedSettings.facebookAppSecret) {
+        newEnvContent = updateEnvVariable(newEnvContent, "FACEBOOK_APP_ID", updatedSettings.facebookAppId)
+        newEnvContent = updateEnvVariable(newEnvContent, "FACEBOOK_APP_SECRET", updatedSettings.facebookAppSecret)
+      } else {
+        newEnvContent = updateEnvVariable(newEnvContent, "FACEBOOK_APP_ID", "")
+        newEnvContent = updateEnvVariable(newEnvContent, "FACEBOOK_APP_SECRET", "")
+      }
+
+      await writeFile(envPath, newEnvContent, "utf-8")
+    } catch (envError) {
+      console.error("Error updating .env file:", envError)
+      // .env güncellenemese bile devam et
+    }
+
     // Cache'i temizle
     revalidatePath("/", "layout")
     revalidatePath("/admin/settings")
     clearMaintenanceCache() // Bakım modu cache'ini temizle
-    clearOAuthCache() // OAuth ayarları cache'ini temizle
 
     return NextResponse.json({
       success: true,
       settings: updatedSettings,
-      message: "Ayarlar başarıyla güncellendi",
+      message: "Ayarlar başarıyla güncellendi. Değişikliklerin etkili olması için sunucuyu yeniden başlatın.",
     })
   } catch (error) {
     if (error instanceof Error) {
@@ -137,5 +168,17 @@ export async function PATCH(request: NextRequest) {
       { error: "Ayarlar güncellenirken bir hata oluştu" },
       { status: 500 }
     )
+  }
+}
+
+// Helper function to update environment variables
+function updateEnvVariable(content: string, key: string, value: string): string {
+  const regex = new RegExp(`^${key}=.*$`, "m")
+  const newLine = `${key}="${value}"`
+  
+  if (regex.test(content)) {
+    return content.replace(regex, newLine)
+  } else {
+    return content + `\n${newLine}`
   }
 }

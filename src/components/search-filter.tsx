@@ -92,8 +92,8 @@ export function SearchFilter() {
                   <button
                     onClick={() => handleCategoryClick("")}
                     className={`rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 ${!categoryId
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105"
-                        : "bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-300 hover:bg-purple-50"
+                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105"
+                      : "bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-300 hover:bg-purple-50"
                       }`}
                   >
                     ✨ Tümü
@@ -103,8 +103,8 @@ export function SearchFilter() {
                       key={category.id}
                       onClick={() => handleCategoryClick(category.id)}
                       className={`rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 ${categoryId === category.id
-                          ? "text-white shadow-lg scale-105"
-                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-300 hover:bg-purple-50"
+                        ? "text-white shadow-lg scale-105"
+                        : "bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-300 hover:bg-purple-50"
                         }`}
                       style={{
                         backgroundColor: categoryId === category.id ? category.color : undefined,
@@ -195,8 +195,8 @@ export function SearchFilter() {
                     <button
                       onClick={() => setDuration("")}
                       className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${!duration
-                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
-                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                        : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
                         }`}
                     >
                       Tümü
@@ -204,8 +204,8 @@ export function SearchFilter() {
                     <button
                       onClick={() => setDuration("30")}
                       className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${duration === "30"
-                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
-                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                        : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
                         }`}
                     >
                       1 Ay
@@ -213,8 +213,8 @@ export function SearchFilter() {
                     <button
                       onClick={() => setDuration("90")}
                       className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${duration === "90"
-                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
-                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                        : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
                         }`}
                     >
                       3 Ay
@@ -222,8 +222,8 @@ export function SearchFilter() {
                     <button
                       onClick={() => setDuration("180")}
                       className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${duration === "180"
-                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
-                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                        : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
                         }`}
                     >
                       6 Ay
@@ -231,8 +231,8 @@ export function SearchFilter() {
                     <button
                       onClick={() => setDuration("365")}
                       className={`h-14 rounded-xl px-4 text-sm font-bold transition-all duration-300 ${duration === "365"
-                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
-                          : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
+                        : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50"
                         }`}
                     >
                       1 Yıl+

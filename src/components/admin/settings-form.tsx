@@ -17,6 +17,12 @@ interface SiteSettings {
   footerLinksTitle: string | null
   footerSocialTitle: string | null
   maintenanceMode: boolean
+  googleOAuthEnabled: boolean
+  googleClientId: string | null
+  googleClientSecret: string | null
+  facebookOAuthEnabled: boolean
+  facebookAppId: string | null
+  facebookAppSecret: string | null
   updatedAt: Date
   updatedBy: string
 }
@@ -44,6 +50,12 @@ export function SettingsForm({ initialSettings, onSuccess }: SettingsFormProps) 
     footerLinksTitle: initialSettings.footerLinksTitle || "",
     footerSocialTitle: initialSettings.footerSocialTitle || "",
     maintenanceMode: initialSettings.maintenanceMode,
+    googleOAuthEnabled: initialSettings.googleOAuthEnabled,
+    googleClientId: initialSettings.googleClientId || "",
+    googleClientSecret: initialSettings.googleClientSecret || "",
+    facebookOAuthEnabled: initialSettings.facebookOAuthEnabled,
+    facebookAppId: initialSettings.facebookAppId || "",
+    facebookAppSecret: initialSettings.facebookAppSecret || "",
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -90,6 +102,10 @@ export function SettingsForm({ initialSettings, onSuccess }: SettingsFormProps) 
         footerAboutText: formData.footerAboutText.trim() || undefined,
         footerLinksTitle: formData.footerLinksTitle.trim() || undefined,
         footerSocialTitle: formData.footerSocialTitle.trim() || undefined,
+        googleClientId: formData.googleClientId.trim() || undefined,
+        googleClientSecret: formData.googleClientSecret.trim() || undefined,
+        facebookAppId: formData.facebookAppId.trim() || undefined,
+        facebookAppSecret: formData.facebookAppSecret.trim() || undefined,
       }
 
       // Client-side validation
@@ -370,6 +386,155 @@ export function SettingsForm({ initialSettings, onSuccess }: SettingsFormProps) 
             />
             <p className="mt-1 text-xs text-gray-500">Footer'ın en altında görünecek copyright metni</p>
           </div>
+        </div>
+      </div>
+
+      {/* OAuth Settings Section */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h2 className="text-xl font-semibold mb-4">OAuth Giriş Ayarları</h2>
+        
+        {/* Google OAuth */}
+        <div className="mb-6 pb-6 border-b">
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="googleOAuthEnabled"
+              name="googleOAuthEnabled"
+              checked={formData.googleOAuthEnabled}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label htmlFor="googleOAuthEnabled" className="ml-2 block text-sm font-medium text-gray-700">
+              Google ile Giriş Yap özelliğini aktif et
+            </label>
+          </div>
+          
+          {formData.googleOAuthEnabled && (
+            <div className="ml-6 space-y-4">
+              <div>
+                <label htmlFor="googleClientId" className="block text-sm font-medium text-gray-700 mb-1">
+                  Google Client ID *
+                </label>
+                <input
+                  type="text"
+                  id="googleClientId"
+                  name="googleClientId"
+                  value={formData.googleClientId}
+                  onChange={handleChange}
+                  placeholder="123456789-abc.apps.googleusercontent.com"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.googleClientId ? "border-red-500" : "border-gray-300"
+                  }`}
+                  required={formData.googleOAuthEnabled}
+                />
+                {errors.googleClientId && (
+                  <p className="mt-1 text-sm text-red-600">{errors.googleClientId}</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="googleClientSecret" className="block text-sm font-medium text-gray-700 mb-1">
+                  Google Client Secret *
+                </label>
+                <input
+                  type="password"
+                  id="googleClientSecret"
+                  name="googleClientSecret"
+                  value={formData.googleClientSecret}
+                  onChange={handleChange}
+                  placeholder="GOCSPX-..."
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.googleClientSecret ? "border-red-500" : "border-gray-300"
+                  }`}
+                  required={formData.googleOAuthEnabled}
+                />
+                {errors.googleClientSecret && (
+                  <p className="mt-1 text-sm text-red-600">{errors.googleClientSecret}</p>
+                )}
+              </div>
+
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+                <p className="text-sm text-blue-800">
+                  <strong>Redirect URI:</strong> {typeof window !== 'undefined' ? window.location.origin : ''}/api/auth/callback/google
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Bu URL'yi Google Cloud Console'da Authorized redirect URIs'e eklemeyi unutmayın.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Facebook OAuth */}
+        <div>
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="facebookOAuthEnabled"
+              name="facebookOAuthEnabled"
+              checked={formData.facebookOAuthEnabled}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label htmlFor="facebookOAuthEnabled" className="ml-2 block text-sm font-medium text-gray-700">
+              Facebook ile Giriş Yap özelliğini aktif et
+            </label>
+          </div>
+          
+          {formData.facebookOAuthEnabled && (
+            <div className="ml-6 space-y-4">
+              <div>
+                <label htmlFor="facebookAppId" className="block text-sm font-medium text-gray-700 mb-1">
+                  Facebook App ID *
+                </label>
+                <input
+                  type="text"
+                  id="facebookAppId"
+                  name="facebookAppId"
+                  value={formData.facebookAppId}
+                  onChange={handleChange}
+                  placeholder="123456789012345"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.facebookAppId ? "border-red-500" : "border-gray-300"
+                  }`}
+                  required={formData.facebookOAuthEnabled}
+                />
+                {errors.facebookAppId && (
+                  <p className="mt-1 text-sm text-red-600">{errors.facebookAppId}</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="facebookAppSecret" className="block text-sm font-medium text-gray-700 mb-1">
+                  Facebook App Secret *
+                </label>
+                <input
+                  type="password"
+                  id="facebookAppSecret"
+                  name="facebookAppSecret"
+                  value={formData.facebookAppSecret}
+                  onChange={handleChange}
+                  placeholder="..."
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.facebookAppSecret ? "border-red-500" : "border-gray-300"
+                  }`}
+                  required={formData.facebookOAuthEnabled}
+                />
+                {errors.facebookAppSecret && (
+                  <p className="mt-1 text-sm text-red-600">{errors.facebookAppSecret}</p>
+                )}
+              </div>
+
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+                <p className="text-sm text-blue-800">
+                  <strong>Redirect URI:</strong> {typeof window !== 'undefined' ? window.location.origin : ''}/api/auth/callback/facebook
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Bu URL'yi Facebook Developer Console'da Valid OAuth Redirect URIs'e eklemeyi unutmayın.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

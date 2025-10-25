@@ -5,6 +5,7 @@ import { logActivity } from "@/lib/activity-logger"
 import { siteSettingsSchema } from "@/lib/validations"
 import { revalidatePath } from "next/cache"
 import { clearMaintenanceCache } from "@/lib/maintenance"
+import { clearOAuthCache } from "@/lib/auth"
 
 /**
  * GET /api/admin/settings
@@ -106,6 +107,7 @@ export async function PATCH(request: NextRequest) {
     revalidatePath("/", "layout")
     revalidatePath("/admin/settings")
     clearMaintenanceCache() // Bakım modu cache'ini temizle
+    clearOAuthCache() // OAuth ayarları cache'ini temizle
 
     return NextResponse.json({
       success: true,

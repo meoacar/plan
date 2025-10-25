@@ -72,5 +72,31 @@ export const siteSettingsSchema = z.object({
   instagramUrl: z.string().optional(),
   facebookUrl: z.string().optional(),
   footerText: z.string().optional(),
+  footerAboutTitle: z.string().optional(),
+  footerAboutText: z.string().optional(),
+  footerLinksTitle: z.string().optional(),
+  footerSocialTitle: z.string().optional(),
   maintenanceMode: z.boolean(),
+  googleOAuthEnabled: z.boolean(),
+  googleClientId: z.string().optional(),
+  googleClientSecret: z.string().optional(),
+  facebookOAuthEnabled: z.boolean(),
+  facebookAppId: z.string().optional(),
+  facebookAppSecret: z.string().optional(),
+}).refine((data) => {
+  if (data.googleOAuthEnabled) {
+    return data.googleClientId && data.googleClientSecret
+  }
+  return true
+}, {
+  message: "Google OAuth aktifken Client ID ve Client Secret gereklidir",
+  path: ["googleClientId"],
+}).refine((data) => {
+  if (data.facebookOAuthEnabled) {
+    return data.facebookAppId && data.facebookAppSecret
+  }
+  return true
+}, {
+  message: "Facebook OAuth aktifken App ID ve App Secret gereklidir",
+  path: ["facebookAppId"],
 })

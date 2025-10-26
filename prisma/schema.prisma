@@ -55,6 +55,7 @@ model User {
   notifications          Notification[]
   notificationPreference NotificationPreference?
   plans                  Plan[]
+  planReactions          PlanReaction[]
   polls                  Poll[]
   pollVotes              PollVote[]
   progressPhotos         ProgressPhoto[]
@@ -95,6 +96,7 @@ model Plan {
   comments        Comment[]
   favorites       Favorite[]
   likes           Like[]
+  reactions       PlanReaction[]
   category        Category?        @relation(fields: [categoryId], references: [id])
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags            PlanTag[]
@@ -1212,4 +1214,18 @@ enum NotificationType {
   RECIPE_LIKE
   PLAN_COMMENT
   PLAN_LIKE
+}
+
+model PlanReaction {
+  id        String   @id @default(cuid())
+  planId    String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, userId, emoji])
+  @@index([planId])
+  @@index([userId])
 }

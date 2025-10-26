@@ -113,6 +113,23 @@ export default async function RootLayout({
 
   return (
     <html lang="tr">
+      <head>
+        {/* DNS Prefetch & Preconnect for Performance */}
+        <link rel="dns-prefetch" href="https://utfs.io" />
+        <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
+        <link rel="preconnect" href="https://utfs.io" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://lh3.googleusercontent.com" crossOrigin="anonymous" />
+        
+        {/* Favicon & App Icons */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+        
+        {/* Theme Color */}
+        <meta name="theme-color" content="#9333ea" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      </head>
       <body className={inter.className}>
         <NextTopLoader
           color="#9333ea"

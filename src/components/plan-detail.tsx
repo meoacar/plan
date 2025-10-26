@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
+import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Button } from "./ui/button"
 import { Textarea } from "./ui/textarea"
@@ -212,8 +213,8 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
               {isAdmin && (isPending || isRejected) && (
                 <div className="mb-6">
                   <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg shadow-xl ${isPending
-                      ? "bg-yellow-500 text-yellow-900"
-                      : "bg-red-500 text-white"
+                    ? "bg-yellow-500 text-yellow-900"
+                    : "bg-red-500 text-white"
                     }`}>
                     <span className="text-2xl">{isPending ? "⏳" : "❌"}</span>
                     <span>{isPending ? "Onay Bekliyor" : "Reddedildi"}</span>
@@ -227,12 +228,14 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                   href={`/profile/${plan.user.id}`}
                   className="flex items-center gap-4 hover:opacity-90 transition-opacity group/author"
                 >
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-white/20 backdrop-blur-xl flex items-center justify-center text-white font-bold text-2xl border-2 border-white/30 group-hover/author:scale-110 transition-transform shadow-xl">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden bg-white/20 backdrop-blur-xl flex items-center justify-center text-white font-bold text-2xl border-2 border-white/30 group-hover/author:scale-110 transition-transform shadow-xl">
                     {plan.user.image ? (
-                      <img
+                      <Image
                         src={plan.user.image}
                         alt={plan.user.name || "Profil"}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="64px"
+                        className="object-cover"
                       />
                     ) : (
                       <span>{plan.user.name?.[0]?.toUpperCase() || "?"}</span>
@@ -296,16 +299,17 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
             </CardHeader>
 
             <CardContent className="relative space-y-8 pt-8">
-              {/* Image Section */}
+              {/* Image Section - Optimized with Next.js Image */}
               {plan.imageUrl && (
-                <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                  <img
+                <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
+                  <Image
                     src={plan.imageUrl}
                     alt={plan.title}
-                    className="w-full h-auto max-h-[500px] object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none"
-                    }}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                    className="object-cover"
+                    priority
+                    quality={85}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent" />
                 </div>
@@ -534,7 +538,7 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                 <div className="relative group/section">
                   <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
                   <div className="relative bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl p-8 rounded-2xl border border-green-500/30">
-                    <ShoppingList 
+                    <ShoppingList
                       planId={plan.id}
                       planTitle={plan.title}
                       dietContent={plan.diet}
@@ -632,12 +636,14 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                   <Card className="relative bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all">
                     <CardContent className="pt-6">
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
+                        <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
                           {comment.user.image ? (
-                            <img
+                            <Image
                               src={comment.user.image}
                               alt={comment.user.name || "Profil"}
-                              className="w-full h-full object-cover"
+                              fill
+                              sizes="48px"
+                              className="object-cover"
                             />
                           ) : (
                             <span>{comment.user.name?.[0]?.toUpperCase() || "?"}</span>

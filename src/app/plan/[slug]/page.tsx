@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { PlanDetail } from "@/components/plan-detail"
+import { generatePlanStructuredData, generateBreadcrumbStructuredData, getStructuredDataScript } from "@/lib/structured-data"
 import type { Metadata } from "next"
 
 interface PageProps {
@@ -130,22 +131,46 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const description = `${plan.startWeight}kg → ${plan.goalWeight}kg | ${plan.durationText} | ${plan.routine.substring(0, 120)}...`
   const url = `https://zayiflamaplanim.com/plan/${slug}`
+  const weightLoss = plan.startWeight - plan.goalWeight
 
   return {
     title: `${plan.title} - Zayıflama Planım`,
     description,
+    keywords: [
+      'zayıflama',
+      'diyet',
+      'kilo verme',
+      plan.durationText,
+      `${weightLoss}kg`,
+      'sağlıklı beslenme',
+      'egzersiz programı',
+      plan.category?.name || 'diyet planı'
+    ],
+    authors: [{ name: plan.user.name || 'Anonim' }],
+    creator: plan.user.name || 'Anonim',
+    publisher: 'Zayıflama Planım',
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
     openGraph: {
       title: plan.title,
       description,
       url,
       siteName: 'Zayıflama Planım',
       type: 'article',
+      publishedTime: plan.createdAt.toISOString(),
+      modifiedTime: plan.updatedAt.toISOString(),
+      authors: [plan.user.name || 'Anonim'],
+      locale: 'tr_TR',
       images: [
         {
           url: `/plan/${slug}/opengraph-image`,
           width: 1200,
           height: 630,
           alt: plan.title,
+          type: 'image/png',
         }
       ],
     },
@@ -154,6 +179,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: plan.title,
       description,
       images: [`/plan/${slug}/opengraph-image`],
+      creator: '@zayiflamaplanim',
+      site: '@zayiflamaplanim',
+    },
+    alternates: {
+      canonical: url,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      nocache: false,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   }
 }
@@ -173,7 +215,47 @@ export default async function PlanPage({ params }: PageProps) {
 
   const similarPlans = await getSimilarPlans(plan.goalWeight, plan.id)
 
-  return <PlanDetail plan={plan} similarPlans={similarPlans} />
+  // Generate structured data for SEO
+  const planStructuredData = generatePlanStructuredData({
+    name: plan.title,
+    description: `${plan.startWeight}kg → ${plan.goalWeight}kg | ${plan.durationText}`,
+    image: plan.imageUrl || undefined,
+    author: {
+      name: plan.user.name || "Anonim",
+      url: `/profile/${plan.user.id}`
+    },
+    datePublished: plan.createdAt.toISOString(),
+    dateModified: plan.updatedAt.toISOString(),
+    startWeight: plan.startWeight,
+    goalWeight: plan.goalWeight,
+    duration: plan.durationText,
+    category: plan.category?.name,
+    keywords: ["zayıflama", "diyet", "kilo verme", plan.durationText],
+    aggregateRating: plan._count.likes > 0 ? {
+      ratingValue: 4.5,
+      reviewCount: plan._count.likes
+    } : undefined
+  })
+
+  const breadcrumbStructuredData = generateBreadcrumbStructuredData([
+    { name: "Ana Sayfa", url: "/" },
+    { name: "Planlar", url: "/plans" },
+    { name: plan.title, url: `/plan/${slug}` }
+  ])
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: getStructuredDataScript(planStructuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: getStructuredDataScript(breadcrumbStructuredData) }}
+      />
+      <PlanDetail plan={plan} similarPlans={similarPlans} />
+    </>
+  )
 }
 
 // Generate static params for popular plans

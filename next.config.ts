@@ -19,6 +19,12 @@ const nextConfig: NextConfig = {
     ],
     formats: ["image/avif", "image/webp"],
     unoptimized: false,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   // Compression
@@ -35,8 +41,14 @@ const nextConfig: NextConfig = {
 
   // Experimental features for better performance
   experimental: {
-    optimizePackageImports: ["lucide-react", "recharts"],
+    optimizePackageImports: ["lucide-react", "recharts", "@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
   },
+
+  // Optimize CSS
+  optimizeFonts: true,
+  
+  // Minimize JavaScript
+  swcMinify: true,
 
   // Security headers
   async headers() {

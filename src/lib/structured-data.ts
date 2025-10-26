@@ -61,7 +61,7 @@ interface PlanStructuredData {
 export function generateRecipeStructuredData(data: RecipeStructuredData) {
     const baseUrl = process.env.NEXTAUTH_URL || "https://zayiflamaplanim.com"
 
-    return {
+    const structuredData: Record<string, any> = {
         "@context": "https://schema.org",
         "@type": "Recipe",
         "name": data.name,
@@ -70,7 +70,7 @@ export function generateRecipeStructuredData(data: RecipeStructuredData) {
         "author": {
             "@type": "Person",
             "name": data.author.name,
-            "url": data.author.url
+            "url": data.author.url ? `${baseUrl}${data.author.url}` : undefined
         },
         "datePublished": data.datePublished,
         "dateModified": data.dateModified || data.datePublished,
@@ -94,11 +94,6 @@ export function generateRecipeStructuredData(data: RecipeStructuredData) {
             "text": instruction
         })),
         "recipeIngredient": data.recipeIngredient,
-        "aggregateRating": data.aggregateRating ? {
-            "@type": "AggregateRating",
-            "ratingValue": data.aggregateRating.ratingValue,
-            "reviewCount": data.aggregateRating.reviewCount
-        } : undefined,
         "publisher": {
             "@type": "Organization",
             "name": "Zayıflama Planım",
@@ -109,6 +104,23 @@ export function generateRecipeStructuredData(data: RecipeStructuredData) {
             }
         }
     }
+
+    // AggregateRating sadece review varsa ekle ve itemReviewed ile birlikte
+    if (data.aggregateRating && data.aggregateRating.reviewCount > 0) {
+        structuredData.aggregateRating = {
+            "@type": "AggregateRating",
+            "ratingValue": data.aggregateRating.ratingValue,
+            "reviewCount": data.aggregateRating.reviewCount,
+            "bestRating": 5,
+            "worstRating": 1,
+            "itemReviewed": {
+                "@type": "Recipe",
+                "name": data.name
+            }
+        }
+    }
+
+    return structuredData
 }
 
 /**
@@ -119,7 +131,7 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
     const weightLoss = data.startWeight - data.goalWeight
     const lossPercentage = ((weightLoss / data.startWeight) * 100).toFixed(1)
 
-    return {
+    const structuredData: Record<string, any> = {
         "@context": "https://schema.org",
         "@type": "Article",
         "@id": `${baseUrl}/plan/${data.name}`,
@@ -131,7 +143,7 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
         "author": {
             "@type": "Person",
             "name": data.author.name,
-            "url": data.author.url
+            "url": data.author.url ? `${baseUrl}${data.author.url}` : undefined
         },
         "publisher": {
             "@type": "Organization",
@@ -148,11 +160,6 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
         },
         "articleSection": data.category || "Zayıflama Planları",
         "keywords": data.keywords?.join(", "),
-        "aggregateRating": data.aggregateRating ? {
-            "@type": "AggregateRating",
-            "ratingValue": data.aggregateRating.ratingValue,
-            "reviewCount": data.aggregateRating.reviewCount
-        } : undefined,
         // Custom properties for diet plan
         "about": {
             "@type": "Thing",
@@ -160,6 +167,23 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
             "description": `${data.startWeight}kg'dan ${data.goalWeight}kg'a (${weightLoss}kg kayıp, %${lossPercentage}) ${data.duration} süresinde`
         }
     }
+
+    // AggregateRating sadece review varsa ekle ve itemReviewed ile birlikte
+    if (data.aggregateRating && data.aggregateRating.reviewCount > 0) {
+        structuredData.aggregateRating = {
+            "@type": "AggregateRating",
+            "ratingValue": data.aggregateRating.ratingValue,
+            "reviewCount": data.aggregateRating.reviewCount,
+            "bestRating": 5,
+            "worstRating": 1,
+            "itemReviewed": {
+                "@type": "Article",
+                "name": data.name
+            }
+        }
+    }
+
+    return structuredData
 }
 
 /**

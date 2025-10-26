@@ -14,7 +14,22 @@ export async function checkAndAwardCheatBadges(userId: string) {
     return badges;
   }
 
+  // İlk günah yemeği tarihini bul (kullanıcı ne zamandan beri kullanıyor?)
+  const firstCheat = await prisma.cheatMeal.findFirst({
+    where: { userId },
+    orderBy: { date: "asc" },
+  });
+
+  if (!firstCheat) {
+    return badges;
+  }
+
+  const daysSinceFirstCheat = differenceInDays(new Date(), new Date(firstCheat.date));
+  const hasBeenUsing7Days = daysSinceFirstCheat >= 7;
+  const hasBeenUsing30Days = daysSinceFirstCheat >= 30;
+
   // 7 gün kaçamak yok - Glukozsuz Kahraman
+  // Sadece en az 7 gündür kullanan kullanıcılara ver
   const sevenDaysAgo = subDays(startOfDay(new Date()), 7);
   const recentCheats = await prisma.cheatMeal.count({
     where: {
@@ -25,7 +40,7 @@ export async function checkAndAwardCheatBadges(userId: string) {
     },
   });
 
-  if (recentCheats === 0) {
+  if (recentCheats === 0 && hasBeenUsing7Days) {
     const hasCheatFree7 = await prisma.userBadge.findFirst({
       where: {
         userId,
@@ -68,6 +83,7 @@ export async function checkAndAwardCheatBadges(userId: string) {
   }
 
   // 30 gün kaçamak yok
+  // Sadece en az 30 gündür kullanan kullanıcılara ver
   const thirtyDaysAgo = subDays(startOfDay(new Date()), 30);
   const monthCheats = await prisma.cheatMeal.count({
     where: {
@@ -78,7 +94,7 @@ export async function checkAndAwardCheatBadges(userId: string) {
     },
   });
 
-  if (monthCheats === 0) {
+  if (monthCheats === 0 && hasBeenUsing30Days) {
     const hasCheatFree30 = await prisma.userBadge.findFirst({
       where: {
         userId,
@@ -120,6 +136,7 @@ export async function checkAndAwardCheatBadges(userId: string) {
   }
 
   // 30 gün fast food yok - Yağsavar
+  // Sadece en az 30 gündür kullanan kullanıcılara ver
   const fastFoodCheats = await prisma.cheatMeal.count({
     where: {
       userId,
@@ -130,7 +147,7 @@ export async function checkAndAwardCheatBadges(userId: string) {
     },
   });
 
-  if (fastFoodCheats === 0) {
+  if (fastFoodCheats === 0 && hasBeenUsing30Days) {
     const hasFastFoodFree = await prisma.userBadge.findFirst({
       where: {
         userId,

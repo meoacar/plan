@@ -1359,3 +1359,29 @@ enum CheatType {
   ALCOHOL
   OTHER
 }
+
+model Badge {
+  id          String      @id @default(cuid())
+  type        String      @unique
+  name        String
+  description String
+  icon        String
+  xpReward    Int         @default(0)
+  createdAt   DateTime    @default(now())
+  userBadges  UserBadge[]
+
+  @@index([type])
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([badgeId])
+}

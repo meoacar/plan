@@ -4,6 +4,9 @@ interface LogoProps {
 }
 
 export function Logo({ className = "", size = 40 }: LogoProps) {
+  // Her logo instance için benzersiz ID'ler oluştur
+  const uniqueId = Math.random().toString(36).substr(2, 9)
+  
   return (
     <svg
       width={size}
@@ -12,25 +15,27 @@ export function Logo({ className = "", size = 40 }: LogoProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      role="img"
+      aria-label="Zayıflama Planım Logo"
     >
       <defs>
-        {/* Gradient tanımlamaları */}
-        <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        {/* Gradient tanımlamaları - benzersiz ID'lerle */}
+        <linearGradient id={`mainGradient-${uniqueId}`} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#2d7a4a" />
           <stop offset="50%" stopColor="#4caf50" />
           <stop offset="100%" stopColor="#66bb6a" />
         </linearGradient>
-        <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id={`accentGradient-${uniqueId}`} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#81c784" />
           <stop offset="100%" stopColor="#a5d6a7" />
         </linearGradient>
-        <radialGradient id="glowGradient">
+        <radialGradient id={`glowGradient-${uniqueId}`}>
           <stop offset="0%" stopColor="#4caf50" stopOpacity="0.3" />
           <stop offset="100%" stopColor="#4caf50" stopOpacity="0" />
         </radialGradient>
 
         {/* Gölge filtresi */}
-        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+        <filter id={`shadow-${uniqueId}`} x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
           <feOffset dx="0" dy="2" result="offsetblur" />
           <feComponentTransfer>
@@ -44,7 +49,7 @@ export function Logo({ className = "", size = 40 }: LogoProps) {
       </defs>
 
       {/* Arka plan glow efekti */}
-      <circle cx="50" cy="50" r="45" fill="url(#glowGradient)" />
+      <circle cx="50" cy="50" r="45" fill={`url(#glowGradient-${uniqueId})`} />
 
       {/* Ana daire - kalın border */}
       <circle
@@ -52,9 +57,9 @@ export function Logo({ className = "", size = 40 }: LogoProps) {
         cy="50"
         r="42"
         fill="white"
-        stroke="url(#mainGradient)"
+        stroke={`url(#mainGradient-${uniqueId})`}
         strokeWidth="4"
-        filter="url(#shadow)"
+        filter={`url(#shadow-${uniqueId})`}
       />
 
       {/* İç dekoratif daire */}
@@ -63,7 +68,7 @@ export function Logo({ className = "", size = 40 }: LogoProps) {
         cy="50"
         r="35"
         fill="none"
-        stroke="url(#accentGradient)"
+        stroke={`url(#accentGradient-${uniqueId})`}
         strokeWidth="1"
         opacity="0.4"
         strokeDasharray="3 3"
@@ -78,8 +83,8 @@ export function Logo({ className = "", size = 40 }: LogoProps) {
            L 65 48 
            C 68 45, 68 40, 65 35 
            C 62 30, 55 30, 50 35 Z"
-        fill="url(#mainGradient)"
-        filter="url(#shadow)"
+        fill={`url(#mainGradient-${uniqueId})`}
+        filter={`url(#shadow-${uniqueId})`}
       />
 
       {/* Kalp içinde artı işareti - sağlık */}
@@ -91,22 +96,22 @@ export function Logo({ className = "", size = 40 }: LogoProps) {
         {/* Sol üst yaprak */}
         <path
           d="M 25 30 Q 20 25, 22 20 Q 27 22, 28 28 Z"
-          fill="url(#accentGradient)"
+          fill={`url(#accentGradient-${uniqueId})`}
         />
         {/* Sağ üst yaprak */}
         <path
           d="M 75 30 Q 80 25, 78 20 Q 73 22, 72 28 Z"
-          fill="url(#accentGradient)"
+          fill={`url(#accentGradient-${uniqueId})`}
         />
         {/* Sol alt yaprak */}
         <path
           d="M 25 70 Q 20 75, 22 80 Q 27 78, 28 72 Z"
-          fill="url(#accentGradient)"
+          fill={`url(#accentGradient-${uniqueId})`}
         />
         {/* Sağ alt yaprak */}
         <path
           d="M 75 70 Q 80 75, 78 80 Q 73 78, 72 72 Z"
-          fill="url(#accentGradient)"
+          fill={`url(#accentGradient-${uniqueId})`}
         />
       </g>
 

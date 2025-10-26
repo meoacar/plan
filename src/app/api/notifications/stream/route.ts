@@ -2,36 +2,9 @@ import { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// SSE için özel response oluştur
-function createSSEResponse() {
-  const encoder = new TextEncoder();
-  
-  const stream = new ReadableStream({
-    async start(controller) {
-      // Heartbeat - bağlantıyı canlı tut
-      const heartbeat = setInterval(() => {
-        try {
-          controller.enqueue(encoder.encode(': heartbeat\n\n'));
-        } catch (error) {
-          clearInterval(heartbeat);
-        }
-      }, 30000); // Her 30 saniyede bir
-
-      // Cleanup
-      return () => {
-        clearInterval(heartbeat);
-      };
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-    },
-  });
-}
+// Node.js runtime kullan
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,43 +16,36 @@ export async function GET(request: NextRequest) {
     const userId = session.user.id;
     const encoder = new TextEncoder();
 
-    // Son bildirim ID'sini al
-    const lastNotification = await prisma.notification.findFirst({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      select: { id: true },
-    });
-
-    let lastNotificationId = lastNotification?.id || '';
+    // Son kontrol edilen bildirim zamanı
+    let lastCheck = new Date();
 
     const stream = new ReadableStream({
       async start(controller) {
         // İlk bağlantıda okunmamış sayısını gönder
-        const initialCount = await prisma.notification.count({
-          where: {
-            userId,
-            isRead: false,
-          },
-        });
+        try {
+          const initialCount = await prisma.notification.count({
+            where: {
+              userId,
+              isRead: false,
+            },
+          });
 
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: 'count', count: initialCount })}\n\n`)
-        );
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: 'count', count: initialCount })}\n\n`)
+          );
+        } catch (error) {
+          console.error('Initial count error:', error);
+        }
 
-        // Polling - her 5 saniyede bir yeni bildirim kontrolü
+        // Polling interval - her 3 saniyede bir kontrol et
         const pollInterval = setInterval(async () => {
           try {
-            // Yeni bildirimler var mı kontrol et
+            // Son kontrolden sonra oluşturulan bildirimleri al
             const newNotifications = await prisma.notification.findMany({
               where: {
                 userId,
                 createdAt: {
-                  gt: lastNotificationId
-                    ? (await prisma.notification.findUnique({
-                        where: { id: lastNotificationId },
-                        select: { createdAt: true },
-                      }))?.createdAt || new Date(0)
-                    : new Date(0),
+                  gt: lastCheck,
                 },
               },
               orderBy: { createdAt: 'desc' },
@@ -87,10 +53,10 @@ export async function GET(request: NextRequest) {
             });
 
             if (newNotifications.length > 0) {
-              // Son bildirim ID'sini güncelle
-              lastNotificationId = newNotifications[0].id;
+              // Son kontrol zamanını güncelle
+              lastCheck = new Date();
 
-              // Yeni bildirimleri gönder
+              // Her yeni bildirim için mesaj gönder
               for (const notification of newNotifications) {
                 controller.enqueue(
                   encoder.encode(
@@ -116,7 +82,7 @@ export async function GET(request: NextRequest) {
           } catch (error) {
             console.error('SSE polling error:', error);
           }
-        }, 5000); // Her 5 saniyede bir kontrol
+        }, 3000); // Her 3 saniyede bir
 
         // Heartbeat - bağlantıyı canlı tut
         const heartbeat = setInterval(() => {
@@ -126,13 +92,17 @@ export async function GET(request: NextRequest) {
             clearInterval(heartbeat);
             clearInterval(pollInterval);
           }
-        }, 30000);
+        }, 15000); // Her 15 saniyede bir
 
-        // Cleanup fonksiyonu
+        // Cleanup - bağlantı kapandığında
         request.signal.addEventListener('abort', () => {
           clearInterval(pollInterval);
           clearInterval(heartbeat);
-          controller.close();
+          try {
+            controller.close();
+          } catch (error) {
+            // Already closed
+          }
         });
       },
     });
@@ -140,9 +110,9 @@ export async function GET(request: NextRequest) {
     return new Response(stream, {
       headers: {
         'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
+        'Cache-Control': 'no-cache, no-transform',
         'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no', // Nginx için buffering'i kapat
+        'X-Accel-Buffering': 'no', // Nginx için
       },
     });
   } catch (error) {
@@ -150,6 +120,3 @@ export async function GET(request: NextRequest) {
     return new Response('Internal Server Error', { status: 500 });
   }
 }
-
-// Edge runtime kullan (daha iyi SSE desteği)
-export const runtime = 'edge';

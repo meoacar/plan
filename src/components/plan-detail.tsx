@@ -14,7 +14,6 @@ import { PdfExportButton } from "./pdf-export-button"
 import { VideoEmbed } from "./video-embed"
 import { CommentReactions } from "./comment-reactions"
 import { ShoppingList } from "./shopping-list"
-import { PlanReactions } from "./plan-reactions"
 
 interface PlanDetailProps {
   plan: any

@@ -105,8 +105,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ comment })
   } catch (error) {
+    console.error('Comment creation error:', error);
     return NextResponse.json(
-      { error: "Yorum eklenirken bir hata oluştu" },
+      { 
+        error: "Yorum eklenirken bir hata oluştu",
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

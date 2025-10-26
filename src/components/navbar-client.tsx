@@ -7,6 +7,7 @@ import { Button } from "./ui/button"
 import { useState, useRef, useEffect } from "react"
 import { Menu, X, User, LogOut, Settings, ChevronDown, FolderOpen, Camera, Trophy, BarChart3, Users, BarChart2, Utensils } from "lucide-react"
 import { Logo } from "./logo"
+import { NotificationBell } from "./notifications/notification-bell"
 
 interface NavbarPage {
   id: string
@@ -335,82 +336,103 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
             {status === "loading" ? (
               <div className="w-20 h-9 bg-gray-200 rounded-lg animate-pulse"></div>
             ) : session ? (
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center text-white font-bold text-sm shadow-md">
-                    {session.user?.image ? (
-                      <img
-                        src={session.user.image}
-                        alt={session.user.name || "Profil"}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span>{session.user?.name?.[0]?.toUpperCase() || "?"}</span>
-                    )}
-                  </div>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {userMenuOpen && (
-                  <div className="absolute top-full mt-2 right-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-semibold text-gray-800 truncate">
-                        {session.user?.name || "Kullanıcı"}
-                      </p>
-                      <p className="text-xs text-gray-500 truncate">
-                        {session.user?.email}
-                      </p>
+              <>
+                {/* Bildirim İkonu */}
+                <NotificationBell />
+                
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center text-white font-bold text-sm shadow-md">
+                      {session.user?.image ? (
+                        <img
+                          src={session.user.image}
+                          alt={session.user.name || "Profil"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span>{session.user?.name?.[0]?.toUpperCase() || "?"}</span>
+                      )}
                     </div>
-                    <Link
-                      href={`/profile/${session.user?.username || session.user?.id}`}
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <User className="w-4 h-4" />
-                      <span>Profilim</span>
-                    </Link>
-                    <Link
-                      href={`/profile/${session.user?.username || session.user?.id}/following`}
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <Users className="w-4 h-4" />
-                      <span>Takip Edilenler</span>
-                    </Link>
-                    <Link
-                      href="/takip-istekleri"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <User className="w-4 h-4" />
-                      <span>Takip İstekleri</span>
-                    </Link>
-                    {session.user?.role === "ADMIN" && (
+                    <ChevronDown className={`w-4 h-4 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {userMenuOpen && (
+                    <div className="absolute top-full mt-2 right-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                      <div className="px-4 py-2 border-b border-gray-100">
+                        <p className="text-sm font-semibold text-gray-800 truncate">
+                          {session.user?.name || "Kullanıcı"}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {session.user?.email}
+                        </p>
+                      </div>
                       <Link
-                        href="/admin"
+                        href={`/profile/${session.user?.username || session.user?.id}`}
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        <span>Profilim</span>
+                      </Link>
+                      <Link
+                        href="/bildirimler"
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
                       >
                         <Settings className="w-4 h-4" />
-                        <span>Admin Panel</span>
+                        <span>Bildirimler</span>
                       </Link>
-                    )}
-                    <button
-                      onClick={() => {
-                        setUserMenuOpen(false)
-                        signOut({ callbackUrl: "/" })
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      <span>Çıkış Yap</span>
-                    </button>
-                  </div>
-                )}
-              </div>
+                      <Link
+                        href={`/profile/${session.user?.username || session.user?.id}/following`}
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <Users className="w-4 h-4" />
+                        <span>Takip Edilenler</span>
+                      </Link>
+                      <Link
+                        href="/takip-istekleri"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        <span>Takip İstekleri</span>
+                      </Link>
+                      <Link
+                        href="/ayarlar"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <Settings className="w-4 h-4" />
+                        <span>Ayarlar</span>
+                      </Link>
+                      {session.user?.role === "ADMIN" && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        >
+                          <Settings className="w-4 h-4" />
+                          <span>Admin Panel</span>
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => {
+                          setUserMenuOpen(false)
+                          signOut({ callbackUrl: "/" })
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Çıkış Yap</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
             ) : (
               <Link href="/login">
                 <Button size="sm" className="flex items-center gap-1">
@@ -591,6 +613,26 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   <div className="px-4 py-2 mt-2">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Kişisel</p>
                   </div>
+                  <Link
+                    href="/bildirimler"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/bildirimler"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    🔔 Bildirimler
+                  </Link>
+                  <Link
+                    href="/ayarlar"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/ayarlar"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    ⚙️ Ayarlar
+                  </Link>
                   <Link
                     href="/recipes/my-recipes"
                     onClick={() => setMobileMenuOpen(false)}

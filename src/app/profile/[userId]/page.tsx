@@ -10,6 +10,7 @@ import FollowButton from "@/components/follow-button"
 import UserFollowStats from "@/components/user-follow-stats"
 import WallPosts from "@/components/wall-posts"
 import { ProfileTabs } from "@/components/profile-tabs"
+import { getUserCustomization } from "@/lib/unlock-customization"
 
 interface PageProps {
   params: Promise<{ userId: string }>
@@ -145,12 +146,28 @@ export default async function ProfilePage({ params }: PageProps) {
   const pendingPlans = isOwnProfile ? user.plans.filter((p: any) => p.status === "PENDING") : []
   const rejectedPlans = isOwnProfile ? user.plans.filter((p: any) => p.status === "REJECTED") : []
 
+  // Profil özelleştirmelerini getir
+  const customization = await getUserCustomization(user.id)
+  const activeTheme = customization.activeTheme
+  const activeBackground = customization.activeBackground
+  const activeFrame = customization.activeFrame
+
+  // Arka plan stilini belirle
+  const backgroundStyle = activeBackground?.imageUrl
+    ? { backgroundImage: `url(${activeBackground.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : activeBackground?.colors?.gradient
+    ? { background: activeBackground.colors.gradient }
+    : {}
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className={`container mx-auto px-4 py-8 max-w-6xl ${activeTheme?.cssClass || ''}`}>
       {/* Modern Cover & Profile Section */}
       <div className="relative mb-8">
-        {/* Cover Image */}
-        <div className="h-48 md:h-64 bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 rounded-2xl shadow-2xl relative overflow-hidden">
+        {/* Cover Image with Custom Background */}
+        <div 
+          className="h-48 md:h-64 bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 rounded-2xl shadow-2xl relative overflow-hidden"
+          style={Object.keys(backgroundStyle).length > 0 ? backgroundStyle : undefined}
+        >
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
         </div>
@@ -159,9 +176,9 @@ export default async function ProfilePage({ params }: PageProps) {
         <Card className="relative -mt-20 mx-4 md:mx-8 shadow-2xl border-0">
           <CardContent className="p-6 md:p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              {/* Avatar */}
-              <div className="relative">
-                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden shadow-xl ring-8 ring-white bg-gradient-to-br from-emerald-400 to-teal-600">
+              {/* Avatar with Custom Frame */}
+              <div className="relative profile-avatar-container">
+                <div className={`w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden shadow-xl ring-8 ring-white bg-gradient-to-br from-emerald-400 to-teal-600 ${activeFrame?.cssClass || ''}`}>
                   {user.image ? (
                     <img 
                       src={user.image} 
@@ -174,6 +191,27 @@ export default async function ProfilePage({ params }: PageProps) {
                     </div>
                   )}
                 </div>
+                {/* Profile Badges */}
+                {customization.activeBadges && customization.activeBadges.length > 0 && (
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+                    {customization.activeBadges.map((badge: any, index: number) => (
+                      <div
+                        key={index}
+                        className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg flex items-center justify-center border-2 border-white"
+                        title={badge.name}
+                      >
+                        {badge.imageUrl ? (
+                          <img src={badge.imageUrl} alt={badge.name} className="w-5 h-5" />
+                        ) : (
+                          <span className="text-white text-xs font-bold">
+                            {badge.name[0]}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
                 {isOwnProfile && (
                   <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-2 shadow-lg">
                     <Link href="/profile/edit">

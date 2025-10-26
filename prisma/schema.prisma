@@ -67,6 +67,8 @@ model User {
   wallPostsWritten       WallPost[]                  @relation("WallPostAuthor")
   wallPosts              WallPost[]                  @relation("WallPostOwner")
   weightLogs             WeightLog[]
+  cheatMeals             CheatMeal[]
+  cheatChallenges        CheatChallenge[]
 
   @@index([xp, level])
 }
@@ -1131,6 +1133,10 @@ enum BadgeType {
   CHALLENGE_WINNER
   CHALLENGE_PARTICIPANT
   SOCIAL_BUTTERFLY
+  CHEAT_FREE_7_DAYS
+  CHEAT_FREE_30_DAYS
+  FAST_FOOD_FREE_30_DAYS
+  BALANCED_RECOVERY
 }
 
 enum GoalType {
@@ -1316,4 +1322,40 @@ enum BlogStatus {
   DRAFT
   PUBLISHED
   SCHEDULED
+}
+
+model CheatMeal {
+  id        String       @id @default(cuid())
+  userId    String
+  type      CheatType
+  note      String?
+  date      DateTime     @default(now())
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@index([type])
+}
+
+model CheatChallenge {
+  id          String   @id @default(cuid())
+  userId      String
+  weekStart   DateTime
+  weekEnd     DateTime
+  limit       Int      @default(2)
+  penalty     String?
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart])
+}
+
+enum CheatType {
+  SWEET
+  FAST_FOOD
+  SODA
+  ALCOHOL
+  OTHER
 }

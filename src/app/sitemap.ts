@@ -13,12 +13,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
       url: `${baseUrl}/submit`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
@@ -36,61 +30,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.7,
     },
-    {
-      url: `${baseUrl}/challenges`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
   ];
 
-  // Blog posts
-  const blogPosts = await prisma.blogPost.findMany({
-    where: {
-      status: 'PUBLISHED',
-      isPublished: true,
-    },
-    select: {
-      slug: true,
-      updatedAt: true,
-      publishedAt: true,
-    },
-    orderBy: {
-      publishedAt: 'desc',
-    },
-  });
-
-  const blogPostPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: post.updatedAt,
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }));
-
-  // Blog categories
-  const blogCategories = await prisma.blogCategory.findMany({
+  // Categories
+  const categories = await prisma.category.findMany({
     select: {
       slug: true,
       updatedAt: true,
     },
   });
 
-  const blogCategoryPages: MetadataRoute.Sitemap = blogCategories.map((category) => ({
-    url: `${baseUrl}/blog/kategori/${category.slug}`,
+  const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
+    url: `${baseUrl}/kategori/${category.slug}`,
     lastModified: category.updatedAt,
     changeFrequency: 'weekly',
     priority: 0.7,
   }));
 
-  // Blog tags
-  const blogTags = await prisma.blogTag.findMany({
+  // Tags
+  const tags = await prisma.tag.findMany({
     select: {
       slug: true,
     },
   });
 
-  const blogTagPages: MetadataRoute.Sitemap = blogTags.map((tag) => ({
-    url: `${baseUrl}/blog/etiket/${tag.slug}`,
+  const tagPages: MetadataRoute.Sitemap = tags.map((tag) => ({
+    url: `${baseUrl}/etiket/${tag.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.6,
@@ -176,10 +141,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticPages,
+    ...categoryPages,
+    ...tagPages,
     ...planPages,
-    ...blogPostPages,
-    ...blogCategoryPages,
-    ...blogTagPages,
     ...recipePages,
     ...customPages,
     ...groupPages,

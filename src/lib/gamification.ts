@@ -417,9 +417,6 @@ export async function updateStreak(userId: string) {
 export async function getLeaderboard(type: "xp" | "likes" | "views", limit = 10) {
   if (type === "xp") {
     return await prisma.user.findMany({
-      where: {
-        role: "USER",
-      },
       select: {
         id: true,
         name: true,
@@ -444,7 +441,6 @@ export async function getLeaderboard(type: "xp" | "likes" | "views", limit = 10)
   if (type === "likes") {
     const users = await prisma.user.findMany({
       where: {
-        role: "USER",
         plans: {
           some: {
             status: "APPROVED",
@@ -482,7 +478,6 @@ export async function getLeaderboard(type: "xp" | "likes" | "views", limit = 10)
   if (type === "views") {
     const users = await prisma.user.findMany({
       where: {
-        role: "USER",
         plans: {
           some: {
             status: "APPROVED",

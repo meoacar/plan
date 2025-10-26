@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { Logo } from "@/components/logo";
 import NextTopLoader from 'nextjs-toploader';
 import { WebVitalsReporter } from "@/components/web-vitals-reporter";
+import { NotificationPermission } from "@/components/notifications/notification-permission";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -180,6 +181,7 @@ export default async function RootLayout({
           <MaintenanceChecker />
           <StreakTracker />
           <CrisisButton />
+          <NotificationPermission />
           <Navbar />
           <main className="min-h-screen bg-[#f8f8f8]">
             {children}

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
-const ALLOWED_EMOJIS = ["💪", "🔥", "👏", "❤️", "😊"]
+const ALLOWED_EMOJIS = ["💪", "🎉", "❤️", "🔥", "👏"]
 
 export async function POST(
   req: Request,

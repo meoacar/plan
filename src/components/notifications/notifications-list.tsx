@@ -29,6 +29,11 @@ export function NotificationsList() {
     fetchNotifications();
   }, [page]);
 
+  async function updateUnreadCount() {
+    // Custom event ile NotificationBell'e güncelleme sinyali gönder
+    window.dispatchEvent(new CustomEvent('notificationUpdate'));
+  }
+
   async function fetchNotifications() {
     try {
       setLoadingMore(page > 1);
@@ -60,6 +65,8 @@ export function NotificationsList() {
         setNotifications((prev) =>
           prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
         );
+        // Sayacı güncelle
+        updateUnreadCount();
       }
     } catch (error) {
       console.error('Failed to mark as read:', error);
@@ -74,6 +81,8 @@ export function NotificationsList() {
 
       if (response.ok) {
         setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+        // Sayacı güncelle
+        updateUnreadCount();
       }
     } catch (error) {
       console.error('Failed to mark all as read:', error);
@@ -88,6 +97,8 @@ export function NotificationsList() {
 
       if (response.ok) {
         setNotifications((prev) => prev.filter((n) => n.id !== id));
+        // Sayacı güncelle
+        updateUnreadCount();
       }
     } catch (error) {
       console.error('Failed to delete notification:', error);

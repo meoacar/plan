@@ -19,6 +19,12 @@ export function NotificationBell() {
     // SSE bağlantısı kur
     connectToSSE();
 
+    // Custom event listener - bildirim listesinden güncellemeler için
+    const handleNotificationUpdate = () => {
+      fetchUnreadCount();
+    };
+    window.addEventListener('notificationUpdate', handleNotificationUpdate);
+
     return () => {
       // Cleanup - SSE bağlantısını kapat
       if (eventSourceRef.current) {
@@ -28,6 +34,7 @@ export function NotificationBell() {
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
       }
+      window.removeEventListener('notificationUpdate', handleNotificationUpdate);
     };
   }, []);
 

@@ -23,7 +23,11 @@ interface Stats {
   _count: number;
 }
 
-export default function CheatMealTracker() {
+interface CheatMealTrackerProps {
+  onCheatMealAdded?: () => void;
+}
+
+export default function CheatMealTracker({ onCheatMealAdded }: CheatMealTrackerProps) {
   const { data: session } = useSession();
   const [showModal, setShowModal] = useState(false);
   const [selectedType, setSelectedType] = useState("");
@@ -77,6 +81,10 @@ export default function CheatMealTracker() {
           setSelectedType("");
           setNote("");
           fetchCheatMeals();
+          // Diğer component'lere haber ver
+          if (onCheatMealAdded) {
+            onCheatMealAdded();
+          }
         }, 3000);
       }
     } catch (error) {

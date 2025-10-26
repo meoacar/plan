@@ -19,7 +19,11 @@ interface CheatMeal {
   date: string;
 }
 
-export default function CheatMealCalendar() {
+interface CheatMealCalendarProps {
+  refreshTrigger?: number;
+}
+
+export default function CheatMealCalendar({ refreshTrigger }: CheatMealCalendarProps) {
   const { data: session } = useSession();
   const [cheatMeals, setCheatMeals] = useState<CheatMeal[]>([]);
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -29,6 +33,13 @@ export default function CheatMealCalendar() {
       fetchCheatMeals();
     }
   }, [session]);
+
+  // Kaçamak eklendiğinde yeniden yükle
+  useEffect(() => {
+    if (session?.user && refreshTrigger !== undefined && refreshTrigger > 0) {
+      fetchCheatMeals();
+    }
+  }, [refreshTrigger, session]);
 
   const fetchCheatMeals = async () => {
     try {

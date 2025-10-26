@@ -17,7 +17,11 @@ interface ChallengeData {
   exceeded: boolean;
 }
 
-export default function CheatMealChallenge() {
+interface CheatMealChallengeProps {
+  refreshTrigger?: number;
+}
+
+export default function CheatMealChallenge({ refreshTrigger }: CheatMealChallengeProps) {
   const { data: session } = useSession();
   const [challengeData, setChallengeData] = useState<ChallengeData | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -30,6 +34,13 @@ export default function CheatMealChallenge() {
       fetchChallenge();
     }
   }, [session]);
+
+  // Kaçamak eklendiğinde yeniden yükle
+  useEffect(() => {
+    if (session?.user && refreshTrigger !== undefined && refreshTrigger > 0) {
+      fetchChallenge();
+    }
+  }, [refreshTrigger, session]);
 
   const fetchChallenge = async () => {
     try {

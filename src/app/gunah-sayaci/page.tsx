@@ -1,22 +1,17 @@
-import { Metadata } from "next";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useState } from "react";
 import CheatMealTracker from "@/components/cheat-meal-tracker";
 import CheatMealCalendar from "@/components/cheat-meal-calendar";
 import CheatMealChallenge from "@/components/cheat-meal-challenge";
 import CheatMealBadges from "@/components/cheat-meal-badges";
 
-export const metadata: Metadata = {
-  title: "Yemek Günah Sayacı | Zayıflama Planım",
-  description: "Kaçamak yemeklerini takip et, farkındalık yarat, oyunlaştırılmış beslenme takibi",
-};
+export default function GunahSayaciPage() {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-export default async function GunahSayaciPage() {
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect("/login?callbackUrl=/gunah-sayaci");
-  }
+  const handleCheatMealAdded = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-purple-50 py-8">
@@ -35,12 +30,12 @@ export default async function GunahSayaciPage() {
         {/* Main Content */}
         <div className="space-y-6">
           {/* Tracker */}
-          <CheatMealTracker />
+          <CheatMealTracker onCheatMealAdded={handleCheatMealAdded} />
 
           {/* Calendar & Challenge Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CheatMealCalendar />
-            <CheatMealChallenge />
+            <CheatMealCalendar refreshTrigger={refreshTrigger} />
+            <CheatMealChallenge refreshTrigger={refreshTrigger} />
           </div>
 
           {/* Info Card */}

@@ -6,7 +6,7 @@ import { createNotification } from "@/lib/notifications"
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -23,9 +23,11 @@ export async function POST(
       )
     }
 
+    const { slug } = await params
+
     // Planı bul
     const plan = await prisma.plan.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       select: { id: true, userId: true, title: true },
     })
 
@@ -71,7 +73,7 @@ export async function POST(
           type: "PLAN_REACTION",
           title: `${emoji} ${label}`,
           message: `${session.user.name} planınıza "${label}" reaksiyonu verdi`,
-          actionUrl: `/plan/${params.slug}`,
+          actionUrl: `/plan/${slug}`,
           actorId: session.user.id,
           relatedId: plan.id,
         })

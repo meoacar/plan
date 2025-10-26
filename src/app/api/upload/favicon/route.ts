@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { writeFile, mkdir, copyFile } from "fs/promises"
+import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
 import { existsSync } from "fs"
 
@@ -54,20 +54,33 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // App klasörüne kaydet (Next.js 13+ için)
-    const appDir = join(process.cwd(), "src", "app")
-    const faviconPath = join(appDir, "favicon.ico")
+    // Public klasörüne kaydet
+    const publicDir = join(process.cwd(), "public")
+    
+    // Public klasörünün var olduğundan emin ol
+    if (!existsSync(publicDir)) {
+      await mkdir(publicDir, { recursive: true })
+    }
 
-    // Dosyayı kaydet
+    // Dosya uzantısını al
+    const extension = file.name.split(".").pop() || "ico"
+    
+    // Favicon'u kaydet - hem favicon.ico hem de timestamp'li versiyon
+    const faviconPath = join(publicDir, "favicon.ico")
+    const timestampedPath = join(publicDir, `favicon-${Date.now()}.${extension}`)
+    
+    // Ana favicon'u kaydet
     await writeFile(faviconPath, buffer)
+    
+    // Timestamp'li versiyonu da kaydet (cache bypass için)
+    await writeFile(timestampedPath, buffer)
 
-    // Ayrıca public klasörüne de kopyala (eski tarayıcılar için)
-    const publicFaviconPath = join(process.cwd(), "public", "favicon.ico")
-    await copyFile(faviconPath, publicFaviconPath)
+    console.log("Favicon başarıyla kaydedildi:", faviconPath)
 
     return NextResponse.json({ 
       url: "/favicon.ico",
-      message: "Favicon başarıyla güncellendi. Değişikliklerin görünmesi için tarayıcı önbelleğini temizlemeniz gerekebilir."
+      timestampedUrl: `/favicon-${Date.now()}.${extension}`,
+      message: "Favicon başarıyla güncellendi. Değişikliklerin görünmesi için tarayıcı önbelleğini temizlemeniz gerekebilir (Ctrl+F5)."
     })
   } catch (error) {
     console.error("Favicon yükleme hatası:", error)

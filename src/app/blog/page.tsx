@@ -3,13 +3,22 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { generateCollectionPageSchema } from '@/lib/blog-structured-data';
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zayiflamaplanim.com';
 
 export const metadata: Metadata = {
-  title: 'Blog - Sağlıklı Yaşam ve Zayıflama İpuçları',
-  description: 'Beslenme, egzersiz, motivasyon ve sağlıklı yaşam hakkında uzman tavsiyeleri ve ipuçları.',
+  title: 'Blog - Sağlıklı Yaşam ve Zayıflama İpuçları | Zayıflama Planım',
+  description: 'Beslenme, egzersiz, motivasyon ve sağlıklı yaşam hakkında uzman tavsiyeleri ve ipuçları. Bilimsel araştırmalara dayalı, uygulanabilir içerikler.',
+  keywords: 'sağlıklı yaşam, zayıflama, diyet, beslenme, egzersiz, motivasyon, kilo verme, sağlıklı beslenme',
   openGraph: {
     title: 'Blog - Sağlıklı Yaşam ve Zayıflama İpuçları',
     description: 'Beslenme, egzersiz, motivasyon ve sağlıklı yaşam hakkında uzman tavsiyeleri ve ipuçları.',
+    url: `${baseUrl}/blog`,
+    type: 'website',
+  },
+  alternates: {
+    canonical: `${baseUrl}/blog`,
   },
 };
 
@@ -59,9 +68,25 @@ export default async function BlogPage() {
     getCategories(),
   ]);
 
+  // Generate structured data
+  const collectionSchema = generateCollectionPageSchema(
+    'Sağlıklı Yaşam Blogu',
+    'Beslenme, egzersiz, motivasyon ve sağlıklı yaşam hakkında uzman tavsiyeleri',
+    '/blog',
+    baseUrl,
+    posts.length
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+      />
+
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+        <div className="container mx-auto px-4 py-12 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -166,7 +191,8 @@ export default async function BlogPage() {
             ))}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

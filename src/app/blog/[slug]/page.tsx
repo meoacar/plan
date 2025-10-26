@@ -8,9 +8,11 @@ import { tr } from 'date-fns/locale';
 import { BlogComments } from '@/components/blog/blog-comments';
 import { BlogReactions } from '@/components/blog/blog-reactions';
 import { BlogSocialShare } from '@/components/blog/blog-social-share';
+import { BlogAuthorBox } from '@/components/blog/blog-author-box';
 import {
   generateBlogPostSchema,
   generateBreadcrumbSchema,
+  generateAuthorSchema,
 } from '@/lib/blog-structured-data';
 
 type Props = {
@@ -20,6 +22,14 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await prisma.blogPost.findUnique({
     where: { slug: params.slug },
+    include: {
+      category: true,
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+    },
   });
 
   if (!post) {
@@ -28,16 +38,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zayiflamaplanim.com';
+  const url = `${baseUrl}/blog/${params.slug}`;
+
   return {
-    title: post.metaTitle || post.title,
+    title: post.metaTitle || `${post.title} | Zayıflama Planım`,
     description: post.metaDescription || post.excerpt,
-    keywords: post.metaKeywords,
+    keywords: post.metaKeywords || post.tags.map((t) => t.tag.name).join(', '),
+    authors: [{ name: post.authorName }],
     openGraph: {
       title: post.metaTitle || post.title,
       description: post.metaDescription || post.excerpt,
-      images: post.featuredImage ? [post.featuredImage] : [],
+      images: post.featuredImage ? [{ url: post.featuredImage, alt: post.featuredImageAlt || post.title }] : [],
       type: 'article',
       publishedTime: post.publishedAt?.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
+      authors: [post.authorName],
+      section: post.category?.name,
+      tags: post.tags.map((t) => t.tag.name),
+      url,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.metaTitle || post.title,
+      description: post.metaDescription || post.excerpt,
+      images: post.featuredImage ? [post.featuredImage] : [],
+    },
+    alternates: {
+      canonical: url,
     },
   };
 }
@@ -132,6 +160,7 @@ export default async function BlogPostPage({ params }: Props) {
   // Generate structured data
   const articleSchema = generateBlogPostSchema(post, baseUrl);
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems, baseUrl);
+  const authorSchema = generateAuthorSchema(post.authorName, baseUrl);
 
   return (
     <>
@@ -143,6 +172,10 @@ export default async function BlogPostPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(authorSchema) }}
       />
 
       <div className="min-h-screen bg-gray-50">
@@ -254,10 +287,19 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </header>
 
+          {/* Author Box */}
+          <div className="px-6 md:px-12 pt-6">
+            <BlogAuthorBox 
+              authorName={post.authorName}
+              publishedAt={post.publishedAt}
+              readTime={post.readTime}
+            />
+          </div>
+
           {/* Content */}
           <div className="px-6 md:px-12 py-8">
             <div
-              className="prose prose-lg max-w-none"
+              className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-img:rounded-xl prose-img:shadow-lg"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>

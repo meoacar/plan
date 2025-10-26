@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { generateCollectionPageSchema, generateBreadcrumbSchema } from '@/lib/blog-structured-data';
 
 type Props = {
   params: { slug: string };
@@ -18,9 +19,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Kategori Bulunamadı' };
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zayiflamaplanim.com';
+
   return {
-    title: `${category.name} - Blog`,
-    description: category.description || `${category.name} kategorisindeki yazılar`,
+    title: `${category.name} - Sağlıklı Yaşam Blogu | Zayıflama Planım`,
+    description: category.description || `${category.name} kategorisindeki yazılar - Uzman tavsiyeleri ve ipuçları`,
+    keywords: `${category.name}, sağlıklı yaşam, zayıflama, diyet, beslenme`,
+    openGraph: {
+      title: `${category.name} - Blog`,
+      description: category.description || `${category.name} kategorisindeki yazılar`,
+      url: `${baseUrl}/blog/kategori/${params.slug}`,
+      type: 'website',
+    },
+    alternates: {
+      canonical: `${baseUrl}/blog/kategori/${params.slug}`,
+    },
   };
 }
 
@@ -52,9 +65,39 @@ export default async function BlogCategoryPage({ params }: Props) {
     },
   });
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zayiflamaplanim.com';
+
+  // Generate structured data
+  const collectionSchema = generateCollectionPageSchema(
+    category.name,
+    category.description || `${category.name} kategorisindeki yazılar`,
+    `/blog/kategori/${params.slug}`,
+    baseUrl,
+    posts.length
+  );
+
+  const breadcrumbItems = [
+    { name: 'Ana Sayfa', url: '/' },
+    { name: 'Blog', url: '/blog' },
+    { name: category.name, url: `/blog/kategori/${params.slug}` },
+  ];
+
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems, baseUrl);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+        <div className="container mx-auto px-4 py-12 max-w-7xl">
         <nav className="mb-8 text-sm text-gray-600">
           <Link href="/" className="hover:text-green-600">Ana Sayfa</Link>
           <span className="mx-2">/</span>
@@ -90,8 +133,10 @@ export default async function BlogCategoryPage({ params }: Props) {
                     <div className="relative h-48 overflow-hidden">
                       <img
                         src={post.featuredImage}
-                        alt={post.title}
+                        alt={post.featuredImageAlt || post.title}
+                        title={post.title}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
                       />
                     </div>
                   </Link>
@@ -122,7 +167,8 @@ export default async function BlogCategoryPage({ params }: Props) {
             ))}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

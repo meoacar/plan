@@ -21,14 +21,26 @@ export function CrisisStats() {
   const [stats, setStats] = useState<CrisisStats | null>(null);
   const [history, setHistory] = useState<CrisisButton[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchStats();
+    
+    // Her 3 saniyede bir otomatik yenile
+    const interval = setInterval(() => {
+      fetchStats(true);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
-  const fetchStats = async () => {
+  const fetchStats = async (silent = false) => {
+    if (!silent) {
+      setLoading(true);
+    }
     try {
-      const res = await fetch('/api/crisis-button?limit=20');
+      const res = await fetch('/api/crisis-button?limit=20', {
+        cache: 'no-store',
+      });
       if (res.ok) {
         const data = await res.json();
         setStats(data.stats);
@@ -38,7 +50,13 @@ export function CrisisStats() {
       console.error('İstatistikler yüklenemedi:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchStats();
   };
 
   const triggerLabels: Record<string, { label: string; emoji: string; color: string }> = {
@@ -66,6 +84,18 @@ export function CrisisStats() {
 
   return (
     <div className="space-y-8">
+      {/* Yenileme Butonu */}
+      <div className="flex justify-end">
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span className={refreshing ? 'animate-spin' : ''}>🔄</span>
+          {refreshing ? 'Yenileniyor...' : 'Yenile'}
+        </button>
+      </div>
+
       {/* Genel İstatistikler */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 animate-fadeIn">

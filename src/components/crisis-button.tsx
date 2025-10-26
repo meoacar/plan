@@ -91,14 +91,22 @@ function CrisisModal({ onClose }: CrisisModalProps) {
   const handleResolved = async () => {
     setIsSubmitting(true);
     try {
-      await fetch('/api/crisis-button/resolve', {
+      const response = await fetch('/api/crisis-button/resolve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ trigger: selectedTrigger }),
       });
-      setStep('success');
+      
+      if (response.ok) {
+        setStep('success');
+      } else {
+        const errorData = await response.json();
+        console.error('Çözüm kaydedilemedi:', errorData);
+        alert('Kriz çözümü kaydedilemedi. Lütfen tekrar deneyin.');
+      }
     } catch (error) {
       console.error('Çözüm kaydedilemedi:', error);
+      alert('Bir hata oluştu. Lütfen tekrar deneyin.');
     } finally {
       setIsSubmitting(false);
     }

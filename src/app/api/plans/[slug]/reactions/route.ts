@@ -1,35 +1,35 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
-import { createNotification } from "@/lib/notifications"
 import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  context: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    // Session kontrolü - basit versiyon
+    const authHeader = req.headers.get("cookie")
+    if (!authHeader) {
+      return NextResponse.json({ error: "Giriş yapmalısınız" }, { status: 401 })
     }
 
-    const { emoji, label } = await req.json()
+    const body = await req.json()
+    const { emoji, label, userId } = body
 
-    if (!emoji || !label) {
+    if (!emoji || !label || !userId) {
       return NextResponse.json(
-        { error: "Emoji ve label gerekli" },
+        { error: "Eksik bilgi" },
         { status: 400 }
       )
     }
 
-    const { slug } = await params
+    const { slug } = await context.params
 
     // Planı bul
     const plan = await prisma.plan.findUnique({
       where: { slug },
-      select: { id: true, userId: true, title: true },
+      select: { id: true, userId: true },
     })
 
     if (!plan) {
@@ -37,55 +37,39 @@ export async function POST(
     }
 
     // Mevcut reaksiyonu kontrol et
-    const existingReaction = await prisma.planReaction.findUnique({
+    const existing = await prisma.planReaction.findFirst({
       where: {
-        planId_userId_emoji: {
-          planId: plan.id,
-          userId: session.user.id,
-          emoji,
-        },
+        planId: plan.id,
+        userId: userId,
+        emoji: emoji,
       },
     })
 
-    let action: "added" | "removed"
+    let action = "added"
 
-    if (existingReaction) {
-      // Reaksiyonu kaldır
+    if (existing) {
+      // Kaldır
       await prisma.planReaction.delete({
-        where: { id: existingReaction.id },
+        where: { id: existing.id },
       })
       action = "removed"
     } else {
-      // Reaksiyon ekle
+      // Ekle
       await prisma.planReaction.create({
         data: {
           planId: plan.id,
-          userId: session.user.id,
-          emoji,
-          label,
+          userId: userId,
+          emoji: emoji,
+          label: label,
         },
       })
-      action = "added"
-
-      // Bildirim gönder (kendi planına reaksiyon vermediyse)
-      if (plan.userId !== session.user.id) {
-        await createNotification({
-          userId: plan.userId,
-          type: "PLAN_REACTION",
-          title: `${emoji} ${label}`,
-          message: `${session.user.name} planınıza "${label}" reaksiyonu verdi`,
-          actionUrl: `/plan/${slug}`,
-          actorId: session.user.id,
-          relatedId: plan.id,
-        })
-      }
     }
 
     return NextResponse.json({ success: true, action })
-  } catch (error) {
-    console.error("Plan reaction error:", error)
+  } catch (error: any) {
+    console.error("Reaction error:", error)
     return NextResponse.json(
-      { error: "Bir hata oluştu" },
+      { error: error.message || "Hata oluştu" },
       { status: 500 }
     )
   }

@@ -61,7 +61,7 @@ export function PlanReactions({ planId, planSlug, initialReactions = [] }: PlanR
       const res = await fetch(`/api/plans/${planSlug}/reactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emoji, label }),
+        body: JSON.stringify({ emoji, label, userId: session.user.id }),
       })
 
       if (!res.ok) {

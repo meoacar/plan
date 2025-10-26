@@ -33,6 +33,12 @@ function CrisisModal({ onClose }: CrisisModalProps) {
   const [step, setStep] = useState<'trigger' | 'motivation' | 'success'>('trigger');
   const [selectedTrigger, setSelectedTrigger] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resolveData, setResolveData] = useState<{
+    xpReward: number;
+    message: string;
+    dailyCount?: number;
+    dailyLimit?: number;
+  } | null>(null);
 
   const triggers = [
     { id: 'food_craving', label: '🍕 Yemek İsteği', emoji: '🍕' },
@@ -98,6 +104,8 @@ function CrisisModal({ onClose }: CrisisModalProps) {
       });
       
       if (response.ok) {
+        const data = await response.json();
+        setResolveData(data);
         setStep('success');
       } else {
         const errorData = await response.json();
@@ -225,16 +233,41 @@ function CrisisModal({ onClose }: CrisisModalProps) {
               Harikasın! 🌟
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Krizi atlattın! Bu büyük bir başarı. Kendini tebrik et! 💪
+              {resolveData?.message || 'Krizi atlattın! Bu büyük bir başarı. Kendini tebrik et! 💪'}
             </p>
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 mb-6">
-              <p className="text-lg font-medium text-gray-900">
-                +50 XP Kazandın! 🏆
-              </p>
-              <p className="text-gray-600 mt-2">
-                Her kriz anını atlatmak seni daha güçlü yapıyor!
-              </p>
-            </div>
+            
+            {resolveData && resolveData.xpReward > 0 && (
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 mb-6">
+                <p className="text-lg font-medium text-gray-900">
+                  +{resolveData.xpReward} XP Kazandın! 🏆
+                </p>
+                <p className="text-gray-600 mt-2">
+                  Her kriz anını atlatmak seni daha güçlü yapıyor!
+                </p>
+                {resolveData.dailyCount && resolveData.dailyLimit && (
+                  <p className="text-sm text-gray-500 mt-2">
+                    Bugün {resolveData.dailyCount}/{resolveData.dailyLimit} kriz çözümü
+                  </p>
+                )}
+              </div>
+            )}
+
+            {resolveData && resolveData.xpReward === 0 && (
+              <div className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-6 mb-6 border-2 border-gray-200">
+                <p className="text-gray-700">
+                  Kriz atlatıldı! 💪
+                </p>
+                {resolveData.dailyCount && resolveData.dailyLimit && (
+                  <p className="text-sm text-gray-500 mt-2">
+                    Bugün {resolveData.dailyCount}/{resolveData.dailyLimit} kriz çözümü
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-3">
+                  💡 XP kazanmak için kriz çözümleri arasında en az 1 saat beklemen gerekiyor.
+                </p>
+              </div>
+            )}
+
             <button
               onClick={onClose}
               className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all"

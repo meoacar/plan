@@ -17,6 +17,8 @@ Mizahi ve oyunlaştırılmış beslenme takip sistemi. Kaçamak yemeklerini taki
   - 💎 Süper Disiplinli (30 gün temiz) - 200 XP
   - 🥈 Yağsavar (30 gün fast food yok) - 100 XP
   - 🥉 Dengeli Dahi (3 gün telafi) - 30 XP
+  
+  **Not**: Rozetler sadece en az bir kere günah yemeği ekleyen kullanıcılara verilir.
 
 - **Challenge Sistemi**:
   - Haftalık limit belirleme

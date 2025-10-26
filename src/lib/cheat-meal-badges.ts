@@ -4,6 +4,16 @@ import { startOfDay, subDays, differenceInDays } from "date-fns";
 export async function checkAndAwardCheatBadges(userId: string) {
   const badges = [];
 
+  // Önce kullanıcının hiç günah yemeği ekleyip eklemediğini kontrol et
+  const totalCheats = await prisma.cheatMeal.count({
+    where: { userId },
+  });
+
+  // Hiç günah yemeği yoksa rozet verme
+  if (totalCheats === 0) {
+    return badges;
+  }
+
   // 7 gün kaçamak yok - Glukozsuz Kahraman
   const sevenDaysAgo = subDays(startOfDay(new Date()), 7);
   const recentCheats = await prisma.cheatMeal.count({

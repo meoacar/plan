@@ -463,9 +463,11 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                       <div className="ml-auto">
                         <ShareButtons
                           title={plan.title}
-                      url={`/plan/${plan.slug}`}
-                      description={`${plan.startWeight}kg → ${plan.goalWeight}kg | ${plan.durationText} | ${plan.routine.substring(0, 100)}...`}
-                    />
+                          url={`/plan/${plan.slug}`}
+                          description={`${plan.startWeight}kg → ${plan.goalWeight}kg | ${plan.durationText} | ${plan.routine.substring(0, 100)}...`}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

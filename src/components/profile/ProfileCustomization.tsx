@@ -230,11 +230,11 @@ export default function ProfileCustomization() {
             )}
 
             <div className="text-center">
-              {item.imageUrl ? (
+              {item.previewUrl || item.imageUrl ? (
                 <img
-                  src={item.imageUrl}
+                  src={item.previewUrl || item.imageUrl}
                   alt={item.name}
-                  className="w-16 h-16 mx-auto mb-2 object-contain"
+                  className="w-16 h-16 mx-auto mb-2 object-cover rounded-lg"
                 />
               ) : item.colors?.gradient ? (
                 <div

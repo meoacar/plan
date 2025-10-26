@@ -155,8 +155,8 @@ export default async function ProfilePage({ params }: PageProps) {
   // Arka plan stilini belirle
   const backgroundStyle = activeBackground?.imageUrl
     ? { backgroundImage: `url(${activeBackground.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-    : activeBackground?.colors?.gradient
-    ? { background: activeBackground.colors.gradient }
+    : activeBackground?.colors && typeof activeBackground.colors === 'object' && 'gradient' in activeBackground.colors
+    ? { background: (activeBackground.colors as any).gradient }
     : {}
 
   return (
@@ -211,7 +211,6 @@ export default async function ProfilePage({ params }: PageProps) {
                     ))}
                   </div>
                 )}
-              </div>
                 {isOwnProfile && (
                   <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-2 shadow-lg">
                     <Link href="/profile/edit">

@@ -450,7 +450,6 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                     />
                   </div>
                 </div>
-              </div>
 
               {/* Content Sections */}
               <div className="space-y-6">

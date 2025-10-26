@@ -49,30 +49,41 @@ export async function POST(
       )
     }
 
-    // Kullanıcı bu yoruma bu emoji ile daha önce reaksiyon vermiş mi?
-    const existingReaction = await prisma.commentReaction.findUnique({
+    // Kullanıcının bu yoruma verdiği tüm reaksiyonları kontrol et
+    const existingReactions = await prisma.commentReaction.findMany({
       where: {
-        commentId_userId_emoji: {
-          commentId: id,
-          userId: session.user.id,
-          emoji,
-        },
+        commentId: id,
+        userId: session.user.id,
       },
     })
 
-    if (existingReaction) {
+    // Aynı emoji'ye tıklandıysa, reaksiyonu kaldır
+    const sameEmojiReaction = existingReactions.find(r => r.emoji === emoji)
+    
+    if (sameEmojiReaction) {
       // Reaksiyonu kaldır
       await prisma.commentReaction.delete({
-        where: { id: existingReaction.id },
+        where: { id: sameEmojiReaction.id },
       })
 
       return NextResponse.json({ 
         success: true, 
         action: "removed",
-        emoji 
+        emoji,
+        removedOthers: false
       })
     } else {
-      // Reaksiyon ekle
+      // Farklı emoji'ye tıklandıysa, önce tüm eski reaksiyonları sil
+      if (existingReactions.length > 0) {
+        await prisma.commentReaction.deleteMany({
+          where: {
+            commentId: id,
+            userId: session.user.id,
+          },
+        })
+      }
+
+      // Yeni reaksiyonu ekle
       await prisma.commentReaction.create({
         data: {
           commentId: id,
@@ -102,7 +113,8 @@ export async function POST(
       return NextResponse.json({ 
         success: true, 
         action: "added",
-        emoji 
+        emoji,
+        removedOthers: existingReactions.length > 0
       })
     }
   } catch (error) {

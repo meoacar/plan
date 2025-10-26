@@ -66,9 +66,24 @@ export function CommentReactions({ commentId, initialReactions = [] }: CommentRe
       // Optimistic update
       setReactions((prev) => {
         const newReactions = { ...prev }
+        
         if (data.action === "added") {
+          // Eğer başka reaksiyonlar kaldırıldıysa, onları da UI'dan kaldır
+          if (data.removedOthers) {
+            // Kullanıcının önceki reaksiyonlarını bul ve sayılarını azalt
+            userReactions.forEach((oldEmoji) => {
+              if (oldEmoji !== emoji) {
+                newReactions[oldEmoji] = Math.max(0, (newReactions[oldEmoji] || 0) - 1)
+                if (newReactions[oldEmoji] === 0) {
+                  delete newReactions[oldEmoji]
+                }
+              }
+            })
+          }
+          // Yeni reaksiyonu ekle
           newReactions[emoji] = (newReactions[emoji] || 0) + 1
         } else {
+          // Reaksiyon kaldırıldı
           newReactions[emoji] = Math.max(0, (newReactions[emoji] || 0) - 1)
           if (newReactions[emoji] === 0) {
             delete newReactions[emoji]
@@ -78,12 +93,12 @@ export function CommentReactions({ commentId, initialReactions = [] }: CommentRe
       })
 
       setUserReactions((prev) => {
-        const newSet = new Set(prev)
+        const newSet = new Set<string>()
         if (data.action === "added") {
+          // Sadece yeni emoji'yi ekle (öncekiler temizlendi)
           newSet.add(emoji)
-        } else {
-          newSet.delete(emoji)
         }
+        // action === "removed" ise set boş kalır
         return newSet
       })
     } catch (error) {

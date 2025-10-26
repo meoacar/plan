@@ -41,14 +41,13 @@ const nextConfig: NextConfig = {
 
   // Experimental features for better performance
   experimental: {
-    optimizePackageImports: ["lucide-react", "recharts", "@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
+    optimizePackageImports: [
+      "lucide-react",
+      "recharts",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+    ],
   },
-
-  // Optimize CSS
-  optimizeFonts: true,
-  
-  // Minimize JavaScript
-  swcMinify: true,
 
   // Security headers
   async headers() {

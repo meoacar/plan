@@ -111,131 +111,198 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
               </button>
 
               {featuresMenuOpen && (
-                <div className="absolute top-full mt-2 right-0 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <div className="absolute top-full mt-2 right-0 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 py-3 z-50 max-h-[80vh] overflow-y-auto">
                   {/* Dynamic Navbar Pages */}
-                  {navbarPages.filter(p => p.showInNavbar).map((page) => (
-                    <Link
-                      key={page.id}
-                      href={`/pages/${page.slug}`}
-                      onClick={() => setFeaturesMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <span className="text-lg">📄</span>
-                      <span>{page.title}</span>
-                    </Link>
-                  ))}
                   {navbarPages.filter(p => p.showInNavbar).length > 0 && (
-                    <div className="border-t border-gray-100 my-2"></div>
+                    <>
+                      <div className="px-4 py-2">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sayfalar</p>
+                      </div>
+                      {navbarPages.filter(p => p.showInNavbar).map((page) => (
+                        <Link
+                          key={page.id}
+                          href={`/pages/${page.slug}`}
+                          onClick={() => setFeaturesMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                        >
+                          <span className="text-xl group-hover:scale-110 transition-transform">📄</span>
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium">{page.title}</span>
+                        </Link>
+                      ))}
+                      <div className="border-t border-gray-100 my-2"></div>
+                    </>
                   )}
+
+                  {/* Genel Özellikler */}
+                  <div className="px-4 py-2">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Genel</p>
+                  </div>
                   <Link
                     href="/polls"
                     onClick={() => setFeaturesMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                   >
-                    <BarChart2 className="w-4 h-4 text-[#2d7a4a]" />
-                    <span>Anketler</span>
+                    <BarChart2 className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                    <div className="flex-1">
+                      <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Anketler</span>
+                      <span className="text-xs text-gray-500">Topluluk anketleri</span>
+                    </div>
                   </Link>
                   <Link
                     href="/recipes"
                     onClick={() => setFeaturesMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                   >
-                    <span className="text-lg">🍽️</span>
-                    <span>Sağlıklı Tarifler</span>
+                    <Utensils className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                    <div className="flex-1">
+                      <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Sağlıklı Tarifler</span>
+                      <span className="text-xs text-gray-500">Lezzetli ve sağlıklı</span>
+                    </div>
                   </Link>
-                  {session && (
-                    <Link
-                      href="/recipes/my-recipes"
-                      onClick={() => setFeaturesMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <span className="text-lg">📖</span>
-                      <span>Tariflerim</span>
-                    </Link>
-                  )}
+
                   {session && (
                     <>
+                      <div className="border-t border-gray-100 my-2"></div>
+                      <div className="px-4 py-2">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Kişisel</p>
+                      </div>
+                      <Link
+                        href="/recipes/my-recipes"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                      >
+                        <span className="text-xl group-hover:scale-110 transition-transform">📖</span>
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Tariflerim</span>
+                          <span className="text-xs text-gray-500">Kendi tarifleriniz</span>
+                        </div>
+                      </Link>
                       <Link
                         href="/collections"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                       >
-                        <FolderOpen className="w-4 h-4 text-[#2d7a4a]" />
-                        <span>Koleksiyonlar</span>
+                        <FolderOpen className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Koleksiyonlar</span>
+                          <span className="text-xs text-gray-500">Favori planlarınız</span>
+                        </div>
                       </Link>
+
+                      <div className="border-t border-gray-100 my-2"></div>
+                      <div className="px-4 py-2">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Takip & Analiz</p>
+                      </div>
                       <Link
                         href="/progress"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                       >
-                        <Camera className="w-4 h-4 text-[#2d7a4a]" />
-                        <span>Fotoğraf Galerisi</span>
+                        <Camera className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Fotoğraf Galerisi</span>
+                          <span className="text-xs text-gray-500">İlerleme fotoğrafları</span>
+                        </div>
                       </Link>
                       <Link
                         href="/analytics"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                       >
-                        <BarChart3 className="w-4 h-4 text-[#2d7a4a]" />
-                        <span>İlerleme Takibi</span>
+                        <BarChart3 className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">İlerleme Takibi</span>
+                          <span className="text-xs text-gray-500">Detaylı analizler</span>
+                        </div>
                       </Link>
                       <Link
                         href="/calories"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                       >
-                        <Utensils className="w-4 h-4 text-[#2d7a4a]" />
-                        <span>Kalori Takibi</span>
+                        <Utensils className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Kalori Takibi</span>
+                          <span className="text-xs text-gray-500">Günlük kalori hesabı</span>
+                        </div>
                       </Link>
+
+                      <div className="border-t border-gray-100 my-2"></div>
+                      <div className="px-4 py-2">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Motivasyon</p>
+                      </div>
                       <Link
                         href="/gamification"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                       >
-                        <Trophy className="w-4 h-4 text-[#2d7a4a]" />
-                        <span>Rozetler & Liderlik</span>
+                        <Trophy className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Rozetler & Liderlik</span>
+                          <span className="text-xs text-gray-500">Başarılarınız</span>
+                        </div>
                       </Link>
                       <Link
                         href="/partnerships"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                       >
-                        <Users className="w-4 h-4 text-[#2d7a4a]" />
-                        <span>Partnerler</span>
+                        <Users className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Partnerler</span>
+                          <span className="text-xs text-gray-500">Birlikte zayıflayın</span>
+                        </div>
                       </Link>
+
                       <div className="border-t border-gray-100 my-2"></div>
+                      <div className="px-4 py-2">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sosyal</p>
+                      </div>
                       <Link
                         href="/groups"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                       >
-                        <span className="text-lg">👥</span>
-                        <span>Gruplar</span>
+                        <span className="text-xl group-hover:scale-110 transition-transform">👥</span>
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Gruplar</span>
+                          <span className="text-xs text-gray-500">Topluluk grupları</span>
+                        </div>
                       </Link>
                       <Link
                         href="/challenges"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                       >
-                        <span className="text-lg">🏆</span>
-                        <span>Challenge'lar</span>
+                        <span className="text-xl group-hover:scale-110 transition-transform">🏆</span>
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Challenge'lar</span>
+                          <span className="text-xs text-gray-500">Yarışmalar</span>
+                        </div>
                       </Link>
                       <Link
                         href="/friend-suggestions"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                       >
-                        <span className="text-lg">🦋</span>
-                        <span>Arkadaş Önerileri</span>
+                        <span className="text-xl group-hover:scale-110 transition-transform">🦋</span>
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Arkadaş Önerileri</span>
+                          <span className="text-xs text-gray-500">Yeni arkadaşlar</span>
+                        </div>
                       </Link>
+
                       <div className="border-t border-gray-100 my-2"></div>
                       <Link
                         href="/crisis-stats"
                         onClick={() => setFeaturesMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 transition-all group"
                       >
-                        <span className="text-lg">🆘</span>
-                        <span>Kriz İstatistikleri</span>
+                        <span className="text-xl group-hover:scale-110 transition-transform">🆘</span>
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-red-600 font-medium block">Kriz İstatistikleri</span>
+                          <span className="text-xs text-gray-500">Destek ve yardım</span>
+                        </div>
                       </Link>
                     </>
                   )}

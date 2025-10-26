@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { startOfDay, subDays, differenceInDays } from "date-fns";
+import { unlockCustomizationItems, checkBadgeCountUnlocks } from "./unlock-customization";
 
 export async function checkAndAwardCheatBadges(userId: string) {
   const badges = [];
@@ -73,10 +74,15 @@ export async function checkAndAwardCheatBadges(userId: string) {
           },
         });
 
+        // Özelleştirme öğelerini aç
+        const unlocked = await unlockCustomizationItems(userId, badge.type);
+        await checkBadgeCountUnlocks(userId);
+
         badges.push({
           type: "CHEAT_FREE_7_DAYS",
           name: "Glukozsuz Kahraman",
           xp: badge.xpReward,
+          unlockedItems: unlocked.unlockedItems,
         });
       }
     }
@@ -126,10 +132,15 @@ export async function checkAndAwardCheatBadges(userId: string) {
           },
         });
 
+        // Özelleştirme öğelerini aç
+        const unlocked = await unlockCustomizationItems(userId, badge.type);
+        await checkBadgeCountUnlocks(userId);
+
         badges.push({
           type: "CHEAT_FREE_30_DAYS",
           name: "Süper Disiplinli",
           xp: badge.xpReward,
+          unlockedItems: unlocked.unlockedItems,
         });
       }
     }
@@ -179,10 +190,15 @@ export async function checkAndAwardCheatBadges(userId: string) {
           },
         });
 
+        // Özelleştirme öğelerini aç
+        const unlocked = await unlockCustomizationItems(userId, badge.type);
+        await checkBadgeCountUnlocks(userId);
+
         badges.push({
           type: "FAST_FOOD_FREE_30_DAYS",
           name: "Yağsavar",
           xp: badge.xpReward,
+          unlockedItems: unlocked.unlockedItems,
         });
       }
     }
@@ -231,10 +247,15 @@ export async function checkAndAwardCheatBadges(userId: string) {
             },
           });
 
+          // Özelleştirme öğelerini aç
+          const unlocked = await unlockCustomizationItems(userId, badge.type);
+          await checkBadgeCountUnlocks(userId);
+
           badges.push({
             type: "BALANCED_RECOVERY",
             name: "Dengeli Dahi",
             xp: badge.xpReward,
+            unlockedItems: unlocked.unlockedItems,
           });
         }
       }

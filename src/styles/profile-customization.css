@@ -1,0 +1,292 @@
+/* Profil Çerçeveleri */
+.profile-avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-avatar-frame {
+  position: relative;
+  border-radius: 50%;
+  padding: 4px;
+}
+
+/* Varsayılan Çerçeve */
+.frame-default {
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+}
+
+/* Bronz Çerçeve */
+.frame-bronze {
+  background: linear-gradient(135deg, #cd7f32 0%, #b87333 100%);
+  box-shadow: 0 0 20px rgba(205, 127, 50, 0.5);
+}
+
+/* Gümüş Çerçeve */
+.frame-silver {
+  background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
+  box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+}
+
+/* Altın Çerçeve */
+.frame-gold {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+  animation: goldGlow 2s ease-in-out infinite;
+}
+
+@keyframes goldGlow {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(255, 215, 0, 0.8);
+  }
+}
+
+/* Elmas Çerçeve */
+.frame-diamond {
+  background: linear-gradient(135deg, #b9f2ff 0%, #00d4ff 100%);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.7);
+  animation: diamondSparkle 1.5s ease-in-out infinite;
+}
+
+@keyframes diamondSparkle {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(185, 242, 255, 0.9);
+  }
+}
+
+/* Disiplin Çerçevesi */
+.frame-discipline {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+}
+
+/* Kahraman Çerçevesi */
+.frame-hero {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+  animation: heroFlame 1s ease-in-out infinite;
+}
+
+@keyframes heroFlame {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(220, 38, 38, 0.8);
+  }
+}
+
+/* Şef Çerçevesi */
+.frame-chef {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+/* Gökkuşağı Çerçeve */
+.frame-rainbow {
+  background: linear-gradient(
+    135deg,
+    #ef4444 0%,
+    #f59e0b 20%,
+    #10b981 40%,
+    #3b82f6 60%,
+    #8b5cf6 80%,
+    #ec4899 100%
+  );
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+  animation: rainbowRotate 3s linear infinite;
+}
+
+@keyframes rainbowRotate {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+/* Profil Arka Planları */
+.profile-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.bg-default {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bg-fitness {
+  background: url('/backgrounds/fitness-motivation.jpg') center/cover;
+}
+
+.bg-healthy {
+  background: url('/backgrounds/healthy-life.jpg') center/cover;
+}
+
+.bg-success {
+  background: url('/backgrounds/success-path.jpg') center/cover;
+}
+
+.bg-healthy-food {
+  background: url('/backgrounds/healthy-food.jpg') center/cover;
+}
+
+.bg-galaxy {
+  background: url('/backgrounds/galaxy.jpg') center/cover;
+  animation: galaxyMove 20s ease-in-out infinite;
+}
+
+@keyframes galaxyMove {
+  0%, 100% {
+    background-position: center center;
+  }
+  50% {
+    background-position: center 60%;
+  }
+}
+
+/* Profil Temaları */
+.theme-classic {
+  --color-primary: #10b981;
+  --color-secondary: #3b82f6;
+  --color-accent: #8b5cf6;
+  --color-background: #ffffff;
+  --color-text: #1f2937;
+}
+
+.theme-fire {
+  --color-primary: #ef4444;
+  --color-secondary: #f97316;
+  --color-accent: #fbbf24;
+  --color-background: #fef2f2;
+  --color-text: #7f1d1d;
+}
+
+.theme-ocean {
+  --color-primary: #3b82f6;
+  --color-secondary: #06b6d4;
+  --color-accent: #8b5cf6;
+  --color-background: #eff6ff;
+  --color-text: #1e3a8a;
+}
+
+.theme-forest {
+  --color-primary: #10b981;
+  --color-secondary: #059669;
+  --color-accent: #84cc16;
+  --color-background: #f0fdf4;
+  --color-text: #064e3b;
+}
+
+.theme-night {
+  --color-primary: #8b5cf6;
+  --color-secondary: #6366f1;
+  --color-accent: #ec4899;
+  --color-background: #1f2937;
+  --color-text: #f9fafb;
+}
+
+.theme-legend {
+  --color-primary: #fbbf24;
+  --color-secondary: #f59e0b;
+  --color-accent: #ef4444;
+  --color-background: #fffbeb;
+  --color-text: #78350f;
+}
+
+/* Profil Rozetleri */
+.profile-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.profile-badge {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+  transition: transform 0.2s;
+}
+
+.profile-badge:hover {
+  transform: scale(1.1);
+}
+
+.profile-badge img {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+}
+
+/* Animasyonlar */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+.sparkle-effect {
+  animation: sparkle 1s ease-in-out infinite;
+}
+
+/* Level Up Animasyonu */
+@keyframes levelUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px) scale(1);
+    opacity: 0;
+  }
+}
+
+.level-up-animation {
+  animation: levelUp 1s ease-out;
+}
+
+/* Başarı Konfetisi */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  animation: confetti-fall 3s linear;
+  pointer-events: none;
+}

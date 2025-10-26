@@ -69,6 +69,7 @@ model User {
   weightLogs             WeightLog[]
   cheatMeals             CheatMeal[]
   cheatChallenges        CheatChallenge[]
+  profileCustomization   ProfileCustomization?
 
   @@index([xp, level])
 }
@@ -1358,4 +1359,56 @@ enum CheatType {
   SODA
   ALCOHOL
   OTHER
+}
+
+model ProfileCustomization {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  activeFrame         String?
+  activeBackground    String?
+  activeTheme         String?
+  activeBadges        String[]
+  unlockedFrames      String[]
+  unlockedBackgrounds String[]
+  unlockedThemes      String[]
+  unlockedBadges      String[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CustomizationItem {
+  id              String             @id @default(cuid())
+  type            CustomizationType
+  code            String             @unique
+  name            String
+  description     String?
+  imageUrl        String?
+  previewUrl      String?
+  cssClass        String?
+  colors          Json?
+  unlockCondition String
+  badgeType       BadgeType?
+  badgeCount      Int?
+  level           Int?
+  xpRequired      Int?
+  isDefault       Boolean            @default(false)
+  isSpecial       Boolean            @default(false)
+  order           Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([type, order])
+  @@index([badgeType])
+  @@index([isDefault])
+}
+
+enum CustomizationType {
+  FRAME
+  BACKGROUND
+  THEME
+  BADGE
+  ANIMATION
 }

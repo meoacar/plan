@@ -12,6 +12,8 @@
     "db:seed:polls": "tsx prisma/seed-polls.ts",
     "db:seed:foods": "tsx prisma/seed-foods.ts",
     "db:seed:foods-mega": "tsx prisma/seed-foods-mega.ts",
+    "db:seed:customization": "tsx prisma/seed-customization-items.ts",
+    "test:customization": "tsx scripts/test-customization-system.ts",
     "lighthouse": "lighthouse https://zayiflamaplanim.com --view",
     "lighthouse:mobile": "lighthouse https://zayiflamaplanim.com --preset=perf --view"
   },

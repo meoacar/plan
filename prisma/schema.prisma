@@ -1235,6 +1235,7 @@ model BlogPost {
   updatedAt       DateTime       @updatedAt
   category        BlogCategory?  @relation(fields: [categoryId], references: [id])
   comments        BlogComment[]
+  reactions       BlogReaction[]
   tags            BlogPostTag[]
 
   @@index([slug])
@@ -1292,6 +1293,19 @@ model BlogComment {
 
   @@index([postId, isApproved, createdAt])
   @@index([authorId])
+}
+
+model BlogReaction {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId, emoji])
+  @@index([postId])
+  @@index([userId])
 }
 
 enum BlogStatus {

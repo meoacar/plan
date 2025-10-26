@@ -19,10 +19,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/planlar`,
+      url: `${baseUrl}/submit`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/recipes`,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 0.9,
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/groups`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/challenges`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
     },
   ];
 
@@ -78,5 +96,92 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...blogPostPages, ...blogCategoryPages, ...blogTagPages];
+  // Plans (Zayıflama Planları)
+  const plans = await prisma.plan.findMany({
+    where: {
+      status: 'APPROVED',
+    },
+    select: {
+      slug: true,
+      updatedAt: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  const planPages: MetadataRoute.Sitemap = plans.map((plan) => ({
+    url: `${baseUrl}/plan/${plan.slug}`,
+    lastModified: plan.updatedAt,
+    changeFrequency: 'weekly',
+    priority: 0.8,
+  }));
+
+  // Recipes (Tarifler)
+  const recipes = await prisma.recipe.findMany({
+    where: {
+      status: 'APPROVED',
+    },
+    select: {
+      slug: true,
+      updatedAt: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  const recipePages: MetadataRoute.Sitemap = recipes.map((recipe) => ({
+    url: `${baseUrl}/recipes/${recipe.slug}`,
+    lastModified: recipe.updatedAt,
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }));
+
+  // Pages (Statik Sayfalar)
+  const pages = await prisma.page.findMany({
+    where: {
+      isPublished: true,
+    },
+    select: {
+      slug: true,
+      updatedAt: true,
+    },
+  });
+
+  const customPages: MetadataRoute.Sitemap = pages.map((page) => ({
+    url: `${baseUrl}/pages/${page.slug}`,
+    lastModified: page.updatedAt,
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  }));
+
+  // Groups (Gruplar)
+  const groups = await prisma.group.findMany({
+    where: {
+      status: 'APPROVED',
+    },
+    select: {
+      slug: true,
+      updatedAt: true,
+    },
+  });
+
+  const groupPages: MetadataRoute.Sitemap = groups.map((group) => ({
+    url: `${baseUrl}/groups/${group.slug}`,
+    lastModified: group.updatedAt,
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }));
+
+  return [
+    ...staticPages,
+    ...planPages,
+    ...blogPostPages,
+    ...blogCategoryPages,
+    ...blogTagPages,
+    ...recipePages,
+    ...customPages,
+    ...groupPages,
+  ];
 }

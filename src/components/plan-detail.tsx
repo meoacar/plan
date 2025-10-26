@@ -422,21 +422,6 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
               {/* Interaction Buttons */}
               <div className="space-y-6">
                 {/* Hızlı Reaksiyon Butonları */}
-                <div className="relative">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-lg opacity-20" />
-                  <div className="relative bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xl p-6 rounded-2xl border border-purple-500/30">
-                    <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                      <span className="text-xl">💫</span>
-                      Bu plana nasıl tepki vermek istersin?
-                    </h4>
-                    <PlanReactions
-                      planId={plan.id}
-                      planSlug={plan.slug}
-                      initialReactions={[]}
-                    />
-                  </div>
-                </div>
-
                 {/* Diğer Etkileşim Butonları */}
                 <div className="flex flex-wrap items-center gap-4">
                   <button

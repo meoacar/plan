@@ -66,7 +66,8 @@ export function generateRecipeStructuredData(data: RecipeStructuredData) {
         "@type": "Recipe",
         "name": data.name,
         "description": data.description,
-        "image": data.image ? [data.image] : undefined,
+        // Image: recipe görseli varsa onu, yoksa varsayılan logo
+        "image": data.image ? [data.image] : [`${baseUrl}/og-image.jpg`],
         "author": {
             "@type": "Person",
             "name": data.author.name,
@@ -138,7 +139,8 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
         "@id": `${baseUrl}/plan/${data.name}`,
         "headline": data.name,
         "description": data.description,
-        "image": data.image ? [data.image] : undefined,
+        // Image: plan görseli varsa onu, yoksa varsayılan logo
+        "image": data.image ? [data.image] : [`${baseUrl}/og-image.jpg`],
         "datePublished": data.datePublished,
         "dateModified": data.dateModified || data.datePublished,
         "author": {

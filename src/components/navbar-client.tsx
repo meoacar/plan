@@ -50,24 +50,19 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 md:gap-3 text-base sm:text-xl md:text-2xl font-bold text-[#2d7a4a] hover:text-[#236038] transition-all hover:scale-105 group">
+          <Link href="/" className="flex items-center transition-all hover:scale-105 group">
             {logoUrl ? (
-              <>
-                <img 
-                  src={logoUrl} 
-                  alt={siteTitle}
-                  className="w-8 h-8 sm:w-10 sm:h-10 object-contain transition-transform group-hover:rotate-12"
-                />
-              </>
+              <img 
+                src={logoUrl} 
+                alt={siteTitle}
+                className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-110"
+              />
             ) : (
               <>
-                <Logo size={32} className="sm:hidden transition-transform group-hover:rotate-12" />
-                <Logo size={40} className="hidden sm:block transition-transform group-hover:rotate-12" />
+                <Logo size={40} className="sm:hidden transition-transform group-hover:rotate-12" />
+                <Logo size={48} className="hidden sm:block transition-transform group-hover:rotate-12" />
               </>
             )}
-            <span className="bg-gradient-to-r from-[#2d7a4a] to-[#4caf50] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none">
-              {siteTitle}
-            </span>
           </Link>
 
           {/* Desktop Menu */}

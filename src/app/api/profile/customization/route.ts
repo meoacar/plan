@@ -47,6 +47,12 @@ export async function GET(req: NextRequest) {
       orderBy: [{ type: "asc" }, { order: "asc" }],
     });
 
+    // Açılmış öğeleri takip et
+    const newlyUnlockedFrames: string[] = [];
+    const newlyUnlockedBackgrounds: string[] = [];
+    const newlyUnlockedThemes: string[] = [];
+    const newlyUnlockedBadges: string[] = [];
+
     const itemsWithLockStatus = allItems.map((item: any) => {
       let isUnlocked = item.isDefault;
 
@@ -60,6 +66,19 @@ export async function GET(req: NextRequest) {
         isUnlocked = badgeTypes.includes(item.badgeType);
       }
 
+      // Açılmış ama listeye eklenmemiş öğeleri ekle
+      if (isUnlocked) {
+        if (item.type === "FRAME" && !customization!.unlockedFrames.includes(item.code)) {
+          newlyUnlockedFrames.push(item.code);
+        } else if (item.type === "BACKGROUND" && !customization!.unlockedBackgrounds.includes(item.code)) {
+          newlyUnlockedBackgrounds.push(item.code);
+        } else if (item.type === "THEME" && !customization!.unlockedThemes.includes(item.code)) {
+          newlyUnlockedThemes.push(item.code);
+        } else if (item.type === "BADGE" && !customization!.unlockedBadges.includes(item.code)) {
+          newlyUnlockedBadges.push(item.code);
+        }
+      }
+
       return {
         ...item,
         isUnlocked,
@@ -70,6 +89,32 @@ export async function GET(req: NextRequest) {
           customization?.activeBadges?.includes(item.code),
       };
     });
+
+    // Yeni açılan öğeleri veritabanına ekle
+    if (
+      newlyUnlockedFrames.length > 0 ||
+      newlyUnlockedBackgrounds.length > 0 ||
+      newlyUnlockedThemes.length > 0 ||
+      newlyUnlockedBadges.length > 0
+    ) {
+      customization = await prisma.profileCustomization.update({
+        where: { userId: session.user.id },
+        data: {
+          unlockedFrames: {
+            push: newlyUnlockedFrames,
+          },
+          unlockedBackgrounds: {
+            push: newlyUnlockedBackgrounds,
+          },
+          unlockedThemes: {
+            push: newlyUnlockedThemes,
+          },
+          unlockedBadges: {
+            push: newlyUnlockedBadges,
+          },
+        },
+      });
+    }
 
     return NextResponse.json({
       customization,
@@ -115,41 +160,95 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Seçilen öğelerin açık olduğunu kontrol et
+    // Kullanıcının rozet bilgilerini al
+    const badgeCount = await prisma.userBadge.count({
+      where: { userId: session.user.id },
+    });
+
+    const userBadges = await prisma.userBadge.findMany({
+      where: { userId: session.user.id },
+      include: { badge: true },
+    });
+
+    const badgeTypes = userBadges.map((ub) => ub.badge.type);
+
+    // Seçilen öğelerin gerçekten açık olduğunu kontrol et
+    const checkIfUnlocked = async (code: string, type: "FRAME" | "BACKGROUND" | "THEME" | "BADGE") => {
+      const item = await prisma.customizationItem.findFirst({
+        where: { code, type },
+      });
+
+      if (!item) return false;
+      if (item.isDefault) return true;
+      if (item.badgeCount && badgeCount >= item.badgeCount) return true;
+      if (item.badgeType && badgeTypes.includes(item.badgeType)) return true;
+
+      return false;
+    };
+
     const updates: any = {};
 
     if (activeFrame !== undefined) {
-      if (
-        customization.unlockedFrames.includes(activeFrame) ||
-        activeFrame === null
-      ) {
-        updates.activeFrame = activeFrame;
+      if (activeFrame === null) {
+        updates.activeFrame = null;
+      } else {
+        const isUnlocked = await checkIfUnlocked(activeFrame, "FRAME");
+        if (isUnlocked) {
+          updates.activeFrame = activeFrame;
+          // Eğer unlocked listesinde yoksa ekle
+          if (!customization.unlockedFrames.includes(activeFrame)) {
+            updates.unlockedFrames = [...customization.unlockedFrames, activeFrame];
+          }
+        }
       }
     }
 
     if (activeBackground !== undefined) {
-      if (
-        customization.unlockedBackgrounds.includes(activeBackground) ||
-        activeBackground === null
-      ) {
-        updates.activeBackground = activeBackground;
+      if (activeBackground === null) {
+        updates.activeBackground = null;
+      } else {
+        const isUnlocked = await checkIfUnlocked(activeBackground, "BACKGROUND");
+        if (isUnlocked) {
+          updates.activeBackground = activeBackground;
+          // Eğer unlocked listesinde yoksa ekle
+          if (!customization.unlockedBackgrounds.includes(activeBackground)) {
+            updates.unlockedBackgrounds = [...customization.unlockedBackgrounds, activeBackground];
+          }
+        }
       }
     }
 
     if (activeTheme !== undefined) {
-      if (
-        customization.unlockedThemes.includes(activeTheme) ||
-        activeTheme === null
-      ) {
-        updates.activeTheme = activeTheme;
+      if (activeTheme === null) {
+        updates.activeTheme = null;
+      } else {
+        const isUnlocked = await checkIfUnlocked(activeTheme, "THEME");
+        if (isUnlocked) {
+          updates.activeTheme = activeTheme;
+          // Eğer unlocked listesinde yoksa ekle
+          if (!customization.unlockedThemes.includes(activeTheme)) {
+            updates.unlockedThemes = [...customization.unlockedThemes, activeTheme];
+          }
+        }
       }
     }
 
     if (activeBadges !== undefined) {
-      // Max 3 rozet
-      const validBadges = activeBadges
-        .filter((badge: string) => customization!.unlockedBadges.includes(badge))
-        .slice(0, 3);
+      // Her rozeti kontrol et
+      const validBadges: string[] = [];
+      for (const badge of activeBadges.slice(0, 3)) {
+        const isUnlocked = await checkIfUnlocked(badge, "BADGE");
+        if (isUnlocked) {
+          validBadges.push(badge);
+          // Eğer unlocked listesinde yoksa ekle
+          if (!customization.unlockedBadges.includes(badge)) {
+            if (!updates.unlockedBadges) {
+              updates.unlockedBadges = [...customization.unlockedBadges];
+            }
+            updates.unlockedBadges.push(badge);
+          }
+        }
+      }
       updates.activeBadges = validBadges;
     }
 

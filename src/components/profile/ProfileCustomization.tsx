@@ -42,19 +42,21 @@ export default function ProfileCustomization() {
     fetchCustomization();
   }, []);
 
-  const fetchCustomization = async () => {
+  const fetchCustomization = async (resetSelection = true) => {
     try {
       const res = await fetch("/api/profile/customization");
       const json = await res.json();
       setData(json);
 
       // Aktif öğeleri set et
-      setSelectedItems({
-        frame: json.customization?.activeFrame || null,
-        background: json.customization?.activeBackground || null,
-        theme: json.customization?.activeTheme || null,
-        badges: json.customization?.activeBadges || [],
-      });
+      if (resetSelection) {
+        setSelectedItems({
+          frame: json.customization?.activeFrame || null,
+          background: json.customization?.activeBackground || null,
+          theme: json.customization?.activeTheme || null,
+          badges: json.customization?.activeBadges || [],
+        });
+      }
     } catch (error) {
       console.error("Error fetching customization:", error);
     } finally {
@@ -77,8 +79,20 @@ export default function ProfileCustomization() {
       });
 
       if (res.ok) {
-        await fetchCustomization();
+        const result = await res.json();
+        // Kaydedilen değerleri state'e yansıt
+        setSelectedItems({
+          frame: result.customization.activeFrame || null,
+          background: result.customization.activeBackground || null,
+          theme: result.customization.activeTheme || null,
+          badges: result.customization.activeBadges || [],
+        });
+        // Veriyi güncelle ama seçimleri sıfırlama
+        await fetchCustomization(false);
         alert("Özelleştirmeler kaydedildi!");
+      } else {
+        const error = await res.json();
+        alert("Bir hata oluştu: " + (error.error || "Bilinmeyen hata"));
       }
     } catch (error) {
       console.error("Error saving customization:", error);

@@ -506,21 +506,100 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                 ➕ Plan Ekle
               </Link>
 
+              {/* Dynamic Top Navbar Pages - Mobile */}
+              {navbarPages.filter(p => p.showInTopNavbar).length > 0 && (
+                <>
+                  <div className="px-4 py-2 mt-2">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Sayfalar</p>
+                  </div>
+                  {navbarPages.filter(p => p.showInTopNavbar).map((page) => (
+                    <Link
+                      key={page.id}
+                      href={`/pages/${page.slug}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === `/pages/${page.slug}`
+                        ? "bg-[#2d7a4a] text-white"
+                        : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                    >
+                      📄 {page.title}
+                    </Link>
+                  ))}
+                </>
+              )}
+
+              {/* Genel Özellikler */}
+              <div className="px-4 py-2 mt-2">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Genel</p>
+              </div>
+              <Link
+                href="/polls"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/polls"
+                  ? "bg-[#2d7a4a] text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                📊 Anketler
+              </Link>
+              <Link
+                href="/recipes"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/recipes"
+                  ? "bg-[#2d7a4a] text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                🍽️ Sağlıklı Tarifler
+              </Link>
+              <Link
+                href="/blog"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/blog"
+                  ? "bg-[#2d7a4a] text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                ✍️ Blog
+              </Link>
+
               {/* Sadece Giriş Yapanlar İçin */}
               {session && (
                 <>
+                  {/* Dynamic Navbar Pages - Mobile */}
+                  {navbarPages.filter(p => p.showInNavbar && !p.showInTopNavbar).length > 0 && (
+                    <>
+                      <div className="px-4 py-2 mt-2">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Diğer Sayfalar</p>
+                      </div>
+                      {navbarPages.filter(p => p.showInNavbar && !p.showInTopNavbar).map((page) => (
+                        <Link
+                          key={page.id}
+                          href={`/pages/${page.slug}`}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === `/pages/${page.slug}`
+                            ? "bg-[#2d7a4a] text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                            }`}
+                        >
+                          📄 {page.title}
+                        </Link>
+                      ))}
+                    </>
+                  )}
+
                   <div className="px-4 py-2 mt-2">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Özellikler</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Kişisel</p>
                   </div>
                   <Link
-                    href="/recipes"
+                    href="/recipes/my-recipes"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/recipes"
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/recipes/my-recipes"
                       ? "bg-[#2d7a4a] text-white"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
                   >
-                    🍽️ Tarifler
+                    📖 Tariflerim
                   </Link>
                   <Link
                     href="/collections"
@@ -532,6 +611,10 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   >
                     📁 Koleksiyonlar
                   </Link>
+
+                  <div className="px-4 py-2 mt-2">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Takip & Analiz</p>
+                  </div>
                   <Link
                     href="/progress"
                     onClick={() => setMobileMenuOpen(false)}
@@ -540,7 +623,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
                   >
-                    📸 Galeri
+                    📸 Fotoğraf Galerisi
                   </Link>
                   <Link
                     href="/analytics"
@@ -550,7 +633,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
                   >
-                    📊 İlerleme
+                    📊 İlerleme Takibi
                   </Link>
                   <Link
                     href="/calories"
@@ -562,6 +645,10 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   >
                     🍽️ Kalori Takibi
                   </Link>
+
+                  <div className="px-4 py-2 mt-2">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Motivasyon</p>
+                  </div>
                   <Link
                     href="/gamification"
                     onClick={() => setMobileMenuOpen(false)}
@@ -570,8 +657,32 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
                   >
-                    🏆 Rozetler
+                    🏆 Rozetler & Liderlik
                   </Link>
+                  <Link
+                    href="/partnerships"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/partnerships"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    👥 Partnerler
+                  </Link>
+                  <Link
+                    href="/gunah-sayaci"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/gunah-sayaci"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    😈 Günah Sayacı
+                  </Link>
+
+                  <div className="px-4 py-2 mt-2">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Sosyal</p>
+                  </div>
                   <Link
                     href="/groups"
                     onClick={() => setMobileMenuOpen(false)}
@@ -581,6 +692,38 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                       }`}
                   >
                     👥 Gruplar
+                  </Link>
+                  <Link
+                    href="/challenges"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/challenges"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    🏆 Challenge'lar
+                  </Link>
+                  <Link
+                    href="/friend-suggestions"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/friend-suggestions"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    🦋 Arkadaş Önerileri
+                  </Link>
+
+                  <div className="border-t border-gray-200 my-2"></div>
+                  <Link
+                    href="/crisis-stats"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/crisis-stats"
+                      ? "bg-red-600 text-white"
+                      : "text-red-600 hover:bg-red-50"
+                      }`}
+                  >
+                    🆘 Kriz İstatistikleri
                   </Link>
 
                   {/* Admin */}

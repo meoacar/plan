@@ -216,7 +216,7 @@ export default async function PlanPage({ params }: PageProps) {
   const similarPlans = await getSimilarPlans(plan.goalWeight, plan.id)
 
   // Generate structured data for SEO
-  const planStructuredData = generatePlanStructuredData({
+  const { article, rating } = generatePlanStructuredData({
     name: plan.title,
     description: `${plan.startWeight}kg → ${plan.goalWeight}kg | ${plan.durationText}`,
     image: plan.imageUrl || undefined,
@@ -245,10 +245,19 @@ export default async function PlanPage({ params }: PageProps) {
 
   return (
     <>
+      {/* Article structured data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: getStructuredDataScript(planStructuredData) }}
+        dangerouslySetInnerHTML={{ __html: getStructuredDataScript(article) }}
       />
+      {/* Rating structured data (ayrı) */}
+      {rating && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: getStructuredDataScript(rating) }}
+        />
+      )}
+      {/* Breadcrumb structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: getStructuredDataScript(breadcrumbStructuredData) }}

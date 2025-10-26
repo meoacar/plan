@@ -131,7 +131,8 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
     const weightLoss = data.startWeight - data.goalWeight
     const lossPercentage = ((weightLoss / data.startWeight) * 100).toFixed(1)
 
-    const structuredData: Record<string, any> = {
+    // Article structured data (AggregateRating olmadan)
+    const articleData: Record<string, any> = {
         "@context": "https://schema.org",
         "@type": "Article",
         "@id": `${baseUrl}/plan/${data.name}`,
@@ -168,9 +169,11 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
         }
     }
 
-    // AggregateRating sadece review varsa ekle ve itemReviewed ile birlikte
-    if (data.aggregateRating && data.aggregateRating.reviewCount > 0) {
-        structuredData.aggregateRating = {
+    return {
+        article: articleData,
+        // AggregateRating'i ayrı bir obje olarak döndür
+        rating: data.aggregateRating && data.aggregateRating.reviewCount > 0 ? {
+            "@context": "https://schema.org",
             "@type": "AggregateRating",
             "ratingValue": data.aggregateRating.ratingValue,
             "reviewCount": data.aggregateRating.reviewCount,
@@ -178,12 +181,11 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
             "worstRating": 1,
             "itemReviewed": {
                 "@type": "Article",
+                "@id": `${baseUrl}/plan/${data.name}`,
                 "name": data.name
             }
-        }
+        } : null
     }
-
-    return structuredData
 }
 
 /**

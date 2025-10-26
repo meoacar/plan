@@ -433,11 +433,7 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                     <PlanReactions
                       planId={plan.id}
                       planSlug={plan.slug}
-                      initialReactions={plan.reactions?.map((r: any) => ({
-                        emoji: r.emoji,
-                        userId: r.userId,
-                        user: r.user
-                      })) || []}
+                      initialReactions={[]}
                     />
                   </div>
                 </div>

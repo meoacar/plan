@@ -218,6 +218,7 @@ export default async function PlanPage({ params }: PageProps) {
   // Generate structured data for SEO
   const { article, rating } = generatePlanStructuredData({
     name: plan.title,
+    slug: plan.slug,  // URL-safe slug
     description: `${plan.startWeight}kg → ${plan.goalWeight}kg | ${plan.durationText}`,
     image: plan.imageUrl || undefined,
     author: {

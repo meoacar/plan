@@ -36,6 +36,7 @@ interface RecipeStructuredData {
 
 interface PlanStructuredData {
     name: string
+    slug: string  // URL-safe slug
     description: string
     image?: string
     author: {
@@ -136,7 +137,7 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
     const articleData: Record<string, any> = {
         "@context": "https://schema.org",
         "@type": "Article",
-        "@id": `${baseUrl}/plan/${data.name}`,
+        "@id": `${baseUrl}/plan/${data.slug}`,
         "headline": data.name,
         "description": data.description,
         // Image: plan görseli varsa onu, yoksa varsayılan logo
@@ -159,7 +160,7 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
         },
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": `${baseUrl}/plan/${data.name}`
+            "@id": `${baseUrl}/plan/${data.slug}`
         },
         "articleSection": data.category || "Zayıflama Planları",
         "keywords": data.keywords?.join(", "),
@@ -182,7 +183,7 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
             "bestRating": 5,
             "worstRating": 1,
             "itemReviewed": {
-                "@id": `${baseUrl}/plan/${data.name}`
+                "@id": `${baseUrl}/plan/${data.slug}`
             }
         } : null
     }

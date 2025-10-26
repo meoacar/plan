@@ -1360,3 +1360,4 @@ enum CheatType {
   SODA
   ALCOHOL
   OTHER
+}

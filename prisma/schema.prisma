@@ -190,29 +190,31 @@ model VerificationToken {
 }
 
 model SiteSettings {
-  id                   String       @id @default(cuid())
-  siteTitle            String       @default("Zayıflama Planım")
-  siteDescription      String
-  logoUrl              String?
-  twitterUrl           String?
-  instagramUrl         String?
-  facebookUrl          String?
-  footerText           String?
-  maintenanceMode      Boolean      @default(false)
-  updatedAt            DateTime     @updatedAt
-  updatedBy            String
-  footerAboutText      String?      @default("Gerçek insanların gerçek başarı hikayeleri. Sağlıklı yaşam için ilham alın.")
-  footerAboutTitle     String?      @default("Hakkımızda")
-  footerLinksTitle     String?      @default("Hızlı Bağlantılar")
-  footerSocialTitle    String?      @default("Bizi Takip Edin")
-  facebookAppId        String?
-  facebookAppSecret    String?
-  facebookOAuthEnabled Boolean      @default(false)
-  googleClientId       String?
-  googleClientSecret   String?
-  googleOAuthEnabled   Boolean      @default(false)
-  footerLinks          FooterLink[]
-  updatedByUser        User         @relation(fields: [updatedBy], references: [id])
+  id                      String       @id @default(cuid())
+  siteTitle               String       @default("Zayıflama Planım")
+  siteDescription         String
+  logoUrl                 String?
+  twitterUrl              String?
+  instagramUrl            String?
+  facebookUrl             String?
+  footerText              String?
+  maintenanceMode         Boolean      @default(false)
+  updatedAt               DateTime     @updatedAt
+  updatedBy               String
+  footerAboutText         String?      @default("Gerçek insanların gerçek başarı hikayeleri. Sağlıklı yaşam için ilham alın.")
+  footerAboutTitle        String?      @default("Hakkımızda")
+  footerLinksTitle        String?      @default("Hızlı Bağlantılar")
+  footerSocialTitle       String?      @default("Bizi Takip Edin")
+  facebookAppId           String?
+  facebookAppSecret       String?
+  facebookOAuthEnabled    Boolean      @default(false)
+  googleClientId          String?
+  googleClientSecret      String?
+  googleOAuthEnabled      Boolean      @default(false)
+  googleSearchConsoleCode String?
+  googleAnalyticsId       String?
+  footerLinks             FooterLink[]
+  updatedByUser           User         @relation(fields: [updatedBy], references: [id])
 }
 
 model FooterLink {

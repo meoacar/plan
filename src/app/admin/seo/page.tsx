@@ -35,6 +35,10 @@ interface SeoSettings {
         twitterCard: string
         twitterSite: string
     }
+    google: {
+        searchConsoleCode: string
+        analyticsId: string
+    }
 }
 
 export default function SeoPage() {
@@ -62,6 +66,10 @@ export default function SeoPage() {
             defaultImage: "/og-image.jpg",
             twitterCard: "summary_large_image",
             twitterSite: "@zayiflamaplanim"
+        },
+        google: {
+            searchConsoleCode: "",
+            analyticsId: ""
         }
     })
 
@@ -142,6 +150,7 @@ export default function SeoPage() {
                     <TabsTrigger value="robots">Robots.txt</TabsTrigger>
                     <TabsTrigger value="rss">RSS Feed</TabsTrigger>
                     <TabsTrigger value="opengraph">OpenGraph</TabsTrigger>
+                    <TabsTrigger value="google">Google</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="sitemap" className="space-y-4">
@@ -440,6 +449,90 @@ export default function SeoPage() {
                                         })
                                     }
                                 />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="google" className="space-y-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Google Search Console & Analytics</CardTitle>
+                            <CardDescription>
+                                Google doğrulama kodları ve Analytics entegrasyonu
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <h3 className="font-semibold text-blue-900">📋 Google Search Console Kurulum</h3>
+                                <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+                                    <li>
+                                        <a 
+                                            href="https://search.google.com/search-console" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline font-medium"
+                                        >
+                                            Google Search Console
+                                        </a> sayfasına gidin
+                                    </li>
+                                    <li>Site URL'nizi ekleyin ve "HTML tag" doğrulama yöntemini seçin</li>
+                                    <li>Verilen meta tag'deki <code className="bg-blue-100 px-1 rounded">content</code> değerini kopyalayın</li>
+                                    <li>Aşağıdaki alana yapıştırın ve kaydedin</li>
+                                    <li>Google Search Console'a dönüp "Doğrula" butonuna tıklayın</li>
+                                </ol>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="google-search-console">
+                                    Google Search Console Doğrulama Kodu
+                                </Label>
+                                <Input
+                                    id="google-search-console"
+                                    placeholder="örn: abc123xyz456..."
+                                    value={settings.google.searchConsoleCode}
+                                    onChange={(e) =>
+                                        setSettings({
+                                            ...settings,
+                                            google: { ...settings.google, searchConsoleCode: e.target.value }
+                                        })
+                                    }
+                                />
+                                <p className="text-xs text-gray-500">
+                                    Meta tag: <code className="bg-gray-100 px-2 py-1 rounded text-xs">
+                                        &lt;meta name="google-site-verification" content="BURAYA_KOD" /&gt;
+                                    </code>
+                                </p>
+                            </div>
+
+                            <div className="border-t pt-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="google-analytics">
+                                        Google Analytics ID (Opsiyonel)
+                                    </Label>
+                                    <Input
+                                        id="google-analytics"
+                                        placeholder="örn: G-XXXXXXXXXX veya UA-XXXXXXXXX-X"
+                                        value={settings.google.analyticsId}
+                                        onChange={(e) =>
+                                            setSettings({
+                                                ...settings,
+                                                google: { ...settings.google, analyticsId: e.target.value }
+                                            })
+                                        }
+                                    />
+                                    <p className="text-xs text-gray-500">
+                                        Google Analytics 4 (GA4) veya Universal Analytics ID'nizi girin
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <h4 className="font-semibold text-green-900 mb-2">✅ Doğrulama Sonrası</h4>
+                                <p className="text-sm text-green-800">
+                                    Doğrulama başarılı olduktan sonra Google Search Console'da sitenizin performansını, 
+                                    arama sorgularını ve indeksleme durumunu takip edebilirsiniz.
+                                </p>
                             </div>
                         </CardContent>
                     </Card>

@@ -37,6 +37,10 @@ export async function GET() {
           defaultImage: "/og-image.jpg",
           twitterCard: "summary_large_image",
           twitterSite: "@zayiflamaplanim"
+        },
+        google: {
+          searchConsoleCode: "",
+          analyticsId: ""
         }
       })
     }

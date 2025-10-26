@@ -80,6 +80,8 @@ export const siteSettingsSchema = z.object({
   googleOAuthEnabled: z.boolean(),
   googleClientId: z.string().optional(),
   googleClientSecret: z.string().optional(),
+  googleSearchConsoleCode: z.string().optional(),
+  googleAnalyticsId: z.string().optional(),
   facebookOAuthEnabled: z.boolean(),
   facebookAppId: z.string().optional(),
   facebookAppSecret: z.string().optional(),

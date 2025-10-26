@@ -20,6 +20,8 @@ interface SiteSettings {
   googleOAuthEnabled: boolean
   googleClientId: string | null
   googleClientSecret: string | null
+  googleSearchConsoleCode: string | null
+  googleAnalyticsId: string | null
   facebookOAuthEnabled: boolean
   facebookAppId: string | null
   facebookAppSecret: string | null
@@ -53,6 +55,8 @@ export function SettingsForm({ initialSettings, onSuccess }: SettingsFormProps) 
     googleOAuthEnabled: initialSettings.googleOAuthEnabled,
     googleClientId: initialSettings.googleClientId || "",
     googleClientSecret: initialSettings.googleClientSecret || "",
+    googleSearchConsoleCode: initialSettings.googleSearchConsoleCode || "",
+    googleAnalyticsId: initialSettings.googleAnalyticsId || "",
     facebookOAuthEnabled: initialSettings.facebookOAuthEnabled,
     facebookAppId: initialSettings.facebookAppId || "",
     facebookAppSecret: initialSettings.facebookAppSecret || "",
@@ -179,6 +183,8 @@ export function SettingsForm({ initialSettings, onSuccess }: SettingsFormProps) 
         footerSocialTitle: formData.footerSocialTitle.trim() || undefined,
         googleClientId: formData.googleClientId.trim() || undefined,
         googleClientSecret: formData.googleClientSecret.trim() || undefined,
+        googleSearchConsoleCode: formData.googleSearchConsoleCode.trim() || undefined,
+        googleAnalyticsId: formData.googleAnalyticsId.trim() || undefined,
         facebookAppId: formData.facebookAppId.trim() || undefined,
         facebookAppSecret: formData.facebookAppSecret.trim() || undefined,
       }
@@ -644,6 +650,69 @@ export function SettingsForm({ initialSettings, onSuccess }: SettingsFormProps) 
               </div>
             </div>
           )}
+        </div>
+
+        {/* Google Search Console & Analytics */}
+        <div className="mt-6 pt-6 border-t">
+          <h3 className="text-lg font-semibold mb-4">Google Search Console & Analytics</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="googleSearchConsoleCode" className="block text-sm font-medium text-gray-700 mb-1">
+                Google Search Console Doğrulama Kodu
+              </label>
+              <input
+                type="text"
+                id="googleSearchConsoleCode"
+                name="googleSearchConsoleCode"
+                value={formData.googleSearchConsoleCode}
+                onChange={handleChange}
+                placeholder="abc123xyz456..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Google Search Console'dan aldığınız meta tag içindeki content değerini girin
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="googleAnalyticsId" className="block text-sm font-medium text-gray-700 mb-1">
+                Google Analytics ID
+              </label>
+              <input
+                type="text"
+                id="googleAnalyticsId"
+                name="googleAnalyticsId"
+                value={formData.googleAnalyticsId}
+                onChange={handleChange}
+                placeholder="G-XXXXXXXXXX veya UA-XXXXXXXXX-X"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Google Analytics 4 (GA4) veya Universal Analytics ID'nizi girin
+              </p>
+            </div>
+
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded">
+              <h4 className="font-semibold text-blue-900 mb-2">📋 Kurulum Adımları</h4>
+              <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                <li>
+                  <a 
+                    href="https://search.google.com/search-console" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Google Search Console
+                  </a> sayfasına gidin
+                </li>
+                <li>Site URL'nizi ekleyin ve "HTML tag" doğrulama yöntemini seçin</li>
+                <li>Verilen meta tag'deki content değerini yukarıdaki alana yapıştırın</li>
+                <li>Kaydet butonuna tıklayın</li>
+                <li>Google Search Console'a dönüp "Doğrula" butonuna tıklayın</li>
+              </ol>
+            </div>
+          </div>
         </div>
 
         {/* Facebook OAuth */}

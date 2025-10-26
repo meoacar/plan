@@ -29,6 +29,16 @@ async function getSiteSettings() {
   }
 }
 
+async function getSeoSettings() {
+  try {
+    const seoSettings = await prisma.seoSettings.findFirst();
+    return seoSettings?.settings as any;
+  } catch (error) {
+    console.error("Error fetching SEO settings:", error);
+    return null;
+  }
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
 
@@ -109,6 +119,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const settings = await getSiteSettings();
+  const seoSettings = await getSeoSettings();
   const { pages: footerPages, footerLinks } = await getFooterData();
 
   return (
@@ -129,6 +140,28 @@ export default async function RootLayout({
         <meta name="theme-color" content="#9333ea" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        
+        {/* Google Search Console Verification */}
+        {settings?.googleSearchConsoleCode && (
+          <meta name="google-site-verification" content={settings.googleSearchConsoleCode} />
+        )}
+        
+        {/* Google Analytics */}
+        {settings?.googleAnalyticsId && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}`}></script>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${settings.googleAnalyticsId}');
+                `,
+              }}
+            />
+          </>
+        )}
       </head>
       <body className={inter.className}>
         <NextTopLoader

@@ -316,15 +316,13 @@ model Backup {
 
 model Badge {
   id          String      @id @default(cuid())
-  type        String      @unique
+  type        BadgeType   @unique
   name        String
   description String
   icon        String
   xpReward    Int         @default(0)
   createdAt   DateTime    @default(now())
   users       UserBadge[]
-
-  @@index([type])
 }
 
 model UserBadge {
@@ -1135,6 +1133,10 @@ enum BadgeType {
   CHALLENGE_WINNER
   CHALLENGE_PARTICIPANT
   SOCIAL_BUTTERFLY
+  CHEAT_FREE_7_DAYS
+  CHEAT_FREE_30_DAYS
+  FAST_FOOD_FREE_30_DAYS
+  BALANCED_RECOVERY
   CHEAT_FREE_7_DAYS
   CHEAT_FREE_30_DAYS
   FAST_FOOD_FREE_30_DAYS

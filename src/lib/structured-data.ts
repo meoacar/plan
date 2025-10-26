@@ -171,7 +171,7 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
 
     return {
         article: articleData,
-        // AggregateRating'i ayrı bir obje olarak döndür
+        // AggregateRating'i ayrı bir obje olarak döndür (sadece @id referansı)
         rating: data.aggregateRating && data.aggregateRating.reviewCount > 0 ? {
             "@context": "https://schema.org",
             "@type": "AggregateRating",
@@ -180,9 +180,7 @@ export function generatePlanStructuredData(data: PlanStructuredData) {
             "bestRating": 5,
             "worstRating": 1,
             "itemReviewed": {
-                "@type": "Article",
-                "@id": `${baseUrl}/plan/${data.name}`,
-                "name": data.name
+                "@id": `${baseUrl}/plan/${data.name}`
             }
         } : null
     }

@@ -86,7 +86,7 @@ export default async function AdminBlogPage() {
             </div>
 
             {/* Quick Links */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <Link
                     href="/admin/blog/kategoriler"
                     className="p-4 bg-white rounded-lg border border-gray-200 hover:border-green-500 hover:shadow-md transition"
@@ -100,6 +100,13 @@ export default async function AdminBlogPage() {
                 >
                     <h3 className="font-semibold text-gray-900 mb-1">Etiketler</h3>
                     <p className="text-sm text-gray-600">Blog etiketlerini yönetin</p>
+                </Link>
+                <Link
+                    href="/admin/blog/yorumlar"
+                    className="p-4 bg-white rounded-lg border border-gray-200 hover:border-green-500 hover:shadow-md transition"
+                >
+                    <h3 className="font-semibold text-gray-900 mb-1">Yorumlar</h3>
+                    <p className="text-sm text-gray-600">Kullanıcı yorumlarını yönetin</p>
                 </Link>
             </div>
 

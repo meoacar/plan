@@ -421,33 +421,48 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
 
               {/* Interaction Buttons */}
               <div className="space-y-6">
-                {/* Hızlı Reaksiyon Butonları */}
-                {/* Diğer Etkileşim Butonları */}
-                <div className="flex flex-wrap items-center gap-4">
-                  <button
-                    onClick={handleLike}
-                    className={`group flex items-center gap-3 px-6 py-3 rounded-xl font-bold text-lg transition-all shadow-lg ${liked
-                      ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-red-500/30 scale-105"
-                      : "bg-gray-800/50 text-gray-300 border border-gray-700 hover:border-red-500/50 hover:bg-gray-800"
-                      }`}
-                  >
-                    <Heart className={`w-6 h-6 ${liked ? "fill-current animate-pulse" : "group-hover:scale-110 transition-transform"}`} />
-                    <span>{likeCount}</span>
-                  </button>
-                  <FavoriteButton planId={plan.id} showLabel />
-                  {session && <AddToCollectionButton planId={plan.id} />}
-                  <PdfExportButton slug={plan.slug} title={plan.title} />
-                  <div className="flex items-center gap-3 px-6 py-3 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-xl font-bold text-lg">
-                    <Eye className="w-6 h-6" />
-                    <span>{plan.views}</span>
-                  </div>
-                  <div className="flex items-center gap-3 px-6 py-3 bg-green-500/20 border border-green-500/30 text-green-300 rounded-xl font-bold text-lg">
-                    <MessageCircle className="w-6 h-6" />
-                    <span>{comments.length}</span>
-                  </div>
-                  <div className="ml-auto">
-                    <ShareButtons
-                      title={plan.title}
+                {/* Modern Etkileşim Butonları */}
+                <div className="relative">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-blue-600/20 rounded-2xl blur-xl" />
+                  <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
+                    <div className="flex flex-wrap items-center gap-3">
+                      {/* Like Button */}
+                      <button
+                        onClick={handleLike}
+                        className={`group relative flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${liked
+                          ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg shadow-red-500/30 scale-105"
+                          : "bg-gray-800/80 text-gray-300 border border-gray-700/50 hover:border-red-500/50 hover:bg-gray-700/80 hover:scale-105"
+                          }`}
+                      >
+                        <Heart className={`w-5 h-5 ${liked ? "fill-current" : "group-hover:scale-110 transition-transform"}`} />
+                        <span className="font-bold">{likeCount}</span>
+                      </button>
+
+                      {/* Favorite Button */}
+                      <FavoriteButton planId={plan.id} showLabel />
+
+                      {/* Collection Button */}
+                      {session && <AddToCollectionButton planId={plan.id} />}
+
+                      {/* PDF Button */}
+                      <PdfExportButton slug={plan.slug} title={plan.title} />
+
+                      {/* Views */}
+                      <div className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 border border-blue-500/20 text-blue-300 rounded-xl font-semibold backdrop-blur-sm">
+                        <Eye className="w-5 h-5" />
+                        <span>{plan.views}</span>
+                      </div>
+
+                      {/* Comments */}
+                      <div className="flex items-center gap-2 px-4 py-2.5 bg-green-500/10 border border-green-500/20 text-green-300 rounded-xl font-semibold backdrop-blur-sm">
+                        <MessageCircle className="w-5 h-5" />
+                        <span>{comments.length}</span>
+                      </div>
+
+                      {/* Share Button */}
+                      <div className="ml-auto">
+                        <ShareButtons
+                          title={plan.title}
                       url={`/plan/${plan.slug}`}
                       description={`${plan.startWeight}kg → ${plan.goalWeight}kg | ${plan.durationText} | ${plan.routine.substring(0, 100)}...`}
                     />

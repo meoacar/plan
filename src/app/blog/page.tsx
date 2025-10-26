@@ -111,8 +111,10 @@ export default async function BlogPage() {
                     <div className="relative h-48 overflow-hidden">
                       <img
                         src={post.featuredImage}
-                        alt={post.title}
+                        alt={post.featuredImageAlt || post.title}
+                        title={post.title}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
                       />
                     </div>
                   </Link>

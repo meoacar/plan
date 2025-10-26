@@ -1221,7 +1221,9 @@ model BlogPost {
   excerpt         String
   content         String
   featuredImage   String?
+  featuredImageAlt String?
   authorId        String
+  authorName      String         @default("Admin")
   categoryId      String?
   status          BlogStatus     @default(DRAFT)
   isPublished     Boolean        @default(false)

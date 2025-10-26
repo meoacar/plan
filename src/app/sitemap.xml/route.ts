@@ -1,78 +1,108 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-  try {
-    const [plans, pages] = await Promise.all([
-      prisma.plan.findMany({
-        where: { status: "APPROVED" },
-        select: {
-          id: true,
-          slug: true,
-          updatedAt: true
-        }
-      }),
-      prisma.page.findMany({
-        where: { isPublished: true },
-        select: {
-          slug: true,
-          updatedAt: true,
-          publishedAt: true
-        }
-      })
-    ])
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zayiflamaplanim.com';
 
-    const baseUrl = process.env.NEXTAUTH_URL || "https://zayiflamaplanim.com"
-    const currentDate = new Date().toISOString()
+  // Blog yazılarını al
+  const blogPosts = await prisma.blogPost.findMany({
+    where: {
+      status: 'PUBLISHED',
+      isPublished: true,
+    },
+    select: {
+      slug: true,
+      updatedAt: true,
+    },
+  });
 
-    let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  // Planları al
+  const plans = await prisma.plan.findMany({
+    where: {
+      status: 'APPROVED',
+    },
+    select: {
+      slug: true,
+      updatedAt: true,
+    },
+  });
+
+  // Tarifleri al
+  const recipes = await prisma.recipe.findMany({
+    where: {
+      status: 'APPROVED',
+    },
+    select: {
+      slug: true,
+      updatedAt: true,
+    },
+  });
+
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>${baseUrl}</loc>
-    <lastmod>${currentDate}</lastmod>
+    <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>${baseUrl}/plans</loc>
-    <lastmod>${currentDate}</lastmod>
+    <loc>${baseUrl}/blog</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-`
-
-    // Dynamic pages
-    pages.forEach(page => {
-      sitemap += `  <url>
-    <loc>${baseUrl}/pages/${page.slug}</loc>
-    <lastmod>${page.updatedAt.toISOString()}</lastmod>
-    <changefreq>weekly</changefreq>
+  <url>
+    <loc>${baseUrl}/plan</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-`
-    })
-
-    // Plans
-    plans.forEach(plan => {
-      sitemap += `  <url>
-    <loc>${baseUrl}/plan/${plan.slug}</loc>
-    <lastmod>${plan.updatedAt.toISOString()}</lastmod>
+  <url>
+    <loc>${baseUrl}/recipes</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  ${blogPosts
+    .map(
+      (post) => `
+  <url>
+    <loc>${baseUrl}/blog/${post.slug}</loc>
+    <lastmod>${post.updatedAt.toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>
-`
-    })
+  </url>`
+    )
+    .join('')}
+  ${plans
+    .map(
+      (plan) => `
+  <url>
+    <loc>${baseUrl}/plan/${plan.slug}</loc>
+    <lastmod>${plan.updatedAt.toISOString()}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`
+    )
+    .join('')}
+  ${recipes
+    .map(
+      (recipe) => `
+  <url>
+    <loc>${baseUrl}/recipes/${recipe.slug}</loc>
+    <lastmod>${recipe.updatedAt.toISOString()}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`
+    )
+    .join('')}
+</urlset>`;
 
-    sitemap += `</urlset>`
-
-    return new NextResponse(sitemap, {
-      headers: {
-        "Content-Type": "application/xml",
-        "Cache-Control": "public, max-age=3600, s-maxage=3600"
-      }
-    })
-  } catch (error) {
-    console.error("Sitemap oluşturulurken hata:", error)
-    return new NextResponse("Sitemap oluşturulamadı", { status: 500 })
-  }
+  return new NextResponse(sitemap, {
+    headers: {
+      'Content-Type': 'application/xml',
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate',
+    },
+  });
 }

@@ -15,6 +15,7 @@ const adminNavItems: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: "📊" },
   { href: "/admin/plans", label: "Planlar", icon: "📋" },
   { href: "/admin/recipes", label: "Tarifler", icon: "🍽️" },
+  { href: "/admin/blog", label: "Blog", icon: "✍️" },
   { href: "/admin/groups", label: "Gruplar", icon: "👥" },
   { href: "/admin/challenges", label: "Challenge'lar", icon: "🏆" },
   { href: "/admin/users", label: "Kullanıcılar", icon: "👤" },

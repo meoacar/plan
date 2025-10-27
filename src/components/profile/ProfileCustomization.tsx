@@ -319,6 +319,32 @@ export default function ProfileCustomization() {
                         <div className="w-4 h-4 rounded-full border-2 border-white shadow-lg" style={{ backgroundColor: item.colors.accent || '#8b5cf6' }}></div>
                       </div>
                     </div>
+                  ) : item.type === "BADGE" ? (
+                    <div className="relative w-24 h-24 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-xl animate-pulse"></div>
+                      {item.imageUrl ? (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className="relative z-10 w-16 h-16 object-contain drop-shadow-lg group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="relative z-10 text-5xl group-hover:scale-110 transition-transform duration-500">
+                          {item.name.includes("Bronz") ? "🥉" :
+                           item.name.includes("Gümüş") ? "🥈" :
+                           item.name.includes("Altın") ? "🥇" :
+                           item.name.includes("Elmas") ? "💎" :
+                           item.name.includes("Disiplin") ? "💪" :
+                           item.name.includes("Kahraman") ? "🦸" :
+                           item.name.includes("Şef") ? "👨‍🍳" :
+                           item.name.includes("Sosyal") ? "🤝" :
+                           item.name.includes("Cheat") ? "🍔" :
+                           item.name.includes("Fast Food") ? "🍟" :
+                           item.name.includes("Balanced") ? "⚖️" :
+                           "⭐"}
+                        </div>
+                      )}
+                    </div>
                   ) : item.previewUrl || item.imageUrl ? (
                     <img
                       src={item.previewUrl || item.imageUrl}

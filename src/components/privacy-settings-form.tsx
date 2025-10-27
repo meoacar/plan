@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { toast } from "@/hooks/use-toast"
 
 interface PrivacySettings {
   isPrivate: boolean
@@ -41,18 +40,10 @@ export function PrivacySettingsForm({ initialSettings }: PrivacySettingsFormProp
         throw new Error("Ayarlar güncellenemedi")
       }
 
-      toast({
-        title: "Başarılı!",
-        description: "Gizlilik ayarların güncellendi.",
-      })
-
+      alert("✅ Gizlilik ayarların başarıyla güncellendi!")
       router.refresh()
     } catch (error) {
-      toast({
-        title: "Hata!",
-        description: "Ayarlar güncellenirken bir hata oluştu.",
-        variant: "destructive",
-      })
+      alert("❌ Ayarlar güncellenirken bir hata oluştu. Lütfen tekrar deneyin.")
     } finally {
       setIsLoading(false)
     }

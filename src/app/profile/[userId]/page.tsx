@@ -159,14 +159,33 @@ export default async function ProfilePage({ params }: PageProps) {
     ? { background: (activeBackground.colors as any).gradient }
     : {}
 
+  // Tema renklerini CSS değişkenleri olarak ayarla
+  const themeColors = activeTheme?.colors && typeof activeTheme.colors === 'object' ? activeTheme.colors as any : null
+  const themeStyle = themeColors ? {
+    '--theme-primary': themeColors.primary || '#10b981',
+    '--theme-secondary': themeColors.secondary || '#3b82f6',
+    '--theme-accent': themeColors.accent || '#8b5cf6',
+    '--theme-background': themeColors.background || '#ffffff',
+    '--theme-text': themeColors.text || '#1f2937',
+  } as React.CSSProperties : {}
+
   return (
-    <div className={`container mx-auto px-4 py-8 max-w-6xl ${activeTheme?.cssClass || ''}`}>
+    <div 
+      className={`container mx-auto px-4 py-8 max-w-6xl ${activeTheme?.cssClass || ''}`}
+      style={themeStyle}
+    >
       {/* Modern Cover & Profile Section */}
       <div className="relative mb-8">
         {/* Cover Image with Custom Background */}
         <div 
-          className="h-48 md:h-64 bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 rounded-2xl shadow-2xl relative overflow-hidden"
-          style={Object.keys(backgroundStyle).length > 0 ? backgroundStyle : undefined}
+          className="h-48 md:h-64 rounded-2xl shadow-2xl relative overflow-hidden"
+          style={{
+            ...(Object.keys(backgroundStyle).length > 0 ? backgroundStyle : {
+              background: themeColors 
+                ? `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.secondary} 50%, ${themeColors.accent} 100%)`
+                : 'linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #8b5cf6 100%)'
+            })
+          }}
         >
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
@@ -266,17 +285,62 @@ export default async function ProfilePage({ params }: PageProps) {
 
                 {/* Stats Row */}
                 <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 mb-4">
-                  <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full">
-                    <span className="text-2xl font-bold text-blue-600">{user._count.plans}</span>
-                    <span className="text-sm font-medium text-blue-900">Plan</span>
+                  <div 
+                    className="flex items-center gap-2 px-4 py-2 rounded-full"
+                    style={{
+                      backgroundColor: themeColors ? `${themeColors.primary}15` : '#dbeafe',
+                    }}
+                  >
+                    <span 
+                      className="text-2xl font-bold"
+                      style={{ color: themeColors?.primary || '#2563eb' }}
+                    >
+                      {user._count.plans}
+                    </span>
+                    <span 
+                      className="text-sm font-medium"
+                      style={{ color: themeColors?.text || '#1e3a8a' }}
+                    >
+                      Plan
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-full">
-                    <span className="text-2xl font-bold text-red-600">{user._count.likes}</span>
-                    <span className="text-sm font-medium text-red-900">Beğeni</span>
+                  <div 
+                    className="flex items-center gap-2 px-4 py-2 rounded-full"
+                    style={{
+                      backgroundColor: themeColors ? `${themeColors.accent}15` : '#fef2f2',
+                    }}
+                  >
+                    <span 
+                      className="text-2xl font-bold"
+                      style={{ color: themeColors?.accent || '#dc2626' }}
+                    >
+                      {user._count.likes}
+                    </span>
+                    <span 
+                      className="text-sm font-medium"
+                      style={{ color: themeColors?.text || '#7f1d1d' }}
+                    >
+                      Beğeni
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full">
-                    <span className="text-2xl font-bold text-green-600">{user._count.comments}</span>
-                    <span className="text-sm font-medium text-green-900">Yorum</span>
+                  <div 
+                    className="flex items-center gap-2 px-4 py-2 rounded-full"
+                    style={{
+                      backgroundColor: themeColors ? `${themeColors.secondary}15` : '#f0fdf4',
+                    }}
+                  >
+                    <span 
+                      className="text-2xl font-bold"
+                      style={{ color: themeColors?.secondary || '#16a34a' }}
+                    >
+                      {user._count.comments}
+                    </span>
+                    <span 
+                      className="text-sm font-medium"
+                      style={{ color: themeColors?.text || '#14532d' }}
+                    >
+                      Yorum
+                    </span>
                   </div>
                 </div>
 

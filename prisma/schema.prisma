@@ -1417,3 +1417,57 @@ enum CustomizationType {
   BADGE
   ANIMATION
 }
+
+model Confession {
+  id        String              @id @default(cuid())
+  userId    String
+  text      String
+  aiReply   String?
+  isAnonymous Boolean           @default(true)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  likes     ConfessionLike[]
+  comments  ConfessionComment[]
+  reactions ConfessionReaction[]
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model ConfessionLike {
+  id           String     @id @default(cuid())
+  confessionId String
+  userId       String
+  createdAt    DateTime   @default(now())
+  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@unique([confessionId, userId])
+  @@index([confessionId])
+  @@index([userId])
+}
+
+model ConfessionComment {
+  id           String     @id @default(cuid())
+  confessionId String
+  userId       String
+  content      String
+  isAnonymous  Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@index([confessionId, createdAt])
+  @@index([userId])
+}
+
+model ConfessionReaction {
+  id           String     @id @default(cuid())
+  confessionId String
+  userId       String
+  emoji        String
+  createdAt    DateTime   @default(now())
+  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@unique([confessionId, userId, emoji])
+  @@index([confessionId])
+  @@index([userId])
+}

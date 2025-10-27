@@ -266,6 +266,42 @@ async function seedGamification() {
       icon: "🗣️",
       xpReward: 120,
     },
+    // İtiraf Duvarı Rozetleri
+    {
+      type: "GROUP_CREATOR",
+      name: "İlk İtiraf",
+      description: "İlk itirafını paylaştın!",
+      icon: "🍰",
+      xpReward: 50,
+    },
+    {
+      type: "GROUP_ADMIN",
+      name: "İtiraf Ustası",
+      description: "10 itiraf paylaştın",
+      icon: "🎭",
+      xpReward: 150,
+    },
+    {
+      type: "CHALLENGE_WINNER",
+      name: "Empati Ustası",
+      description: "İtirafların 50 beğeni aldı",
+      icon: "💖",
+      xpReward: 200,
+    },
+    {
+      type: "CHALLENGE_PARTICIPANT",
+      name: "Topluluk Dostu",
+      description: "50 itiraf yorumu yaptın",
+      icon: "💬",
+      xpReward: 100,
+    },
+    {
+      type: "SOCIAL_BUTTERFLY",
+      name: "Sosyal Kelebek",
+      description: "100 reaksiyon verdin",
+      icon: "🦋",
+      xpReward: 75,
+    },
   ];
 
   for (const badge of badges) {

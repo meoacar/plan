@@ -276,6 +276,17 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                           <span className="text-xs text-gray-500">Kaçamak takibi</span>
                         </div>
                       </Link>
+                      <Link
+                        href="/gunah-itiraf"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                      >
+                        <span className="text-xl group-hover:scale-110 transition-transform">🍰</span>
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">İtiraf Duvarı</span>
+                          <span className="text-xs text-gray-500">Mizah & empati</span>
+                        </div>
+                      </Link>
 
                       <div className="border-t border-gray-100 my-2"></div>
                       <div className="px-4 py-2">

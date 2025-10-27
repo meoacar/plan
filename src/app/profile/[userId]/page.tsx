@@ -171,9 +171,14 @@ export default async function ProfilePage({ params }: PageProps) {
 
   return (
     <div 
-      className={`container mx-auto px-4 py-8 max-w-6xl ${activeTheme?.cssClass || ''}`}
-      style={themeStyle}
+      className={`min-h-screen ${activeTheme?.cssClass || ''}`}
+      style={{
+        ...themeStyle,
+        backgroundColor: themeColors?.background || '#f9fafb',
+        color: themeColors?.text || '#1f2937',
+      }}
     >
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Modern Cover & Profile Section */}
       <div className="relative mb-8">
         {/* Cover Image with Custom Background */}
@@ -192,7 +197,13 @@ export default async function ProfilePage({ params }: PageProps) {
         </div>
 
         {/* Profile Card Overlay */}
-        <Card className="relative -mt-20 mx-4 md:mx-8 shadow-2xl border-0">
+        <Card 
+          className="relative -mt-20 mx-4 md:mx-8 shadow-2xl border-0"
+          style={{
+            backgroundColor: themeColors?.background || '#ffffff',
+            borderColor: themeColors?.primary ? `${themeColors.primary}20` : 'transparent',
+          }}
+        >
           <CardContent className="p-6 md:p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               {/* Avatar with Custom Frame */}
@@ -376,53 +387,111 @@ export default async function ProfilePage({ params }: PageProps) {
           <WallPosts userId={user.id} isOwnProfile={isOwnProfile} />
           {/* About Section */}
           {user.bio && (
-            <Card className="shadow-lg hover:shadow-xl transition-shadow">
+            <Card 
+              className="shadow-lg hover:shadow-xl transition-shadow"
+              style={{
+                backgroundColor: themeColors?.background || '#ffffff',
+                borderColor: themeColors?.primary ? `${themeColors.primary}30` : '#e5e7eb',
+                borderWidth: '2px',
+              }}
+            >
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <CardTitle 
+                  className="text-lg font-bold flex items-center gap-2"
+                  style={{ color: themeColors?.primary || '#1f2937' }}
+                >
                   <span className="text-2xl">📝</span>
                   Hakkında
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 leading-relaxed">{user.bio}</p>
+                <p 
+                  className="leading-relaxed"
+                  style={{ color: themeColors?.text || '#374151' }}
+                >
+                  {user.bio}
+                </p>
               </CardContent>
             </Card>
           )}
 
           {/* Goals Section */}
           {(user.startWeight || user.goalWeight) && (
-            <Card className="shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-purple-50 to-pink-50">
+            <Card 
+              className="shadow-lg hover:shadow-xl transition-shadow"
+              style={{
+                background: themeColors 
+                  ? `linear-gradient(135deg, ${themeColors.primary}10 0%, ${themeColors.accent}10 100%)`
+                  : 'linear-gradient(135deg, #faf5ff 0%, #fce7f3 100%)',
+                borderColor: themeColors?.accent ? `${themeColors.accent}40` : '#e9d5ff',
+                borderWidth: '2px',
+              }}
+            >
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <CardTitle 
+                  className="text-lg font-bold flex items-center gap-2"
+                  style={{ color: themeColors?.primary || '#7c3aed' }}
+                >
                   <span className="text-2xl">🎯</span>
                   Hedefler
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {user.startWeight && (
-                  <div className="bg-white/80 backdrop-blur p-4 rounded-xl">
-                    <div className="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-1">
+                  <div 
+                    className="backdrop-blur p-4 rounded-xl"
+                    style={{
+                      backgroundColor: themeColors?.background || '#ffffff',
+                      opacity: 0.95,
+                    }}
+                  >
+                    <div 
+                      className="text-xs font-semibold uppercase tracking-wide mb-1"
+                      style={{ color: themeColors?.primary || '#7c3aed' }}
+                    >
                       Başlangıç Kilosu
                     </div>
-                    <div className="text-3xl font-bold text-purple-900">
+                    <div 
+                      className="text-3xl font-bold"
+                      style={{ color: themeColors?.text || '#581c87' }}
+                    >
                       {user.startWeight} <span className="text-lg">kg</span>
                     </div>
                   </div>
                 )}
 
                 {user.goalWeight && (
-                  <div className="bg-white/80 backdrop-blur p-4 rounded-xl">
-                    <div className="text-xs font-semibold text-pink-600 uppercase tracking-wide mb-1">
+                  <div 
+                    className="backdrop-blur p-4 rounded-xl"
+                    style={{
+                      backgroundColor: themeColors?.background || '#ffffff',
+                      opacity: 0.95,
+                    }}
+                  >
+                    <div 
+                      className="text-xs font-semibold uppercase tracking-wide mb-1"
+                      style={{ color: themeColors?.accent || '#db2777' }}
+                    >
                       Hedef Kilo
                     </div>
-                    <div className="text-3xl font-bold text-pink-900">
+                    <div 
+                      className="text-3xl font-bold"
+                      style={{ color: themeColors?.text || '#831843' }}
+                    >
                       {user.goalWeight} <span className="text-lg">kg</span>
                     </div>
                   </div>
                 )}
 
                 {weightDiff && weightDiff > 0 && (
-                  <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white p-4 rounded-xl text-center">
+                  <div 
+                    className="text-white p-4 rounded-xl text-center"
+                    style={{
+                      background: themeColors 
+                        ? `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.secondary} 100%)`
+                        : 'linear-gradient(135deg, #10b981 0%, #14b8a6 100%)',
+                    }}
+                  >
                     <div className="text-xs font-semibold uppercase tracking-wide mb-1">
                       Hedef Fark
                     </div>
@@ -437,9 +506,19 @@ export default async function ProfilePage({ params }: PageProps) {
 
           {/* Social Media Section */}
           {(user.instagram || user.twitter || user.youtube || user.tiktok || user.website) && (
-            <Card className="shadow-lg hover:shadow-xl transition-shadow">
+            <Card 
+              className="shadow-lg hover:shadow-xl transition-shadow"
+              style={{
+                backgroundColor: themeColors?.background || '#ffffff',
+                borderColor: themeColors?.secondary ? `${themeColors.secondary}30` : '#e5e7eb',
+                borderWidth: '2px',
+              }}
+            >
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <CardTitle 
+                  className="text-lg font-bold flex items-center gap-2"
+                  style={{ color: themeColors?.secondary || '#1f2937' }}
+                >
                   <span className="text-2xl">🌐</span>
                   Sosyal Medya
                 </CardTitle>
@@ -519,6 +598,7 @@ export default async function ProfilePage({ params }: PageProps) {
           />
         </div>
       </div>
+    </div>
     </div>
   )
 }

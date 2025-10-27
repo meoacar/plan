@@ -1463,11 +1463,19 @@ model ConfessionComment {
   userId       String
   content      String
   isAnonymous  Boolean    @default(true)
+  status       CommentStatus @default(APPROVED)
   createdAt    DateTime   @default(now())
   confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
 
   @@index([confessionId, createdAt])
   @@index([userId])
+  @@index([status])
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model ConfessionReaction {

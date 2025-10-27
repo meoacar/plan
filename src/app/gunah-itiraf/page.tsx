@@ -492,10 +492,13 @@ export default function ConfessionWallPage() {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => toggleComments(confession.id)}
-                    className="flex items-center gap-2 text-white/80 hover:text-blue-400 transition-colors bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl"
+                    className="flex items-center gap-2 text-white/80 hover:text-blue-400 transition-colors bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl group"
                   >
                     <span className="text-2xl">💬</span>
                     <span className="font-bold">{confession._count.comments}</span>
+                    <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                      {expandedComments.has(confession.id) ? 'Gizle' : 'Yorum Yap'}
+                    </span>
                   </motion.button>
 
                   {/* Emoji Reactions */}

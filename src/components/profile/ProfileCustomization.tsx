@@ -320,30 +320,52 @@ export default function ProfileCustomization() {
                       </div>
                     </div>
                   ) : item.type === "BADGE" ? (
-                    <div className="relative w-24 h-24 flex items-center justify-center">
-                      <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-xl animate-pulse"></div>
-                      {item.imageUrl ? (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className="relative z-10 w-16 h-16 object-contain drop-shadow-lg group-hover:scale-110 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="relative z-10 text-5xl group-hover:scale-110 transition-transform duration-500">
-                          {item.name.includes("Bronz") ? "🥉" :
-                           item.name.includes("Gümüş") ? "🥈" :
-                           item.name.includes("Altın") ? "🥇" :
-                           item.name.includes("Elmas") ? "💎" :
-                           item.name.includes("Disiplin") ? "💪" :
-                           item.name.includes("Kahraman") ? "🦸" :
-                           item.name.includes("Şef") ? "👨‍🍳" :
-                           item.name.includes("Sosyal") ? "🤝" :
-                           item.name.includes("Cheat") ? "🍔" :
-                           item.name.includes("Fast Food") ? "🍟" :
-                           item.name.includes("Balanced") ? "⚖️" :
-                           "⭐"}
-                        </div>
-                      )}
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                      {/* Gradient Background Circle */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-2xl"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-2xl animate-pulse opacity-75"></div>
+                      
+                      {/* Badge Content */}
+                      <div className="relative z-10 flex items-center justify-center w-full h-full">
+                        {item.imageUrl ? (
+                          <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center p-2">
+                            <img
+                              src={item.imageUrl}
+                              alt={item.name}
+                              className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500"
+                              onError={(e) => {
+                                // Resim yüklenemezse emoji göster
+                                e.currentTarget.style.display = 'none';
+                                const parent = e.currentTarget.parentElement;
+                                if (parent) {
+                                  parent.innerHTML = `<div class="text-6xl">${
+                                    item.name.includes("Yıldız") || item.name.includes("Yildiz") ? "⭐" :
+                                    item.name.includes("Kalp") ? "❤️" :
+                                    item.name.includes("Ateş") || item.name.includes("Ates") ? "🔥" :
+                                    item.name.includes("Taç") || item.name.includes("Tac") ? "👑" :
+                                    item.name.includes("Şef") || item.name.includes("Chef") ? "👨‍🍳" :
+                                    "🏆"
+                                  }</div>`;
+                                }
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div className="text-7xl drop-shadow-2xl group-hover:scale-110 transition-transform duration-500">
+                            {item.name.includes("Yıldız") || item.name.includes("Yildiz") ? "⭐" :
+                             item.name.includes("Kalp") ? "❤️" :
+                             item.name.includes("Ateş") || item.name.includes("Ates") ? "🔥" :
+                             item.name.includes("Taç") || item.name.includes("Tac") ? "👑" :
+                             item.name.includes("Şef") || item.name.includes("Chef") ? "👨‍🍳" :
+                             "🏆"}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Shine Effect */}
+                      <div className="absolute inset-0 rounded-full overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-50"></div>
+                      </div>
                     </div>
                   ) : item.previewUrl || item.imageUrl ? (
                     <img

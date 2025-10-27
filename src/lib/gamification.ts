@@ -510,3 +510,66 @@ export async function getLeaderboard(type: "xp" | "likes" | "views", limit = 10)
 
   return [];
 }
+
+// İtiraf rozetlerini kontrol et
+export async function checkConfessionBadges(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      badges: true,
+    },
+  });
+
+  if (!user) return [];
+
+  const newBadges = [];
+
+  // İtirafları al
+  const confessions = await prisma.confession.findMany({
+    where: { userId },
+    include: {
+      likes: true,
+      comments: true,
+      reactions: true,
+    },
+  });
+
+  // İlk itiraf (GROUP_CREATOR)
+  if (confessions.length >= 1) {
+    const badge = await checkAndAwardBadge(userId, "GROUP_CREATOR");
+    if (badge) newBadges.push(badge);
+  }
+
+  // 10 itiraf (GROUP_ADMIN)
+  if (confessions.length >= 10) {
+    const badge = await checkAndAwardBadge(userId, "GROUP_ADMIN");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Toplam itiraf beğeni sayısı (CHALLENGE_WINNER)
+  const totalConfessionLikes = confessions.reduce((sum, confession) => sum + confession.likes.length, 0);
+  if (totalConfessionLikes >= 50) {
+    const badge = await checkAndAwardBadge(userId, "CHALLENGE_WINNER");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Toplam itiraf yorum sayısı (CHALLENGE_PARTICIPANT)
+  const totalConfessionComments = await prisma.confessionComment.count({
+    where: { userId },
+  });
+  if (totalConfessionComments >= 50) {
+    const badge = await checkAndAwardBadge(userId, "CHALLENGE_PARTICIPANT");
+    if (badge) newBadges.push(badge);
+  }
+
+  // Toplam reaksiyon sayısı (SOCIAL_BUTTERFLY)
+  const totalReactions = await prisma.confessionReaction.count({
+    where: { userId },
+  });
+  if (totalReactions >= 100) {
+    const badge = await checkAndAwardBadge(userId, "SOCIAL_BUTTERFLY");
+    if (badge) newBadges.push(badge);
+  }
+
+  return newBadges;
+}

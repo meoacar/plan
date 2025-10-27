@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { generateAIReply } from '@/lib/ai-confession';
+import { checkConfessionBadges } from '@/lib/gamification';
 
 export async function GET(req: NextRequest) {
   try {
@@ -92,7 +93,18 @@ export async function POST(req: NextRequest) {
       data: { xp: { increment: 50 } },
     });
 
-    return NextResponse.json(confession);
+    // Rozet kontrolü yap
+    const newBadges = await checkConfessionBadges(session.user.id);
+
+    return NextResponse.json({
+      ...confession,
+      newBadges: newBadges.map(b => ({
+        id: b.badge.id,
+        name: b.badge.name,
+        icon: b.badge.icon,
+        description: b.badge.description,
+      })),
+    });
   } catch (error) {
     console.error('Confession creation error:', error);
     return NextResponse.json({ error: 'İtiraf oluşturulamadı' }, { status: 500 });

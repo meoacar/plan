@@ -75,7 +75,14 @@ export default function ConfessionWallPage() {
       const newConfession = await res.json();
       setConfessions([newConfession, ...confessions]);
       setText('');
-      alert('İtirafın paylaşıldı! +50 XP kazandın 🎉');
+      
+      // Rozet kazanıldı mı kontrol et
+      if (newConfession.newBadges && newConfession.newBadges.length > 0) {
+        const badgeNames = newConfession.newBadges.map((b: any) => `${b.icon} ${b.name}`).join(', ');
+        alert(`İtirafın paylaşıldı! +50 XP kazandın 🎉\n\nYeni Rozet: ${badgeNames}`);
+      } else {
+        alert('İtirafın paylaşıldı! +50 XP kazandın 🎉');
+      }
     } catch (error) {
       alert('İtiraf gönderilemedi');
     } finally {

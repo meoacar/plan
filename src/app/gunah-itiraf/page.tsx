@@ -5,6 +5,13 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface Comment {
+  id: string;
+  content: string;
+  isAnonymous: boolean;
+  createdAt: string;
+}
+
 interface Confession {
   id: string;
   text: string;
@@ -20,6 +27,7 @@ interface Confession {
     emoji: string;
     userId: string;
   }>;
+  comments?: Comment[];
 }
 
 const EMOJIS = ['😂', '🫶', '💪', '😅', '🤗', '👏', '❤️', '🔥'];
@@ -32,6 +40,8 @@ export default function ConfessionWallPage() {
   const [submitting, setSubmitting] = useState(false);
   const [text, setText] = useState('');
   const [sort, setSort] = useState<'recent' | 'popular'>('recent');
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+  const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -128,6 +138,72 @@ export default function ConfessionWallPage() {
       }
     } catch (error) {
       console.error('İşlem başarısız:', error);
+    }
+  };
+
+  const toggleComments = async (id: string) => {
+    const newExpanded = new Set(expandedComments);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+      // Yorumları yükle
+      await fetchComments(id);
+    }
+    setExpandedComments(newExpanded);
+  };
+
+  const fetchComments = async (confessionId: string) => {
+    try {
+      const res = await fetch(`/api/confessions/${confessionId}/comments`);
+      const data = await res.json();
+      
+      setConfessions(confessions.map(c => {
+        if (c.id === confessionId) {
+          return { ...c, comments: data.comments || [] };
+        }
+        return c;
+      }));
+    } catch (error) {
+      console.error('Yorumlar yüklenemedi:', error);
+    }
+  };
+
+  const handleCommentSubmit = async (confessionId: string) => {
+    const content = commentTexts[confessionId]?.trim();
+    if (!content || content.length < 2) {
+      alert('Yorum en az 2 karakter olmalı');
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/confessions/${confessionId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, isAnonymous: true }),
+      });
+
+      if (res.ok) {
+        setCommentTexts({ ...commentTexts, [confessionId]: '' });
+        await fetchComments(confessionId);
+        // Yorum sayısını güncelle
+        setConfessions(confessions.map(c => {
+          if (c.id === confessionId) {
+            return {
+              ...c,
+              _count: {
+                ...c._count,
+                comments: c._count.comments + 1,
+              },
+            };
+          }
+          return c;
+        }));
+      } else {
+        alert('Yorum gönderilemedi');
+      }
+    } catch (error) {
+      alert('Bir hata oluştu');
     }
   };
 
@@ -412,10 +488,15 @@ export default function ConfessionWallPage() {
                     <span className="font-bold">{confession._count.likes}</span>
                   </motion.button>
 
-                  <div className="flex items-center gap-2 text-white/80 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => toggleComments(confession.id)}
+                    className="flex items-center gap-2 text-white/80 hover:text-blue-400 transition-colors bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl"
+                  >
                     <span className="text-2xl">💬</span>
                     <span className="font-bold">{confession._count.comments}</span>
-                  </div>
+                  </motion.button>
 
                   {/* Emoji Reactions */}
                   <div className="flex gap-2 ml-auto flex-wrap">
@@ -462,6 +543,71 @@ export default function ConfessionWallPage() {
                     </div>
                   </motion.div>
                 )}
+
+                {/* Comments Section */}
+                <AnimatePresence>
+                  {expandedComments.has(confession.id) && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-6 pt-6 border-t border-white/20"
+                    >
+                      {/* Comment Input */}
+                      <div className="mb-4">
+                        <div className="flex gap-3">
+                          <input
+                            type="text"
+                            value={commentTexts[confession.id] || ''}
+                            onChange={(e) => setCommentTexts({ ...commentTexts, [confession.id]: e.target.value })}
+                            placeholder="Yorumunu yaz... 💭"
+                            className="flex-1 px-4 py-3 bg-white/90 backdrop-blur-sm border-2 border-white/30 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 focus:outline-none text-gray-800 placeholder-gray-500"
+                            maxLength={200}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                handleCommentSubmit(confession.id);
+                              }
+                            }}
+                          />
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleCommentSubmit(confession.id)}
+                            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-bold hover:shadow-lg transition-all"
+                          >
+                            Gönder
+                          </motion.button>
+                        </div>
+                      </div>
+
+                      {/* Comments List */}
+                      <div className="space-y-3">
+                        {confession.comments && confession.comments.length > 0 ? (
+                          confession.comments.map((comment, idx) => (
+                            <motion.div
+                              key={comment.id}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: idx * 0.1 }}
+                              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4"
+                            >
+                              <p className="text-white/90 mb-2">{comment.content}</p>
+                              <div className="flex items-center gap-2 text-xs text-white/50">
+                                <span>👤 Anonim</span>
+                                <span>•</span>
+                                <span>{new Date(comment.createdAt).toLocaleString('tr-TR')}</span>
+                              </div>
+                            </motion.div>
+                          ))
+                        ) : (
+                          <div className="text-center py-6 text-white/60">
+                            Henüz yorum yok. İlk yorumu sen yap! 💬
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Timestamp */}
                 <div className="mt-4 text-xs text-white/50 font-medium">

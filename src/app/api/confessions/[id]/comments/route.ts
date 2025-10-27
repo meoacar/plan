@@ -15,7 +15,7 @@ export async function GET(
       take: 50,
     });
 
-    return NextResponse.json(comments);
+    return NextResponse.json({ comments });
   } catch (error) {
     console.error('Comments fetch error:', error);
     return NextResponse.json({ error: 'Yorumlar yüklenemedi' }, { status: 500 });

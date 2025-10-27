@@ -7,12 +7,17 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await auth();
     const { id } = params;
 
+    // Onaylanmış yorumları + kullanıcının kendi yorumlarını göster
     const comments = await prisma.confessionComment.findMany({
       where: { 
         confessionId: id,
-        status: 'APPROVED' // Sadece onaylanmış yorumları göster
+        OR: [
+          { status: 'APPROVED' },
+          ...(session?.user?.id ? [{ userId: session.user.id }] : [])
+        ]
       },
       orderBy: { createdAt: 'desc' },
       take: 50,
@@ -52,7 +57,7 @@ export async function POST(
         userId: session.user.id,
         content: content.trim(),
         isAnonymous,
-        status: 'APPROVED', // Otomatik onay (isterseniz PENDING yapabilirsiniz)
+        status: 'PENDING', // Admin onayı gerekli
       },
     });
 

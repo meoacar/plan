@@ -9,6 +9,7 @@ interface Comment {
   id: string;
   content: string;
   isAnonymous: boolean;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
   createdAt: string;
 }
 
@@ -17,6 +18,7 @@ interface Confession {
   text: string;
   aiReply: string | null;
   isAnonymous: boolean;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
   createdAt: string;
   _count: {
     likes: number;
@@ -185,6 +187,7 @@ export default function ConfessionWallPage() {
 
       if (res.ok) {
         setCommentTexts({ ...commentTexts, [confessionId]: '' });
+        alert('Yorumun gönderildi! Admin onayından sonra yayınlanacak. +10 XP kazandın 🎉');
         await fetchComments(confessionId);
         // Yorum sayısını güncelle
         setConfessions(confessions.map(c => {
@@ -432,14 +435,21 @@ export default function ConfessionWallPage() {
               >
                 {/* Confession Text */}
                 <div className="mb-6">
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-white text-xl leading-relaxed font-medium"
-                  >
-                    {confession.text}
-                  </motion.p>
+                  <div className="flex items-start gap-3">
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-white text-xl leading-relaxed font-medium flex-1"
+                    >
+                      {confession.text}
+                    </motion.p>
+                    {confession.status === 'PENDING' && (
+                      <span className="px-3 py-1 bg-yellow-500/20 border border-yellow-400/30 text-yellow-200 text-xs font-bold rounded-full whitespace-nowrap">
+                        ⏳ Onay Bekliyor
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* AI Reply */}
@@ -594,7 +604,14 @@ export default function ConfessionWallPage() {
                               transition={{ delay: idx * 0.1 }}
                               className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4"
                             >
-                              <p className="text-white/90 mb-2">{comment.content}</p>
+                              <div className="flex items-start gap-3 mb-2">
+                                <p className="text-white/90 flex-1">{comment.content}</p>
+                                {comment.status === 'PENDING' && (
+                                  <span className="px-2 py-1 bg-yellow-500/20 border border-yellow-400/30 text-yellow-200 text-xs font-bold rounded-full whitespace-nowrap">
+                                    ⏳ Onay Bekliyor
+                                  </span>
+                                )}
+                              </div>
                               <div className="flex items-center gap-2 text-xs text-white/50">
                                 <span>👤 Anonim</span>
                                 <span>•</span>

@@ -6,6 +6,7 @@ import { checkConfessionBadges } from '@/lib/gamification';
 
 export async function GET(req: NextRequest) {
   try {
+    const session = await auth();
     const { searchParams } = new URL(req.url);
     const sort = searchParams.get('sort') || 'recent';
     const limit = parseInt(searchParams.get('limit') || '20');
@@ -17,9 +18,13 @@ export async function GET(req: NextRequest) {
       orderBy = { likes: { _count: 'desc' } };
     }
 
+    // Onaylanmış itirafları + kullanıcının kendi itiraflarını göster
     const confessions = await prisma.confession.findMany({
       where: {
-        status: 'APPROVED', // Sadece onaylanmış itirafları göster
+        OR: [
+          { status: 'APPROVED' },
+          ...(session?.user?.id ? [{ userId: session.user.id }] : [])
+        ]
       },
       take: limit,
       skip: cursor ? 1 : 0,

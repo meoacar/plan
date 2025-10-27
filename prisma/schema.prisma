@@ -1463,7 +1463,7 @@ model ConfessionComment {
   userId       String
   content      String
   isAnonymous  Boolean    @default(true)
-  status       CommentStatus @default(APPROVED)
+  status       CommentStatus @default(PENDING)
   createdAt    DateTime   @default(now())
   confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
 

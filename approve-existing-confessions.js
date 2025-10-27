@@ -8,13 +8,10 @@ async function approveExistingConfessions() {
   try {
     console.log('🔍 Mevcut itiraflar kontrol ediliyor...');
 
-    // Status'u null veya undefined olan itirafları bul
+    // Status'u PENDING olan itirafları bul
     const pendingConfessions = await prisma.confession.findMany({
       where: {
-        OR: [
-          { status: null },
-          { status: 'PENDING' }
-        ]
+        status: 'PENDING'
       }
     });
 
@@ -28,10 +25,7 @@ async function approveExistingConfessions() {
     // Tüm bekleyen itirafları onayla
     const result = await prisma.confession.updateMany({
       where: {
-        OR: [
-          { status: null },
-          { status: 'PENDING' }
-        ]
+        status: 'PENDING'
       },
       data: {
         status: 'APPROVED',

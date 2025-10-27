@@ -113,8 +113,8 @@ export default function ProfileCustomization() {
       const badges = selectedItems.badges.includes(code)
         ? selectedItems.badges.filter((b) => b !== code)
         : selectedItems.badges.length < 3
-        ? [...selectedItems.badges, code]
-        : selectedItems.badges;
+          ? [...selectedItems.badges, code]
+          : selectedItems.badges;
       setSelectedItems({ ...selectedItems, badges });
     }
   };
@@ -168,16 +168,14 @@ export default function ProfileCustomization() {
           <button
             key={tab.type}
             onClick={() => setActiveTab(tab.type)}
-            className={`group relative px-6 py-4 rounded-2xl font-bold whitespace-nowrap transition-all duration-300 ${
-              activeTab === tab.type
+            className={`group relative px-6 py-4 rounded-2xl font-bold whitespace-nowrap transition-all duration-300 ${activeTab === tab.type
                 ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xl scale-105"
                 : "bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg hover:scale-102"
-            }`}
+              }`}
           >
             <div className="flex items-center gap-2">
-              <span className={`text-2xl transition-transform duration-300 ${
-                activeTab === tab.type ? "scale-110" : "group-hover:scale-110"
-              }`}>
+              <span className={`text-2xl transition-transform duration-300 ${activeTab === tab.type ? "scale-110" : "group-hover:scale-110"
+                }`}>
                 {tab.icon}
               </span>
               <span>{tab.label}</span>
@@ -237,20 +235,19 @@ export default function ProfileCustomization() {
               onClick={() =>
                 item.isUnlocked && handleItemSelect(item.type, item.code)
               }
-              className={`group relative rounded-2xl overflow-hidden transition-all duration-500 ${
-                item.isUnlocked
+              className={`group relative rounded-2xl overflow-hidden transition-all duration-500 ${item.isUnlocked
                   ? isSelected
                     ? "ring-4 ring-emerald-500 shadow-2xl scale-105"
                     : "ring-2 ring-gray-200 hover:ring-emerald-400 hover:shadow-xl hover:scale-102 cursor-pointer"
                   : "ring-2 ring-gray-200 opacity-60 cursor-not-allowed"
-              }`}
+                }`}
             >
               {/* Background Preview for Themes */}
               {item.type === "THEME" && item.colors && (
                 <div
                   className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500"
                   style={{
-                    background: item.colors.gradient || 
+                    background: item.colors.gradient ||
                       `linear-gradient(135deg, ${item.colors.primary || '#10b981'} 0%, ${item.colors.secondary || '#3b82f6'} 50%, ${item.colors.accent || '#8b5cf6'} 100%)`
                   }}
                 ></div>
@@ -295,7 +292,7 @@ export default function ProfileCustomization() {
                       <div
                         className="absolute inset-0 animate-gradient"
                         style={{
-                          background: item.colors.gradient || 
+                          background: item.colors.gradient ||
                             `linear-gradient(135deg, ${item.colors.primary || '#10b981'} 0%, ${item.colors.secondary || '#3b82f6'} 50%, ${item.colors.accent || '#8b5cf6'} 100%)`,
                           backgroundSize: '200% 200%',
                         }}
@@ -324,7 +321,7 @@ export default function ProfileCustomization() {
                       {/* Gradient Background Circle */}
                       <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-2xl"></div>
                       <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-2xl animate-pulse opacity-75"></div>
-                      
+
                       {/* Badge Content */}
                       <div className="relative z-10 flex items-center justify-center w-full h-full">
                         {item.imageUrl ? (
@@ -338,14 +335,13 @@ export default function ProfileCustomization() {
                                 e.currentTarget.style.display = 'none';
                                 const parent = e.currentTarget.parentElement;
                                 if (parent) {
-                                  parent.innerHTML = `<div class="text-6xl">${
-                                    item.name.includes("Yıldız") || item.name.includes("Yildiz") ? "⭐" :
-                                    item.name.includes("Kalp") ? "❤️" :
-                                    item.name.includes("Ateş") || item.name.includes("Ates") ? "🔥" :
-                                    item.name.includes("Taç") || item.name.includes("Tac") ? "👑" :
-                                    item.name.includes("Şef") || item.name.includes("Chef") ? "👨‍🍳" :
-                                    "🏆"
-                                  }</div>`;
+                                  parent.innerHTML = `<div class="text-6xl">${item.name.includes("Yıldız") || item.name.includes("Yildiz") ? "⭐" :
+                                      item.name.includes("Kalp") ? "❤️" :
+                                        item.name.includes("Ateş") || item.name.includes("Ates") ? "🔥" :
+                                          item.name.includes("Taç") || item.name.includes("Tac") ? "👑" :
+                                            item.name.includes("Şef") || item.name.includes("Chef") ? "👨‍🍳" :
+                                              "🏆"
+                                    }</div>`;
                                 }
                               }}
                             />
@@ -353,15 +349,15 @@ export default function ProfileCustomization() {
                         ) : (
                           <div className="text-7xl drop-shadow-2xl group-hover:scale-110 transition-transform duration-500">
                             {item.name.includes("Yıldız") || item.name.includes("Yildiz") ? "⭐" :
-                             item.name.includes("Kalp") ? "❤️" :
-                             item.name.includes("Ateş") || item.name.includes("Ates") ? "🔥" :
-                             item.name.includes("Taç") || item.name.includes("Tac") ? "👑" :
-                             item.name.includes("Şef") || item.name.includes("Chef") ? "👨‍🍳" :
-                             "🏆"}
+                              item.name.includes("Kalp") ? "❤️" :
+                                item.name.includes("Ateş") || item.name.includes("Ates") ? "🔥" :
+                                  item.name.includes("Taç") || item.name.includes("Tac") ? "👑" :
+                                    item.name.includes("Şef") || item.name.includes("Chef") ? "👨‍🍳" :
+                                      "🏆"}
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Shine Effect */}
                       <div className="absolute inset-0 rounded-full overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-50"></div>

@@ -107,6 +107,17 @@ export default function RecipeDetail({
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8">
+      {/* Geri Dönüş Butonu */}
+      <div className="mb-6">
+        <Link
+          href="/recipes"
+          className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-200"
+        >
+          <span>←</span>
+          <span>Tariflere Dön</span>
+        </Link>
+      </div>
+
       {/* Durum Badge'i (Admin veya kendi tarifi için) */}
       {recipe.status !== "APPROVED" && (
         <div className={`mb-6 rounded-xl p-6 border-2 shadow-lg ${recipe.status === "PENDING"

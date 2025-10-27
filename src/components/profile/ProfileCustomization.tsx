@@ -142,134 +142,242 @@ export default function ProfileCustomization() {
   const unlockedCount = currentItems.filter((item) => item.isUnlocked).length;
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Profil Özelleştirme
-        </h2>
-        <p className="text-gray-600">
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl p-8 border border-gray-100">
+      {/* Header */}
+      <div className="mb-8 text-center">
+        <div className="inline-block mb-4">
+          <div className="relative">
+            <h2 className="text-4xl font-black bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+              Profil Özelleştirme
+            </h2>
+            <div className="absolute -top-2 -right-8 text-4xl animate-bounce">✨</div>
+          </div>
+        </div>
+        <p className="text-gray-600 text-lg mb-4">
           Rozetler kazanarak özel çerçeveler, arka planlar ve temalar aç!
         </p>
-        <div className="mt-2 text-sm text-emerald-600 font-medium">
-          🏆 {data.badgeCount} rozet kazandın
+        <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-3 rounded-full shadow-lg">
+          <span className="text-2xl">🏆</span>
+          <span className="font-bold text-lg">{data.badgeCount} Rozet Kazandın</span>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-2 mb-6 overflow-x-auto">
+      <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
         {tabs.map((tab) => (
           <button
             key={tab.type}
             onClick={() => setActiveTab(tab.type)}
-            className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+            className={`group relative px-6 py-4 rounded-2xl font-bold whitespace-nowrap transition-all duration-300 ${
               activeTab === tab.type
-                ? "bg-emerald-500 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xl scale-105"
+                : "bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg hover:scale-102"
             }`}
           >
-            <span className="mr-2">{tab.icon}</span>
-            {tab.label}
+            <div className="flex items-center gap-2">
+              <span className={`text-2xl transition-transform duration-300 ${
+                activeTab === tab.type ? "scale-110" : "group-hover:scale-110"
+              }`}>
+                {tab.icon}
+              </span>
+              <span>{tab.label}</span>
+            </div>
+            {activeTab === tab.type && (
+              <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1/2 h-1 bg-white rounded-full"></div>
+            )}
           </button>
         ))}
       </div>
 
       {/* Progress */}
-      <div className="mb-6 bg-gray-50 rounded-lg p-4">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-700">
-            Açılan Öğeler
-          </span>
-          <span className="text-sm font-bold text-emerald-600">
-            {unlockedCount} / {currentItems.length}
-          </span>
+      <div className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border-2 border-blue-100">
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">📊</span>
+            <span className="text-lg font-bold text-gray-800">
+              Açılan Öğeler
+            </span>
+          </div>
+          <div className="bg-white px-4 py-2 rounded-full shadow-md">
+            <span className="text-xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              {unlockedCount} / {currentItems.length}
+            </span>
+          </div>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="relative w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
           <div
-            className="bg-emerald-500 h-2 rounded-full transition-all"
+            className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500 rounded-full transition-all duration-1000 ease-out"
             style={{
               width: `${(unlockedCount / currentItems.length) * 100}%`,
             }}
-          ></div>
+          >
+            <div className="absolute inset-0 bg-white/30 animate-shimmer"></div>
+          </div>
+        </div>
+        <div className="mt-2 text-center">
+          <span className="text-sm font-semibold text-gray-600">
+            {Math.round((unlockedCount / currentItems.length) * 100)}% Tamamlandı
+          </span>
         </div>
       </div>
 
       {/* Items Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-        {currentItems.map((item) => (
-          <div
-            key={item.id}
-            onClick={() =>
-              item.isUnlocked && handleItemSelect(item.type, item.code)
-            }
-            className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all ${
-              item.isUnlocked
-                ? item.isActive ||
-                  (item.type === "FRAME" &&
-                    selectedItems.frame === item.code) ||
-                  (item.type === "BACKGROUND" &&
-                    selectedItems.background === item.code) ||
-                  (item.type === "THEME" &&
-                    selectedItems.theme === item.code) ||
-                  (item.type === "BADGE" &&
-                    selectedItems.badges.includes(item.code))
-                  ? "border-emerald-500 bg-emerald-50"
-                  : "border-gray-200 hover:border-emerald-300"
-                : "border-gray-200 opacity-50 cursor-not-allowed"
-            }`}
-          >
-            {!item.isUnlocked && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 rounded-lg">
-                <span className="text-4xl">🔒</span>
-              </div>
-            )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        {currentItems.map((item) => {
+          const isSelected =
+            item.isActive ||
+            (item.type === "FRAME" && selectedItems.frame === item.code) ||
+            (item.type === "BACKGROUND" && selectedItems.background === item.code) ||
+            (item.type === "THEME" && selectedItems.theme === item.code) ||
+            (item.type === "BADGE" && selectedItems.badges.includes(item.code));
 
-            {item.isSpecial && item.isUnlocked && (
-              <div className="absolute top-2 right-2">
-                <span className="text-xl">✨</span>
-              </div>
-            )}
-
-            <div className="text-center">
-              {item.previewUrl || item.imageUrl ? (
-                <img
-                  src={item.previewUrl || item.imageUrl}
-                  alt={item.name}
-                  className="w-16 h-16 mx-auto mb-2 object-cover rounded-lg"
-                />
-              ) : item.colors?.gradient ? (
+          return (
+            <div
+              key={item.id}
+              onClick={() =>
+                item.isUnlocked && handleItemSelect(item.type, item.code)
+              }
+              className={`group relative rounded-2xl overflow-hidden transition-all duration-500 ${
+                item.isUnlocked
+                  ? isSelected
+                    ? "ring-4 ring-emerald-500 shadow-2xl scale-105"
+                    : "ring-2 ring-gray-200 hover:ring-emerald-400 hover:shadow-xl hover:scale-102 cursor-pointer"
+                  : "ring-2 ring-gray-200 opacity-60 cursor-not-allowed"
+              }`}
+            >
+              {/* Background Preview for Themes */}
+              {item.type === "THEME" && item.colors && (
                 <div
-                  className="w-16 h-16 mx-auto mb-2 rounded-lg"
-                  style={{ background: item.colors.gradient }}
+                  className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500"
+                  style={{
+                    background: item.colors.gradient || 
+                      `linear-gradient(135deg, ${item.colors.primary || '#10b981'} 0%, ${item.colors.secondary || '#3b82f6'} 50%, ${item.colors.accent || '#8b5cf6'} 100%)`
+                  }}
                 ></div>
-              ) : (
-                <div className="w-16 h-16 mx-auto mb-2 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-lg"></div>
               )}
 
-              <h3 className="font-semibold text-sm text-gray-900 mb-1">
-                {item.name}
-              </h3>
-              <p className="text-xs text-gray-600 line-clamp-2">
-                {item.description}
-              </p>
-
+              {/* Lock Overlay */}
               {!item.isUnlocked && (
-                <p className="text-xs text-emerald-600 mt-2 font-medium">
-                  {item.unlockCondition}
-                </p>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900/80 to-gray-900/60 backdrop-blur-sm z-10">
+                  <div className="text-6xl mb-3 animate-pulse">🔒</div>
+                  <p className="text-white text-sm font-bold px-4 text-center">
+                    {item.unlockCondition}
+                  </p>
+                </div>
               )}
+
+              {/* Special Badge */}
+              {item.isSpecial && item.isUnlocked && (
+                <div className="absolute top-3 right-3 z-20">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-2 shadow-lg animate-pulse">
+                    <span className="text-2xl">✨</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Selected Badge */}
+              {isSelected && item.isUnlocked && (
+                <div className="absolute top-3 left-3 z-20">
+                  <div className="bg-emerald-500 rounded-full p-2 shadow-lg">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="relative z-10 p-6 bg-white/90 backdrop-blur-sm">
+                {/* Preview */}
+                <div className="mb-4 flex items-center justify-center">
+                  {item.type === "THEME" && item.colors ? (
+                    <div className="relative w-full h-32 rounded-xl overflow-hidden shadow-lg">
+                      <div
+                        className="absolute inset-0 animate-gradient"
+                        style={{
+                          background: item.colors.gradient || 
+                            `linear-gradient(135deg, ${item.colors.primary || '#10b981'} 0%, ${item.colors.secondary || '#3b82f6'} 50%, ${item.colors.accent || '#8b5cf6'} 100%)`,
+                          backgroundSize: '200% 200%',
+                        }}
+                      ></div>
+                      {/* Mini Profile Preview */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-white/20 backdrop-blur-md rounded-lg p-3 border border-white/30">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-white/40"></div>
+                            <div className="space-y-1">
+                              <div className="w-16 h-2 bg-white/60 rounded"></div>
+                              <div className="w-12 h-1.5 bg-white/40 rounded"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Color Dots */}
+                      <div className="absolute bottom-2 left-2 flex gap-1">
+                        <div className="w-4 h-4 rounded-full border-2 border-white shadow-lg" style={{ backgroundColor: item.colors.primary || '#10b981' }}></div>
+                        <div className="w-4 h-4 rounded-full border-2 border-white shadow-lg" style={{ backgroundColor: item.colors.secondary || '#3b82f6' }}></div>
+                        <div className="w-4 h-4 rounded-full border-2 border-white shadow-lg" style={{ backgroundColor: item.colors.accent || '#8b5cf6' }}></div>
+                      </div>
+                    </div>
+                  ) : item.previewUrl || item.imageUrl ? (
+                    <img
+                      src={item.previewUrl || item.imageUrl}
+                      alt={item.name}
+                      className="w-24 h-24 object-cover rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-500"
+                    />
+                  ) : item.colors?.gradient ? (
+                    <div
+                      className="w-24 h-24 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-500"
+                      style={{ background: item.colors.gradient }}
+                    ></div>
+                  ) : (
+                    <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-500"></div>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="text-center">
+                  <h3 className="font-bold text-lg text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">
+                    {item.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                    {item.description}
+                  </p>
+
+                  {/* Action Hint */}
+                  {item.isUnlocked && (
+                    <div className="text-xs font-semibold text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {isSelected ? "✓ Seçildi" : "Tıkla ve Seç"}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-center mt-8">
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-6 py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="group relative px-12 py-5 bg-gradient-to-r from-emerald-500 via-teal-600 to-blue-600 text-white rounded-2xl font-bold text-lg shadow-2xl hover:shadow-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 overflow-hidden"
         >
-          {saving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+          <div className="relative flex items-center gap-3">
+            {saving ? (
+              <>
+                <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Kaydediliyor...</span>
+              </>
+            ) : (
+              <>
+                <span className="text-2xl">💾</span>
+                <span>Değişiklikleri Kaydet</span>
+              </>
+            )}
+          </div>
         </button>
       </div>
     </div>

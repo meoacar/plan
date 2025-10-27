@@ -1418,20 +1418,31 @@ enum CustomizationType {
   ANIMATION
 }
 
+enum ConfessionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Confession {
-  id        String              @id @default(cuid())
-  userId    String
-  text      String
-  aiReply   String?
-  isAnonymous Boolean           @default(true)
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @updatedAt
-  likes     ConfessionLike[]
-  comments  ConfessionComment[]
-  reactions ConfessionReaction[]
+  id              String              @id @default(cuid())
+  userId          String
+  text            String
+  aiReply         String?
+  isAnonymous     Boolean             @default(true)
+  status          ConfessionStatus    @default(PENDING)
+  rejectionReason String?
+  approvedBy      String?
+  approvedAt      DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  likes           ConfessionLike[]
+  comments        ConfessionComment[]
+  reactions       ConfessionReaction[]
 
   @@index([createdAt])
   @@index([userId])
+  @@index([status, createdAt])
 }
 
 model ConfessionLike {

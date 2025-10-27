@@ -18,6 +18,9 @@ export async function GET(req: NextRequest) {
     }
 
     const confessions = await prisma.confession.findMany({
+      where: {
+        status: 'APPROVED', // Sadece onaylanmış itirafları göster
+      },
       take: limit,
       skip: cursor ? 1 : 0,
       cursor: cursor ? { id: cursor } : undefined,
@@ -75,6 +78,7 @@ export async function POST(req: NextRequest) {
         text: text.trim(),
         aiReply,
         isAnonymous,
+        status: 'PENDING', // Admin onayı bekliyor
       },
       include: {
         _count: {

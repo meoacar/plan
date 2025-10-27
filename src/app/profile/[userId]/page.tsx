@@ -2,7 +2,6 @@ import { notFound } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PlanCard } from "@/components/plan-card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import type { Metadata } from "next"
@@ -171,19 +170,42 @@ export default async function ProfilePage({ params }: PageProps) {
 
   return (
     <div 
-      className={`min-h-screen ${activeTheme?.cssClass || ''}`}
+      className={`min-h-screen relative overflow-hidden ${activeTheme?.cssClass || ''}`}
       style={{
         ...themeStyle,
         backgroundColor: themeColors?.background || '#f9fafb',
         color: themeColors?.text || '#1f2937',
       }}
     >
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      {/* Animated Background Gradient */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div 
+          className="absolute -top-1/2 -left-1/2 w-full h-full rounded-full blur-3xl opacity-20 animate-pulse"
+          style={{
+            background: themeColors 
+              ? `radial-gradient(circle, ${themeColors.primary} 0%, transparent 70%)`
+              : 'radial-gradient(circle, #10b981 0%, transparent 70%)',
+            animationDuration: '8s',
+          }}
+        ></div>
+        <div 
+          className="absolute -bottom-1/2 -right-1/2 w-full h-full rounded-full blur-3xl opacity-20 animate-pulse"
+          style={{
+            background: themeColors 
+              ? `radial-gradient(circle, ${themeColors.accent} 0%, transparent 70%)`
+              : 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)',
+            animationDuration: '10s',
+            animationDelay: '2s',
+          }}
+        ></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
       {/* Modern Cover & Profile Section */}
-      <div className="relative mb-8">
+      <div className="relative mb-8 group">
         {/* Cover Image with Custom Background */}
         <div 
-          className="h-48 md:h-64 rounded-2xl shadow-2xl relative overflow-hidden"
+          className="h-56 md:h-80 rounded-3xl shadow-2xl relative overflow-hidden transition-all duration-500 group-hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]"
           style={{
             ...(Object.keys(backgroundStyle).length > 0 ? backgroundStyle : {
               background: themeColors 
@@ -192,48 +214,60 @@ export default async function ProfilePage({ params }: PageProps) {
             })
           }}
         >
-          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/20"></div>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
+          
+          {/* Floating Particles */}
+          <div className="absolute inset-0">
+            <div className="absolute top-10 left-10 w-2 h-2 bg-white/40 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
+            <div className="absolute top-20 right-20 w-3 h-3 bg-white/30 rounded-full animate-ping" style={{ animationDuration: '4s', animationDelay: '1s' }}></div>
+            <div className="absolute bottom-10 left-1/3 w-2 h-2 bg-white/40 rounded-full animate-ping" style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
+          </div>
         </div>
 
-        {/* Profile Card Overlay */}
+        {/* Profile Card Overlay - Glassmorphism */}
         <Card 
-          className="relative -mt-20 mx-4 md:mx-8 shadow-2xl border-0"
+          className="relative -mt-24 md:-mt-32 mx-4 md:mx-8 shadow-2xl border-0 backdrop-blur-xl bg-white/80 transition-all duration-500 hover:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-1"
           style={{
-            backgroundColor: themeColors?.background || '#ffffff',
+            backgroundColor: themeColors?.background ? `${themeColors.background}cc` : 'rgba(255, 255, 255, 0.8)',
             borderColor: themeColors?.primary ? `${themeColors.primary}20` : 'transparent',
           }}
         >
-          <CardContent className="p-6 md:p-8">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+          <CardContent className="p-6 md:p-10">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
               {/* Avatar with Custom Frame */}
-              <div className="relative profile-avatar-container">
-                <div className={`w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden shadow-xl ring-8 ring-white bg-gradient-to-br from-emerald-400 to-teal-600 ${activeFrame?.cssClass || ''}`}>
+              <div className="relative profile-avatar-container group/avatar">
+                <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full blur opacity-75 group-hover/avatar:opacity-100 transition duration-500 animate-pulse"></div>
+                <div className={`relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden shadow-2xl ring-4 ring-white bg-gradient-to-br from-emerald-400 to-teal-600 transition-all duration-500 group-hover/avatar:scale-105 ${activeFrame?.cssClass || ''}`}>
                   {user.image ? (
                     <img 
                       src={user.image} 
                       alt={user.name || "Profil"} 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover/avatar:scale-110"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white font-bold text-5xl md:text-6xl">
+                    <div className="w-full h-full flex items-center justify-center text-white font-bold text-6xl md:text-7xl">
                       {user.name?.[0]?.toUpperCase() || "?"}
                     </div>
                   )}
                 </div>
                 {/* Profile Badges */}
                 {customization.activeBadges && customization.activeBadges.length > 0 && (
-                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+                  <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 flex gap-2">
                     {customization.activeBadges.map((badge: any, index: number) => (
                       <div
                         key={index}
-                        className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg flex items-center justify-center border-2 border-white"
+                        className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 shadow-xl flex items-center justify-center border-3 border-white transition-all duration-300 hover:scale-125 hover:rotate-12 cursor-pointer"
                         title={badge.name}
+                        style={{
+                          animation: `float ${3 + index * 0.5}s ease-in-out infinite`,
+                          animationDelay: `${index * 0.2}s`,
+                        }}
                       >
                         {badge.imageUrl ? (
-                          <img src={badge.imageUrl} alt={badge.name} className="w-5 h-5" />
+                          <img src={badge.imageUrl} alt={badge.name} className="w-6 h-6" />
                         ) : (
-                          <span className="text-white text-xs font-bold">
+                          <span className="text-white text-sm font-bold">
                             {badge.name[0]}
                           </span>
                         )}
@@ -242,9 +276,9 @@ export default async function ProfilePage({ params }: PageProps) {
                   </div>
                 )}
                 {isOwnProfile && (
-                  <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-2 shadow-lg">
+                  <div className="absolute -bottom-3 -right-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-1 shadow-xl transition-all duration-300 hover:scale-110 hover:rotate-12">
                     <Link href="/profile/edit">
-                      <Button size="sm" className="rounded-full h-10 w-10 p-0">
+                      <Button size="sm" className="rounded-full h-12 w-12 p-0 bg-white hover:bg-gray-50 text-2xl">
                         ✏️
                       </Button>
                     </Link>
@@ -254,8 +288,15 @@ export default async function ProfilePage({ params }: PageProps) {
 
               {/* User Info */}
               <div className="flex-1 text-center md:text-left">
-                <div className="flex flex-col md:flex-row md:items-center gap-3 mb-3">
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
+                  <h1 
+                    className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent animate-gradient"
+                    style={{
+                      backgroundImage: themeColors 
+                        ? `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.secondary} 50%, ${themeColors.accent} 100%)`
+                        : undefined,
+                    }}
+                  >
                     {user.name || "Anonim Kullanıcı"}
                   </h1>
                   <div className="flex items-center justify-center md:justify-start gap-2">
@@ -263,12 +304,28 @@ export default async function ProfilePage({ params }: PageProps) {
                     {isOwnProfile && (
                       <div className="hidden md:flex items-center gap-2">
                         <Link href="/favorites">
-                          <Button variant="outline" size="sm" className="font-semibold">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg border-2"
+                            style={{
+                              borderColor: themeColors?.accent || '#f59e0b',
+                              color: themeColors?.accent || '#f59e0b',
+                            }}
+                          >
                             ⭐ Favorilerim
                           </Button>
                         </Link>
                         <Link href="/profile/edit">
-                          <Button variant="outline" size="sm" className="font-semibold">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg border-2"
+                            style={{
+                              borderColor: themeColors?.primary || '#3b82f6',
+                              color: themeColors?.primary || '#3b82f6',
+                            }}
+                          >
                             ✏️ Düzenle
                           </Button>
                         </Link>
@@ -277,16 +334,28 @@ export default async function ProfilePage({ params }: PageProps) {
                   </div>
                 </div>
 
-                <p className="text-gray-600 mb-4 flex items-center justify-center md:justify-start gap-2">
-                  <span className="text-lg">📅</span>
-                  <span>Üyelik: {new Date(user.createdAt).toLocaleDateString("tr-TR", {
-                    year: "numeric",
-                    month: "long",
-                  })}</span>
-                </p>
+                <div className="flex items-center justify-center md:justify-start gap-3 mb-5">
+                  <div 
+                    className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                    style={{
+                      backgroundColor: themeColors ? `${themeColors.primary}15` : 'rgba(59, 130, 246, 0.1)',
+                    }}
+                  >
+                    <span className="text-2xl">📅</span>
+                    <span 
+                      className="text-sm font-semibold"
+                      style={{ color: themeColors?.text || '#374151' }}
+                    >
+                      {new Date(user.createdAt).toLocaleDateString("tr-TR", {
+                        year: "numeric",
+                        month: "long",
+                      })}
+                    </span>
+                  </div>
+                </div>
 
                 {/* Follow Stats */}
-                <div className="mb-4 flex justify-center md:justify-start">
+                <div className="mb-6 flex justify-center md:justify-start">
                   <UserFollowStats 
                     userId={user.id}
                     initialFollowersCount={user._count.followers}
@@ -294,79 +363,109 @@ export default async function ProfilePage({ params }: PageProps) {
                   />
                 </div>
 
-                {/* Stats Row */}
-                <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 mb-4">
+                {/* Stats Row - Enhanced */}
+                <div className="flex flex-wrap justify-center md:justify-start gap-3 md:gap-4 mb-6">
                   <div 
-                    className="flex items-center gap-2 px-4 py-2 rounded-full"
+                    className="group relative flex items-center gap-3 px-6 py-3 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:shadow-xl cursor-pointer overflow-hidden"
                     style={{
-                      backgroundColor: themeColors ? `${themeColors.primary}15` : '#dbeafe',
+                      backgroundColor: themeColors ? `${themeColors.primary}20` : 'rgba(37, 99, 235, 0.15)',
                     }}
                   >
-                    <span 
-                      className="text-2xl font-bold"
-                      style={{ color: themeColors?.primary || '#2563eb' }}
-                    >
-                      {user._count.plans}
-                    </span>
-                    <span 
-                      className="text-sm font-medium"
-                      style={{ color: themeColors?.text || '#1e3a8a' }}
-                    >
-                      Plan
-                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div className="relative">
+                      <div 
+                        className="text-3xl font-black"
+                        style={{ color: themeColors?.primary || '#2563eb' }}
+                      >
+                        {user._count.plans}
+                      </div>
+                      <div 
+                        className="text-xs font-bold uppercase tracking-wider"
+                        style={{ color: themeColors?.text || '#1e3a8a' }}
+                      >
+                        Plan
+                      </div>
+                    </div>
+                    <div className="text-3xl">📋</div>
                   </div>
+                  
                   <div 
-                    className="flex items-center gap-2 px-4 py-2 rounded-full"
+                    className="group relative flex items-center gap-3 px-6 py-3 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:shadow-xl cursor-pointer overflow-hidden"
                     style={{
-                      backgroundColor: themeColors ? `${themeColors.accent}15` : '#fef2f2',
+                      backgroundColor: themeColors ? `${themeColors.accent}20` : 'rgba(220, 38, 38, 0.15)',
                     }}
                   >
-                    <span 
-                      className="text-2xl font-bold"
-                      style={{ color: themeColors?.accent || '#dc2626' }}
-                    >
-                      {user._count.likes}
-                    </span>
-                    <span 
-                      className="text-sm font-medium"
-                      style={{ color: themeColors?.text || '#7f1d1d' }}
-                    >
-                      Beğeni
-                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div className="relative">
+                      <div 
+                        className="text-3xl font-black"
+                        style={{ color: themeColors?.accent || '#dc2626' }}
+                      >
+                        {user._count.likes}
+                      </div>
+                      <div 
+                        className="text-xs font-bold uppercase tracking-wider"
+                        style={{ color: themeColors?.text || '#7f1d1d' }}
+                      >
+                        Beğeni
+                      </div>
+                    </div>
+                    <div className="text-3xl animate-pulse">❤️</div>
                   </div>
+                  
                   <div 
-                    className="flex items-center gap-2 px-4 py-2 rounded-full"
+                    className="group relative flex items-center gap-3 px-6 py-3 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:shadow-xl cursor-pointer overflow-hidden"
                     style={{
-                      backgroundColor: themeColors ? `${themeColors.secondary}15` : '#f0fdf4',
+                      backgroundColor: themeColors ? `${themeColors.secondary}20` : 'rgba(22, 163, 74, 0.15)',
                     }}
                   >
-                    <span 
-                      className="text-2xl font-bold"
-                      style={{ color: themeColors?.secondary || '#16a34a' }}
-                    >
-                      {user._count.comments}
-                    </span>
-                    <span 
-                      className="text-sm font-medium"
-                      style={{ color: themeColors?.text || '#14532d' }}
-                    >
-                      Yorum
-                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div className="relative">
+                      <div 
+                        className="text-3xl font-black"
+                        style={{ color: themeColors?.secondary || '#16a34a' }}
+                      >
+                        {user._count.comments}
+                      </div>
+                      <div 
+                        className="text-xs font-bold uppercase tracking-wider"
+                        style={{ color: themeColors?.text || '#14532d' }}
+                      >
+                        Yorum
+                      </div>
+                    </div>
+                    <div className="text-3xl">💬</div>
                   </div>
                 </div>
 
                 {/* Mobile Action Buttons */}
-                <div className="flex md:hidden justify-center gap-2">
+                <div className="flex md:hidden justify-center gap-3 mt-4">
                   {!isOwnProfile && <FollowButton userId={user.id} />}
                   {isOwnProfile && (
                     <>
                       <Link href="/favorites">
-                        <Button variant="outline" size="sm" className="font-semibold">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="font-semibold transition-all duration-300 hover:scale-105 border-2"
+                          style={{
+                            borderColor: themeColors?.accent || '#f59e0b',
+                            color: themeColors?.accent || '#f59e0b',
+                          }}
+                        >
                           ⭐ Favorilerim
                         </Button>
                       </Link>
                       <Link href="/profile/edit">
-                        <Button variant="outline" size="sm" className="font-semibold">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="font-semibold transition-all duration-300 hover:scale-105 border-2"
+                          style={{
+                            borderColor: themeColors?.primary || '#3b82f6',
+                            color: themeColors?.primary || '#3b82f6',
+                          }}
+                        >
                           ✏️ Düzenle
                         </Button>
                       </Link>
@@ -385,28 +484,30 @@ export default async function ProfilePage({ params }: PageProps) {
         <div className="lg:col-span-1 space-y-6">
           {/* Wall Posts */}
           <WallPosts userId={user.id} isOwnProfile={isOwnProfile} />
-          {/* About Section */}
+          {/* About Section - Glassmorphism */}
           {user.bio && (
             <Card 
-              className="shadow-lg hover:shadow-xl transition-shadow"
+              className="group shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm bg-white/90 border-2 hover:-translate-y-1 overflow-hidden relative"
               style={{
-                backgroundColor: themeColors?.background || '#ffffff',
-                borderColor: themeColors?.primary ? `${themeColors.primary}30` : '#e5e7eb',
-                borderWidth: '2px',
+                backgroundColor: themeColors?.background ? `${themeColors.background}e6` : 'rgba(255, 255, 255, 0.9)',
+                borderColor: themeColors?.primary ? `${themeColors.primary}40` : 'rgba(59, 130, 246, 0.3)',
               }}
             >
-              <CardHeader className="pb-3">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700"></div>
+              <CardHeader className="pb-3 relative z-10">
                 <CardTitle 
-                  className="text-lg font-bold flex items-center gap-2"
+                  className="text-xl font-extrabold flex items-center gap-3"
                   style={{ color: themeColors?.primary || '#1f2937' }}
                 >
-                  <span className="text-2xl">📝</span>
-                  Hakkında
+                  <span className="text-3xl animate-bounce">📝</span>
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Hakkında
+                  </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative z-10">
                 <p 
-                  className="leading-relaxed"
+                  className="leading-relaxed text-base"
                   style={{ color: themeColors?.text || '#374151' }}
                 >
                   {user.bio}
@@ -415,88 +516,94 @@ export default async function ProfilePage({ params }: PageProps) {
             </Card>
           )}
 
-          {/* Goals Section */}
+          {/* Goals Section - Enhanced */}
           {(user.startWeight || user.goalWeight) && (
             <Card 
-              className="shadow-lg hover:shadow-xl transition-shadow"
+              className="group shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm border-2 hover:-translate-y-1 overflow-hidden relative"
               style={{
                 background: themeColors 
-                  ? `linear-gradient(135deg, ${themeColors.primary}10 0%, ${themeColors.accent}10 100%)`
-                  : 'linear-gradient(135deg, #faf5ff 0%, #fce7f3 100%)',
-                borderColor: themeColors?.accent ? `${themeColors.accent}40` : '#e9d5ff',
-                borderWidth: '2px',
+                  ? `linear-gradient(135deg, ${themeColors.primary}15 0%, ${themeColors.accent}15 100%)`
+                  : 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(219, 39, 119, 0.1) 100%)',
+                borderColor: themeColors?.accent ? `${themeColors.accent}50` : 'rgba(233, 213, 255, 0.5)',
               }}
             >
-              <CardHeader className="pb-3">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+              <CardHeader className="pb-3 relative z-10">
                 <CardTitle 
-                  className="text-lg font-bold flex items-center gap-2"
+                  className="text-xl font-extrabold flex items-center gap-3"
                   style={{ color: themeColors?.primary || '#7c3aed' }}
                 >
-                  <span className="text-2xl">🎯</span>
-                  Hedefler
+                  <span className="text-3xl animate-pulse">🎯</span>
+                  <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    Hedefler
+                  </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 relative z-10">
                 {user.startWeight && (
                   <div 
-                    className="backdrop-blur p-4 rounded-xl"
+                    className="group/item backdrop-blur-md p-5 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 border-white/50"
                     style={{
-                      backgroundColor: themeColors?.background || '#ffffff',
-                      opacity: 0.95,
+                      backgroundColor: themeColors?.background ? `${themeColors.background}f0` : 'rgba(255, 255, 255, 0.95)',
                     }}
                   >
                     <div 
-                      className="text-xs font-semibold uppercase tracking-wide mb-1"
+                      className="text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"
                       style={{ color: themeColors?.primary || '#7c3aed' }}
                     >
+                      <span className="text-lg">⚖️</span>
                       Başlangıç Kilosu
                     </div>
                     <div 
-                      className="text-3xl font-bold"
+                      className="text-4xl font-black"
                       style={{ color: themeColors?.text || '#581c87' }}
                     >
-                      {user.startWeight} <span className="text-lg">kg</span>
+                      {user.startWeight} <span className="text-xl font-bold opacity-70">kg</span>
                     </div>
                   </div>
                 )}
 
                 {user.goalWeight && (
                   <div 
-                    className="backdrop-blur p-4 rounded-xl"
+                    className="group/item backdrop-blur-md p-5 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 border-white/50"
                     style={{
-                      backgroundColor: themeColors?.background || '#ffffff',
-                      opacity: 0.95,
+                      backgroundColor: themeColors?.background ? `${themeColors.background}f0` : 'rgba(255, 255, 255, 0.95)',
                     }}
                   >
                     <div 
-                      className="text-xs font-semibold uppercase tracking-wide mb-1"
+                      className="text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"
                       style={{ color: themeColors?.accent || '#db2777' }}
                     >
+                      <span className="text-lg">🏆</span>
                       Hedef Kilo
                     </div>
                     <div 
-                      className="text-3xl font-bold"
+                      className="text-4xl font-black"
                       style={{ color: themeColors?.text || '#831843' }}
                     >
-                      {user.goalWeight} <span className="text-lg">kg</span>
+                      {user.goalWeight} <span className="text-xl font-bold opacity-70">kg</span>
                     </div>
                   </div>
                 )}
 
                 {weightDiff && weightDiff > 0 && (
                   <div 
-                    className="text-white p-4 rounded-xl text-center"
+                    className="relative text-white p-6 rounded-2xl text-center overflow-hidden group/diff transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                     style={{
                       background: themeColors 
                         ? `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.secondary} 100%)`
                         : 'linear-gradient(135deg, #10b981 0%, #14b8a6 100%)',
                     }}
                   >
-                    <div className="text-xs font-semibold uppercase tracking-wide mb-1">
-                      Hedef Fark
-                    </div>
-                    <div className="text-2xl font-bold">
-                      -{weightDiff} kg
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/diff:translate-x-full transition-transform duration-1000"></div>
+                    <div className="relative z-10">
+                      <div className="text-xs font-black uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
+                        <span className="text-lg">🔥</span>
+                        Hedef Fark
+                      </div>
+                      <div className="text-5xl font-black animate-pulse">
+                        -{weightDiff} <span className="text-2xl">kg</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -504,36 +611,39 @@ export default async function ProfilePage({ params }: PageProps) {
             </Card>
           )}
 
-          {/* Social Media Section */}
+          {/* Social Media Section - Enhanced */}
           {(user.instagram || user.twitter || user.youtube || user.tiktok || user.website) && (
             <Card 
-              className="shadow-lg hover:shadow-xl transition-shadow"
+              className="group shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm bg-white/90 border-2 hover:-translate-y-1 overflow-hidden relative"
               style={{
-                backgroundColor: themeColors?.background || '#ffffff',
-                borderColor: themeColors?.secondary ? `${themeColors.secondary}30` : '#e5e7eb',
-                borderWidth: '2px',
+                backgroundColor: themeColors?.background ? `${themeColors.background}e6` : 'rgba(255, 255, 255, 0.9)',
+                borderColor: themeColors?.secondary ? `${themeColors.secondary}40` : 'rgba(34, 197, 94, 0.3)',
               }}
             >
-              <CardHeader className="pb-3">
+              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-br from-green-400/30 to-blue-400/30 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+              <CardHeader className="pb-3 relative z-10">
                 <CardTitle 
-                  className="text-lg font-bold flex items-center gap-2"
+                  className="text-xl font-extrabold flex items-center gap-3"
                   style={{ color: themeColors?.secondary || '#1f2937' }}
                 >
-                  <span className="text-2xl">🌐</span>
-                  Sosyal Medya
+                  <span className="text-3xl animate-spin" style={{ animationDuration: '3s' }}>🌐</span>
+                  <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                    Sosyal Medya
+                  </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
+              <CardContent className="relative z-10">
+                <div className="space-y-3">
                   {user.instagram && (
                     <a
                       href={user.instagram.startsWith('http') ? user.instagram : `https://instagram.com/${user.instagram.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-lg transition-all group"
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white hover:shadow-2xl transition-all duration-300 group/link hover:scale-105 relative overflow-hidden"
                     >
-                      <span className="text-xl">📷</span>
-                      <span className="font-semibold group-hover:translate-x-1 transition-transform">Instagram</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/link:translate-x-full transition-transform duration-700"></div>
+                      <span className="text-2xl relative z-10">📷</span>
+                      <span className="font-bold text-lg relative z-10 group-hover/link:translate-x-2 transition-transform">Instagram</span>
                     </a>
                   )}
                   {user.twitter && (
@@ -541,10 +651,11 @@ export default async function ProfilePage({ params }: PageProps) {
                       href={user.twitter.startsWith('http') ? user.twitter : `https://twitter.com/${user.twitter.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-lg bg-black text-white hover:shadow-lg transition-all group"
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-gray-900 to-black text-white hover:shadow-2xl transition-all duration-300 group/link hover:scale-105 relative overflow-hidden"
                     >
-                      <span className="text-xl">🐦</span>
-                      <span className="font-semibold group-hover:translate-x-1 transition-transform">Twitter/X</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/link:translate-x-full transition-transform duration-700"></div>
+                      <span className="text-2xl relative z-10">🐦</span>
+                      <span className="font-bold text-lg relative z-10 group-hover/link:translate-x-2 transition-transform">Twitter/X</span>
                     </a>
                   )}
                   {user.youtube && (
@@ -552,10 +663,11 @@ export default async function ProfilePage({ params }: PageProps) {
                       href={user.youtube.startsWith('http') ? user.youtube : `https://youtube.com/${user.youtube}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-lg bg-red-600 text-white hover:shadow-lg transition-all group"
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-2xl transition-all duration-300 group/link hover:scale-105 relative overflow-hidden"
                     >
-                      <span className="text-xl">📺</span>
-                      <span className="font-semibold group-hover:translate-x-1 transition-transform">YouTube</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/link:translate-x-full transition-transform duration-700"></div>
+                      <span className="text-2xl relative z-10">📺</span>
+                      <span className="font-bold text-lg relative z-10 group-hover/link:translate-x-2 transition-transform">YouTube</span>
                     </a>
                   )}
                   {user.tiktok && (
@@ -563,10 +675,11 @@ export default async function ProfilePage({ params }: PageProps) {
                       href={user.tiktok.startsWith('http') ? user.tiktok : `https://tiktok.com/${user.tiktok}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-lg bg-gray-900 text-white hover:shadow-lg transition-all group"
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white hover:shadow-2xl transition-all duration-300 group/link hover:scale-105 relative overflow-hidden"
                     >
-                      <span className="text-xl">🎵</span>
-                      <span className="font-semibold group-hover:translate-x-1 transition-transform">TikTok</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/link:translate-x-full transition-transform duration-700"></div>
+                      <span className="text-2xl relative z-10">🎵</span>
+                      <span className="font-bold text-lg relative z-10 group-hover/link:translate-x-2 transition-transform">TikTok</span>
                     </a>
                   )}
                   {user.website && (
@@ -574,10 +687,11 @@ export default async function ProfilePage({ params }: PageProps) {
                       href={user.website.startsWith('http') ? user.website : `https://${user.website}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-lg bg-blue-600 text-white hover:shadow-lg transition-all group"
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-2xl transition-all duration-300 group/link hover:scale-105 relative overflow-hidden"
                     >
-                      <span className="text-xl">🌍</span>
-                      <span className="font-semibold group-hover:translate-x-1 transition-transform">Website</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/link:translate-x-full transition-transform duration-700"></div>
+                      <span className="text-2xl relative z-10">🌍</span>
+                      <span className="font-bold text-lg relative z-10 group-hover/link:translate-x-2 transition-transform">Website</span>
                     </a>
                   )}
                 </div>

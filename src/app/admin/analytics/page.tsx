@@ -26,16 +26,32 @@ async function getAnalyticsData() {
     totalPlans,
     totalComments,
     totalLikes,
+    totalConfessions,
+    totalConfessionComments,
+    totalGroups,
+    totalFollows,
+    totalNotifications,
     newUsers,
     newPlans,
+    newConfessions,
+    newGroups,
     previousNewUsers,
     previousNewPlans,
+    previousNewConfessions,
     approvedPlans,
+    pendingConfessions,
+    approvedConfessions,
+    rejectedConfessions,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.plan.count(),
     prisma.comment.count(),
     prisma.like.count(),
+    prisma.confession.count(),
+    prisma.confessionComment.count(),
+    prisma.socialGroup.count(),
+    prisma.follow.count(),
+    prisma.notification.count(),
     prisma.user.count({
       where: {
         createdAt: {
@@ -45,6 +61,22 @@ async function getAnalyticsData() {
       },
     }),
     prisma.plan.count({
+      where: {
+        createdAt: {
+          gte: startOfPeriod,
+          lte: endOfPeriod,
+        },
+      },
+    }),
+    prisma.confession.count({
+      where: {
+        createdAt: {
+          gte: startOfPeriod,
+          lte: endOfPeriod,
+        },
+      },
+    }),
+    prisma.socialGroup.count({
       where: {
         createdAt: {
           gte: startOfPeriod,
@@ -61,6 +93,14 @@ async function getAnalyticsData() {
       },
     }),
     prisma.plan.count({
+      where: {
+        createdAt: {
+          gte: previousStartDate,
+          lte: previousEndDate,
+        },
+      },
+    }),
+    prisma.confession.count({
       where: {
         createdAt: {
           gte: previousStartDate,
@@ -79,6 +119,15 @@ async function getAnalyticsData() {
       select: {
         views: true,
       },
+    }),
+    prisma.confession.count({
+      where: { status: "PENDING" },
+    }),
+    prisma.confession.count({
+      where: { status: "APPROVED" },
+    }),
+    prisma.confession.count({
+      where: { status: "REJECTED" },
     }),
   ])
 
@@ -259,6 +308,8 @@ async function getAnalyticsData() {
     previousNewUsers > 0 ? Math.round(((newUsers - previousNewUsers) / previousNewUsers) * 100) : 0
   const planChange =
     previousNewPlans > 0 ? Math.round(((newPlans - previousNewPlans) / previousNewPlans) * 100) : 0
+  const confessionChange =
+    previousNewConfessions > 0 ? Math.round(((newConfessions - previousNewConfessions) / previousNewConfessions) * 100) : 0
 
   return {
     stats: {
@@ -266,11 +317,22 @@ async function getAnalyticsData() {
       totalPlans,
       totalComments,
       totalLikes,
+      totalConfessions,
+      totalConfessionComments,
+      totalGroups,
+      totalFollows,
+      totalNotifications,
       newUsers,
       newPlans,
+      newConfessions,
+      newGroups,
       avgViews,
       userChange,
       planChange,
+      confessionChange,
+      pendingConfessions,
+      approvedConfessions,
+      rejectedConfessions,
     },
     userGrowth: userGrowthData,
     planActivity: planActivityData,

@@ -96,11 +96,22 @@ interface AnalyticsDashboardProps {
       totalPlans: number
       totalComments: number
       totalLikes: number
+      totalConfessions: number
+      totalConfessionComments: number
+      totalGroups: number
+      totalFollows: number
+      totalNotifications: number
       newUsers: number
       newPlans: number
+      newConfessions: number
+      newGroups: number
       avgViews: number
       userChange: number
       planChange: number
+      confessionChange: number
+      pendingConfessions: number
+      approvedConfessions: number
+      rejectedConfessions: number
     }
     userGrowth: Array<{ date: string; count: number }>
     planActivity: Array<{ date: string; count: number }>
@@ -230,7 +241,55 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
             />
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="mb-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">🆕 Yeni Özellikler</h3>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <StatCard
+                title="Toplam İtiraf"
+                value={data.stats.totalConfessions}
+                change={data.stats.confessionChange}
+                icon="🙏"
+              />
+              <StatCard
+                title="İtiraf Yorumları"
+                value={data.stats.totalConfessionComments}
+                icon="💭"
+              />
+              <StatCard
+                title="Sosyal Gruplar"
+                value={data.stats.totalGroups}
+                icon="👨‍👩‍👧‍👦"
+              />
+              <StatCard
+                title="Takip İlişkileri"
+                value={data.stats.totalFollows}
+                icon="🤝"
+              />
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">📊 İtiraf Moderasyon</h3>
+            <div className="grid gap-6 md:grid-cols-3">
+              <StatCard
+                title="Bekleyen İtiraflar"
+                value={data.stats.pendingConfessions}
+                icon="⏳"
+              />
+              <StatCard
+                title="Onaylanan İtiraflar"
+                value={data.stats.approvedConfessions}
+                icon="✅"
+              />
+              <StatCard
+                title="Reddedilen İtiraflar"
+                value={data.stats.rejectedConfessions}
+                icon="❌"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
             <StatCard
               title="Yeni Kullanıcılar"
               value={data.stats.newUsers}
@@ -240,6 +299,11 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
               title="Yeni Planlar"
               value={data.stats.newPlans}
               icon="📝"
+            />
+            <StatCard
+              title="Yeni İtiraflar"
+              value={data.stats.newConfessions}
+              icon="🆕"
             />
           </div>
 

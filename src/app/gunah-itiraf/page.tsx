@@ -433,23 +433,45 @@ export default function ConfessionWallPage() {
                 whileHover={{ scale: 1.02 }}
                 className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 hover:shadow-pink-500/20 transition-all group"
               >
+                {/* Author Info */}
+                <div className="flex items-center gap-3 mb-4">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-2xl shadow-lg"
+                  >
+                    👤
+                  </motion.div>
+                  <div className="flex-1">
+                    <p className="text-white font-bold text-lg">Anonim Kullanıcı</p>
+                    <p className="text-white/60 text-sm">
+                      {new Date(confession.createdAt).toLocaleString('tr-TR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                  {confession.status === 'PENDING' && (
+                    <span className="px-3 py-1 bg-yellow-500/20 border border-yellow-400/30 text-yellow-200 text-xs font-bold rounded-full whitespace-nowrap">
+                      ⏳ Onay Bekliyor
+                    </span>
+                  )}
+                </div>
+
                 {/* Confession Text */}
                 <div className="mb-6">
-                  <div className="flex items-start gap-3">
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                      className="text-white text-xl leading-relaxed font-medium flex-1"
-                    >
-                      {confession.text}
-                    </motion.p>
-                    {confession.status === 'PENDING' && (
-                      <span className="px-3 py-1 bg-yellow-500/20 border border-yellow-400/30 text-yellow-200 text-xs font-bold rounded-full whitespace-nowrap">
-                        ⏳ Onay Bekliyor
-                      </span>
-                    )}
-                  </div>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-white text-xl leading-relaxed font-medium"
+                  >
+                    {confession.text}
+                  </motion.p>
                 </div>
 
                 {/* AI Reply */}
@@ -629,10 +651,7 @@ export default function ConfessionWallPage() {
                   )}
                 </AnimatePresence>
 
-                {/* Timestamp */}
-                <div className="mt-4 text-xs text-white/50 font-medium">
-                  📅 {new Date(confession.createdAt).toLocaleString('tr-TR')}
-                </div>
+
               </motion.div>
             ))}
           </div>

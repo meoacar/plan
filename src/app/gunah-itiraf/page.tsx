@@ -186,14 +186,16 @@ export default function ConfessionWallPage() {
       });
 
       if (res.ok) {
+        const newComment = await res.json();
         setCommentTexts({ ...commentTexts, [confessionId]: '' });
         alert('Yorumun gönderildi! Admin onayından sonra yayınlanacak. +10 XP kazandın 🎉');
-        await fetchComments(confessionId);
-        // Yorum sayısını güncelle
+        
+        // Yorumu anlık olarak listeye ekle
         setConfessions(confessions.map(c => {
           if (c.id === confessionId) {
             return {
               ...c,
+              comments: [newComment, ...(c.comments || [])],
               _count: {
                 ...c._count,
                 comments: c._count.comments + 1,

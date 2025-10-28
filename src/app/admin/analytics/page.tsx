@@ -21,6 +21,15 @@ async function getAnalyticsData() {
   const previousStartDate = new Date(startOfPeriod.getTime() - periodLength)
   const previousEndDate = new Date(endOfPeriod.getTime() - periodLength)
 
+  // Safe count helper
+  const safeCount = async (model: any, where?: any) => {
+    try {
+      return await model.count(where ? { where } : undefined)
+    } catch {
+      return 0
+    }
+  }
+
   const [
     totalUsers,
     totalPlans,
@@ -47,11 +56,11 @@ async function getAnalyticsData() {
     prisma.plan.count(),
     prisma.comment.count(),
     prisma.like.count(),
-    prisma.confession.count(),
-    prisma.confessionComment.count(),
-    prisma.socialGroup.count(),
-    prisma.follow.count(),
-    prisma.notification.count(),
+    safeCount(prisma.confession),
+    safeCount(prisma.confessionComment),
+    safeCount(prisma.socialGroup),
+    safeCount(prisma.follow),
+    safeCount(prisma.notification),
     prisma.user.count({
       where: {
         createdAt: {
@@ -68,20 +77,16 @@ async function getAnalyticsData() {
         },
       },
     }),
-    prisma.confession.count({
-      where: {
-        createdAt: {
-          gte: startOfPeriod,
-          lte: endOfPeriod,
-        },
+    safeCount(prisma.confession, {
+      createdAt: {
+        gte: startOfPeriod,
+        lte: endOfPeriod,
       },
     }),
-    prisma.socialGroup.count({
-      where: {
-        createdAt: {
-          gte: startOfPeriod,
-          lte: endOfPeriod,
-        },
+    safeCount(prisma.socialGroup, {
+      createdAt: {
+        gte: startOfPeriod,
+        lte: endOfPeriod,
       },
     }),
     prisma.user.count({
@@ -100,12 +105,10 @@ async function getAnalyticsData() {
         },
       },
     }),
-    prisma.confession.count({
-      where: {
-        createdAt: {
-          gte: previousStartDate,
-          lte: previousEndDate,
-        },
+    safeCount(prisma.confession, {
+      createdAt: {
+        gte: previousStartDate,
+        lte: previousEndDate,
       },
     }),
     prisma.plan.findMany({
@@ -120,15 +123,9 @@ async function getAnalyticsData() {
         views: true,
       },
     }),
-    prisma.confession.count({
-      where: { status: "PENDING" },
-    }),
-    prisma.confession.count({
-      where: { status: "APPROVED" },
-    }),
-    prisma.confession.count({
-      where: { status: "REJECTED" },
-    }),
+    safeCount(prisma.confession, { status: "PENDING" }),
+    safeCount(prisma.confession, { status: "APPROVED" }),
+    safeCount(prisma.confession, { status: "REJECTED" }),
   ])
 
   const totalViews = approvedPlans.reduce((sum: number, plan: { views: number }) => sum + plan.views, 0)

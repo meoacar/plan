@@ -41,55 +41,55 @@ export default function Home() {
               Binlerce kişinin başarı hikayesini keşfet, ilham al ve kendi yolculuğunu başlat
             </p>
 
-            {/* CTA Buttons - Mobile Stack */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 md:gap-4 mb-10 md:mb-16 px-4">
-              <Link href="/submit" className="w-full sm:w-auto">
-                <Button className="w-full h-12 md:h-14 px-6 md:px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-bold text-base md:text-lg shadow-lg hover:shadow-xl transition-all">
-                  <Zap className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+            {/* CTA Buttons - Mobile Optimized */}
+            <div className="flex flex-col items-stretch justify-center gap-3 mb-10 md:mb-16 px-4 max-w-md mx-auto md:max-w-none md:flex-row">
+              <Link href="/submit" className="w-full md:w-auto">
+                <Button className="w-full h-14 md:h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all active:scale-95">
+                  <Zap className="w-5 h-5 mr-2" />
                   Hikayeni Paylaş
                 </Button>
               </Link>
-              <Link href="#plans" className="w-full sm:w-auto">
-                <Button variant="outline" className="w-full h-12 md:h-14 px-6 md:px-8 border-2 border-gray-300 hover:border-purple-400 rounded-xl font-bold text-base md:text-lg">
+              <Link href="#plans" className="w-full md:w-auto">
+                <Button variant="outline" className="w-full h-14 md:h-14 px-8 border-2 border-purple-300 hover:border-purple-500 hover:bg-purple-50 rounded-2xl font-bold text-lg text-purple-700 active:scale-95 transition-all">
                   Hikayeleri Keşfet
                 </Button>
               </Link>
             </div>
 
-            {/* Stats Cards - Mobile Optimized */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto px-4">
-              <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md border-2 border-purple-100 hover:border-purple-300 transition-all">
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Users className="w-6 h-6 md:w-7 md:h-7 text-white" />
+            {/* Stats Cards - Mobile Clean */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6 max-w-4xl mx-auto px-4">
+              <div className="bg-white rounded-2xl p-5 shadow-lg border border-purple-100 active:scale-95 transition-transform">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                    <Users className="w-7 h-7 text-white" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-2xl md:text-3xl font-black text-gray-900">1000+</p>
-                    <p className="text-xs md:text-sm text-gray-600 font-medium truncate">Aktif Kullanıcı</p>
+                    <p className="text-3xl font-black text-gray-900 mb-0.5">1000+</p>
+                    <p className="text-sm text-gray-600 font-medium">Aktif Kullanıcı</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md border-2 border-emerald-100 hover:border-emerald-300 transition-all">
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
-                    <TrendingDown className="w-6 h-6 md:w-7 md:h-7 text-white" />
+              <div className="bg-white rounded-2xl p-5 shadow-lg border border-emerald-100 active:scale-95 transition-transform">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                    <TrendingDown className="w-7 h-7 text-white" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-2xl md:text-3xl font-black text-gray-900">500+</p>
-                    <p className="text-xs md:text-sm text-gray-600 font-medium truncate">Başarı Hikayesi</p>
+                    <p className="text-3xl font-black text-gray-900 mb-0.5">500+</p>
+                    <p className="text-sm text-gray-600 font-medium">Başarı Hikayesi</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md border-2 border-amber-100 hover:border-amber-300 transition-all">
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Award className="w-6 h-6 md:w-7 md:h-7 text-white" />
+              <div className="bg-white rounded-2xl p-5 shadow-lg border border-amber-100 active:scale-95 transition-transform">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                    <Award className="w-7 h-7 text-white" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-2xl md:text-3xl font-black text-gray-900">10K+</p>
-                    <p className="text-xs md:text-sm text-gray-600 font-medium truncate">Toplam Kilo Kaybı</p>
+                    <p className="text-3xl font-black text-gray-900 mb-0.5">10K+</p>
+                    <p className="text-sm text-gray-600 font-medium">Kilo Kaybı</p>
                   </div>
                 </div>
               </div>

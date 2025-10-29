@@ -12,6 +12,8 @@ import { Logo } from "@/components/logo";
 import NextTopLoader from 'nextjs-toploader';
 import { WebVitalsReporter } from "@/components/web-vitals-reporter";
 import { NotificationPermission } from "@/components/notifications/notification-permission";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
+import { RegisterServiceWorker } from "./register-sw";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -178,11 +180,13 @@ export default async function RootLayout({
           shadow="0 0 10px #9333ea,0 0 5px #9333ea"
         />
         <Providers>
+          <RegisterServiceWorker />
           <WebVitalsReporter />
           <MaintenanceChecker />
           <StreakTracker />
           <CrisisButton />
           <NotificationPermission />
+          <PWAInstallPrompt />
           <Navbar />
           <main className="min-h-screen bg-[#f8f8f8]">
             {children}

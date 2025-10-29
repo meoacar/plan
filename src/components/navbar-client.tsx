@@ -51,7 +51,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center transition-all hover:scale-105 group">
+          <Link href="/" className="flex items-center gap-2 transition-all hover:scale-105 group">
             {logoUrl ? (
               <img 
                 src={logoUrl} 
@@ -60,8 +60,10 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
               />
             ) : (
               <>
-                <Logo size={40} className="sm:hidden transition-transform group-hover:rotate-12" />
-                <Logo size={48} className="hidden sm:block transition-transform group-hover:rotate-12" />
+                <Logo size={40} className="transition-transform group-hover:rotate-12" />
+                <span className="text-lg sm:text-xl font-bold text-[#2d7a4a] truncate max-w-[180px] sm:max-w-none">
+                  {siteTitle}
+                </span>
               </>
             )}
           </Link>

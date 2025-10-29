@@ -377,12 +377,12 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute top-full mt-2 right-0 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-800 truncate">
+                    <div className="absolute top-full mt-2 right-0 min-w-[240px] bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-semibold text-gray-800">
                           {session.user?.name || "Kullanıcı"}
                         </p>
-                        <p className="text-[11px] text-gray-500 break-all">
+                        <p className="text-xs text-gray-500 mt-0.5">
                           {session.user?.email}
                         </p>
                       </div>

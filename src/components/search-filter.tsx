@@ -79,21 +79,21 @@ export function SearchFilter() {
       <Card className="relative bg-white/90 backdrop-blur-xl border border-purple-100 shadow-xl rounded-3xl">
         <CardContent className="pt-8 pb-8">
           <div className="space-y-6">
-            {/* Kategori Filtreleri */}
+            {/* Kategori Filtreleri - Mobile Optimized */}
             {categories.length > 0 && (
               <div>
-                <label className="flex items-center gap-3 text-xl font-black mb-6 text-gray-900">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                    <span className="text-xl">🏷️</span>
+                <label className="flex items-center gap-2 text-base md:text-xl font-black mb-4 text-gray-900">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <span className="text-base md:text-xl">🏷️</span>
                   </div>
                   Kategoriler
                 </label>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex overflow-x-auto gap-2 pb-2 -mx-2 px-2 md:flex-wrap md:mx-0 md:px-0 scrollbar-hide">
                   <button
                     onClick={() => handleCategoryClick("")}
-                    className={`rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 ${!categoryId
-                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105"
-                      : "bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-300 hover:bg-purple-50"
+                    className={`rounded-2xl px-5 py-3 text-sm font-bold transition-all whitespace-nowrap flex-shrink-0 active:scale-95 ${!categoryId
+                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg"
+                      : "bg-white border-2 border-gray-200 text-gray-700"
                       }`}
                   >
                     ✨ Tümü
@@ -102,9 +102,9 @@ export function SearchFilter() {
                     <button
                       key={category.id}
                       onClick={() => handleCategoryClick(category.id)}
-                      className={`rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 ${categoryId === category.id
-                        ? "text-white shadow-lg scale-105"
-                        : "bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-300 hover:bg-purple-50"
+                      className={`rounded-2xl px-5 py-3 text-sm font-bold transition-all whitespace-nowrap flex-shrink-0 active:scale-95 ${categoryId === category.id
+                        ? "text-white shadow-lg"
+                        : "bg-white border-2 border-gray-200 text-gray-700"
                         }`}
                       style={{
                         backgroundColor: categoryId === category.id ? category.color : undefined,
@@ -118,10 +118,10 @@ export function SearchFilter() {
               </div>
             )}
 
-            {/* Search Bar */}
-            <div className="flex gap-3 flex-wrap">
-              <div className="flex-1 min-w-[250px] relative group/search">
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-xl pointer-events-none">
+            {/* Search Bar - Mobile Optimized */}
+            <div className="flex flex-col md:flex-row gap-2 md:gap-3">
+              <div className="flex-1 relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg pointer-events-none">
                   🔍
                 </div>
                 <Input
@@ -129,22 +129,24 @@ export function SearchFilter() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="h-16 bg-white border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl focus:border-purple-400 focus:ring-4 focus:ring-purple-100 text-lg pl-14 pr-4 transition-all font-medium"
+                  className="h-14 md:h-16 bg-white border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-2xl focus:border-purple-400 focus:ring-4 focus:ring-purple-100 text-base md:text-lg pl-12 pr-4 transition-all font-medium"
                 />
               </div>
-              <Button
-                onClick={handleSearch}
-                className="h-16 px-10 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg hover:shadow-xl hover:scale-105 transition-all"
-              >
-                🔍 Ara
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="h-16 px-8 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-bold hover:border-purple-300 hover:bg-purple-50 transition-all"
-              >
-                {showFilters ? "🔼" : "🔽"} Filtreler
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSearch}
+                  className="flex-1 md:flex-initial h-14 md:h-16 px-6 md:px-10 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl font-bold text-base md:text-lg active:scale-95 transition-all"
+                >
+                  🔍 Ara
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="h-14 md:h-16 px-6 md:px-8 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl font-bold active:scale-95 transition-all"
+                >
+                  {showFilters ? "🔼" : "🔽"}
+                </Button>
+              </div>
             </div>
 
             {/* Advanced Filters */}

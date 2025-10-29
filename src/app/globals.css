@@ -37,6 +37,16 @@ html {
   max-width: 100%;
 }
 
+/* Hide scrollbar for horizontal scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Better text rendering on mobile */
 @media (max-width: 768px) {
   body {

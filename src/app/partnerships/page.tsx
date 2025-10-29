@@ -88,7 +88,16 @@ export default async function PartnershipsPage() {
     redirect('/login');
   }
 
+  console.log('Partnerships page - Current user:', { id: session.user.id, name: session.user.name, email: session.user.email });
+
   const partnerships = await getPartnerships(session.user.id);
+  
+  console.log('Partnerships found:', partnerships.length, partnerships.map(p => ({ 
+    id: p.id, 
+    status: p.status, 
+    requester: p.requester.name, 
+    partner: p.partner.name 
+  })));
 
   const activePartnerships = partnerships.filter((p: Partnership) => p.status === 'ACTIVE');
   const pendingRequests = partnerships.filter(

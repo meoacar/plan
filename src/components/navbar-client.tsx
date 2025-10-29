@@ -377,7 +377,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute top-full mt-2 right-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    <div className="absolute top-full mt-2 right-0 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                       <div className="px-4 py-2 border-b border-gray-100">
                         <p className="text-sm font-semibold text-gray-800 truncate">
                           {session.user?.name || "Kullanıcı"}

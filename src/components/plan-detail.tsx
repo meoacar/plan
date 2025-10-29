@@ -194,62 +194,71 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-20 left-10 w-72 h-72 md:w-96 md:h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-72 h-72 md:w-96 md:h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
-      <div className="container mx-auto px-4 py-12 max-w-5xl relative z-10">
+      <div className="container mx-auto px-2 sm:px-4 py-4 md:py-12 max-w-5xl relative z-10">
         {/* Main Card */}
-        <div className="relative group mb-12">
+        <div className="relative group mb-6 md:mb-12">
           {/* Glow Effect */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-500" />
+          <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl md:rounded-3xl blur-lg md:blur-xl opacity-30 group-hover:opacity-50 transition-all duration-500" />
 
           <Card className="relative bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden">
             {/* Glassmorphism Overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/0 to-white/5" />
 
-            <CardHeader className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white p-8 md:p-12">
+            <CardHeader className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white p-4 sm:p-6 md:p-12">
               {/* Admin Status Badge */}
               {isAdmin && (isPending || isRejected) && (
-                <div className="mb-6">
-                  <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg shadow-xl ${isPending
+                <div className="mb-4 md:mb-6">
+                  <div className={`inline-flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-sm md:text-lg shadow-xl ${isPending
                     ? "bg-yellow-500 text-yellow-900"
                     : "bg-red-500 text-white"
                     }`}>
-                    <span className="text-2xl">{isPending ? "⏳" : "❌"}</span>
+                    <span className="text-xl md:text-2xl">{isPending ? "⏳" : "❌"}</span>
                     <span>{isPending ? "Onay Bekliyor" : "Reddedildi"}</span>
                   </div>
                 </div>
               )}
 
               {/* Author Info & Edit Button */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6 gap-2">
                 <Link
                   href={`/profile/${plan.user.id}`}
-                  className="flex items-center gap-4 hover:opacity-90 transition-opacity group/author"
+                  className="flex items-center gap-2 md:gap-4 hover:opacity-90 transition-opacity group/author min-w-0"
                 >
-                  <div className="relative w-16 h-16 rounded-full overflow-hidden bg-white/20 backdrop-blur-xl flex items-center justify-center text-white font-bold text-2xl border-2 border-white/30 group-hover/author:scale-110 transition-transform shadow-xl">
+                  <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden bg-white/20 backdrop-blur-xl flex items-center justify-center text-white font-bold text-lg md:text-2xl border-2 border-white/30 group-hover/author:scale-110 transition-transform shadow-xl flex-shrink-0">
                     {plan.user.image ? (
                       <Image
                         src={plan.user.image}
                         alt={plan.user.name || "Profil"}
                         fill
-                        sizes="64px"
+                        sizes="(max-width: 768px) 48px, 64px"
                         className="object-cover"
                       />
                     ) : (
                       <span>{plan.user.name?.[0]?.toUpperCase() || "?"}</span>
                     )}
                   </div>
-                  <div>
-                    <p className="font-bold text-xl">{plan.user.name || "Anonim"}</p>
-                    <p className="text-sm text-white/90 flex items-center gap-2">
+                  <div className="min-w-0">
+                    <p className="font-bold text-base md:text-xl truncate">{plan.user.name || "Anonim"}</p>
+                    <p className="text-xs md:text-sm text-white/90 flex items-center gap-1 md:gap-2">
                       <span>📅</span>
-                      {new Date(plan.createdAt).toLocaleDateString("tr-TR", {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      <span className="hidden sm:inline">
+                        {new Date(plan.createdAt).toLocaleDateString("tr-TR", {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
+                      <span className="sm:hidden">
+                        {new Date(plan.createdAt).toLocaleDateString("tr-TR", {
+                          day: 'numeric',
+                          month: 'short',
+                          year: '2-digit'
+                        })}
+                      </span>
                     </p>
                   </div>
                 </Link>
@@ -258,50 +267,50 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                 {session?.user?.id === plan.user.id && (
                   <Link
                     href={`/plan/${plan.slug}/edit`}
-                    className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 rounded-xl font-bold transition-all"
+                    className="flex items-center gap-1.5 md:gap-2 px-3 py-2 md:px-6 md:py-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 rounded-lg md:rounded-xl font-bold text-sm md:text-base transition-all flex-shrink-0"
                   >
                     <span>✏️</span>
-                    <span>Düzenle</span>
+                    <span className="hidden sm:inline">Düzenle</span>
                   </Link>
                 )}
               </div>
 
               {/* Title */}
-              <CardTitle className="text-4xl md:text-5xl font-black mb-6 leading-tight">
+              <CardTitle className="text-2xl sm:text-3xl md:text-5xl font-black mb-4 md:mb-6 leading-tight">
                 {plan.title}
               </CardTitle>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20">
-                  <p className="text-white/80 text-sm mb-1">Başlangıç</p>
-                  <p className="text-3xl font-bold">{plan.startWeight}kg</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                <div className="bg-white/10 backdrop-blur-xl rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/20">
+                  <p className="text-white/80 text-xs md:text-sm mb-0.5 md:mb-1">Başlangıç</p>
+                  <p className="text-xl md:text-3xl font-bold">{plan.startWeight}kg</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20">
-                  <p className="text-white/80 text-sm mb-1">Hedef</p>
-                  <p className="text-3xl font-bold">{plan.goalWeight}kg</p>
+                <div className="bg-white/10 backdrop-blur-xl rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/20">
+                  <p className="text-white/80 text-xs md:text-sm mb-0.5 md:mb-1">Hedef</p>
+                  <p className="text-xl md:text-3xl font-bold">{plan.goalWeight}kg</p>
                 </div>
-                <div className="bg-gradient-to-br from-green-500/30 to-emerald-500/30 backdrop-blur-xl rounded-2xl p-4 border border-green-400/30">
-                  <p className="text-white/80 text-sm mb-1">Kayıp</p>
-                  <p className="text-3xl font-bold text-green-300">-{weightLoss}kg</p>
+                <div className="bg-gradient-to-br from-green-500/30 to-emerald-500/30 backdrop-blur-xl rounded-xl md:rounded-2xl p-3 md:p-4 border border-green-400/30">
+                  <p className="text-white/80 text-xs md:text-sm mb-0.5 md:mb-1">Kayıp</p>
+                  <p className="text-xl md:text-3xl font-bold text-green-300">-{weightLoss}kg</p>
                 </div>
-                <div className="bg-gradient-to-br from-yellow-500/30 to-orange-500/30 backdrop-blur-xl rounded-2xl p-4 border border-yellow-400/30">
-                  <p className="text-white/80 text-sm mb-1">Oran</p>
-                  <p className="text-3xl font-bold text-yellow-300">-{lossPercentage}%</p>
+                <div className="bg-gradient-to-br from-yellow-500/30 to-orange-500/30 backdrop-blur-xl rounded-xl md:rounded-2xl p-3 md:p-4 border border-yellow-400/30">
+                  <p className="text-white/80 text-xs md:text-sm mb-0.5 md:mb-1">Oran</p>
+                  <p className="text-xl md:text-3xl font-bold text-yellow-300">-{lossPercentage}%</p>
                 </div>
               </div>
 
               {/* Duration Badge */}
-              <div className="mt-6 inline-flex items-center gap-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-6 py-3">
-                <span className="text-2xl">⏱️</span>
-                <span className="font-bold text-lg">{plan.durationText}</span>
+              <div className="mt-4 md:mt-6 inline-flex items-center gap-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-4 py-2 md:px-6 md:py-3">
+                <span className="text-lg md:text-2xl">⏱️</span>
+                <span className="font-bold text-sm md:text-lg">{plan.durationText}</span>
               </div>
             </CardHeader>
 
-            <CardContent className="relative space-y-8 pt-8">
+            <CardContent className="relative space-y-4 md:space-y-8 pt-4 md:pt-8 px-3 md:px-6">
               {/* Image Section - Optimized with Next.js Image */}
               {plan.imageUrl && (
-                <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
+                <div className="relative rounded-xl md:rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
                   <Image
                     src={plan.imageUrl}
                     alt={plan.title}
@@ -318,13 +327,13 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
               {/* Video Section */}
               {plan.videoUrl && (
                 <div className="relative">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl blur-lg opacity-20" />
-                  <div className="relative bg-gradient-to-br from-red-500/10 to-pink-500/10 backdrop-blur-xl p-6 rounded-2xl border border-red-500/30">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <span className="text-xl">🎥</span>
+                  <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-red-600 to-pink-600 rounded-xl md:rounded-2xl blur-lg opacity-20" />
+                  <div className="relative bg-gradient-to-br from-red-500/10 to-pink-500/10 backdrop-blur-xl p-4 md:p-6 rounded-xl md:rounded-2xl border border-red-500/30">
+                    <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                      <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <span className="text-lg md:text-xl">🎥</span>
                       </div>
-                      <h3 className="font-bold text-2xl text-white">Video</h3>
+                      <h3 className="font-bold text-lg md:text-2xl text-white">Video</h3>
                     </div>
                     <VideoEmbed url={plan.videoUrl} />
                   </div>
@@ -424,26 +433,31 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
               )}
 
               {/* Interaction Buttons */}
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {/* Modern Etkileşim Butonları */}
                 <div className="relative">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-blue-600/20 rounded-2xl blur-xl" />
-                  <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
-                    <div className="flex flex-wrap items-center gap-3">
+                  <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-blue-600/20 rounded-xl md:rounded-2xl blur-lg md:blur-xl" />
+                  <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-xl p-3 md:p-6 rounded-xl md:rounded-2xl border border-white/10">
+                    <div className="flex flex-wrap items-center gap-2 md:gap-3">
                       {/* Like Button */}
                       <button
                         onClick={handleLike}
-                        className={`group relative flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${liked
+                        className={`group relative flex items-center gap-1.5 md:gap-2 px-3 py-2 md:px-5 md:py-2.5 rounded-lg md:rounded-xl font-semibold text-sm md:text-base transition-all duration-300 ${liked
                           ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg shadow-red-500/30 scale-105"
                           : "bg-gray-800/80 text-gray-300 border border-gray-700/50 hover:border-red-500/50 hover:bg-gray-700/80 hover:scale-105"
                           }`}
                       >
-                        <Heart className={`w-5 h-5 ${liked ? "fill-current" : "group-hover:scale-110 transition-transform"}`} />
+                        <Heart className={`w-4 h-4 md:w-5 md:h-5 ${liked ? "fill-current" : "group-hover:scale-110 transition-transform"}`} />
                         <span className="font-bold">{likeCount}</span>
                       </button>
 
                       {/* Favorite Button */}
-                      <FavoriteButton planId={plan.id} showLabel />
+                      <div className="hidden sm:block">
+                        <FavoriteButton planId={plan.id} showLabel />
+                      </div>
+                      <div className="sm:hidden">
+                        <FavoriteButton planId={plan.id} showLabel={false} />
+                      </div>
 
                       {/* Collection Button */}
                       {session && <AddToCollectionButton planId={plan.id} />}
@@ -452,14 +466,14 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                       <PdfExportButton slug={plan.slug} title={plan.title} />
 
                       {/* Views */}
-                      <div className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 border border-blue-500/20 text-blue-300 rounded-xl font-semibold backdrop-blur-sm">
-                        <Eye className="w-5 h-5" />
+                      <div className="flex items-center gap-1.5 md:gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-blue-500/10 border border-blue-500/20 text-blue-300 rounded-lg md:rounded-xl font-semibold text-sm md:text-base backdrop-blur-sm">
+                        <Eye className="w-4 h-4 md:w-5 md:h-5" />
                         <span>{plan.views}</span>
                       </div>
 
                       {/* Comments */}
-                      <div className="flex items-center gap-2 px-4 py-2.5 bg-green-500/10 border border-green-500/20 text-green-300 rounded-xl font-semibold backdrop-blur-sm">
-                        <MessageCircle className="w-5 h-5" />
+                      <div className="flex items-center gap-1.5 md:gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-green-500/10 border border-green-500/20 text-green-300 rounded-lg md:rounded-xl font-semibold text-sm md:text-base backdrop-blur-sm">
+                        <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
                         <span>{comments.length}</span>
                       </div>
 
@@ -477,67 +491,67 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
               </div>
 
               {/* Content Sections */}
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {/* Routine */}
                 <div className="relative group/section">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
-                  <div className="relative bg-gradient-to-br from-blue-500/10 to-cyan-500/10 backdrop-blur-xl p-8 rounded-2xl border border-blue-500/30">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <span className="text-2xl">📅</span>
+                  <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl md:rounded-2xl blur-md md:blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
+                  <div className="relative bg-gradient-to-br from-blue-500/10 to-cyan-500/10 backdrop-blur-xl p-4 md:p-8 rounded-xl md:rounded-2xl border border-blue-500/30">
+                    <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                        <span className="text-xl md:text-2xl">📅</span>
                       </div>
-                      <h3 className="font-bold text-3xl text-white">Günlük Rutin</h3>
+                      <h3 className="font-bold text-xl md:text-3xl text-white">Günlük Rutin</h3>
                     </div>
-                    <p className="text-gray-300 whitespace-pre-wrap text-lg leading-relaxed">{plan.routine}</p>
+                    <p className="text-gray-300 whitespace-pre-wrap text-sm md:text-lg leading-relaxed">{plan.routine}</p>
                   </div>
                 </div>
 
                 {/* Diet */}
                 <div className="relative group/section">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
-                  <div className="relative bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl p-8 rounded-2xl border border-green-500/30">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <span className="text-2xl">🥗</span>
+                  <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl md:rounded-2xl blur-md md:blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
+                  <div className="relative bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl p-4 md:p-8 rounded-xl md:rounded-2xl border border-green-500/30">
+                    <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                        <span className="text-xl md:text-2xl">🥗</span>
                       </div>
-                      <h3 className="font-bold text-3xl text-white">Beslenme Planı</h3>
+                      <h3 className="font-bold text-xl md:text-3xl text-white">Beslenme Planı</h3>
                     </div>
-                    <p className="text-gray-300 whitespace-pre-wrap text-lg leading-relaxed">{plan.diet}</p>
+                    <p className="text-gray-300 whitespace-pre-wrap text-sm md:text-lg leading-relaxed">{plan.diet}</p>
                   </div>
                 </div>
 
                 {/* Exercise */}
                 <div className="relative group/section">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
-                  <div className="relative bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-xl p-8 rounded-2xl border border-orange-500/30">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <span className="text-2xl">💪</span>
+                  <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-orange-600 to-red-600 rounded-xl md:rounded-2xl blur-md md:blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
+                  <div className="relative bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-xl p-4 md:p-8 rounded-xl md:rounded-2xl border border-orange-500/30">
+                    <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                        <span className="text-xl md:text-2xl">💪</span>
                       </div>
-                      <h3 className="font-bold text-3xl text-white">Egzersiz Programı</h3>
+                      <h3 className="font-bold text-xl md:text-3xl text-white">Egzersiz Programı</h3>
                     </div>
-                    <p className="text-gray-300 whitespace-pre-wrap text-lg leading-relaxed">{plan.exercise}</p>
+                    <p className="text-gray-300 whitespace-pre-wrap text-sm md:text-lg leading-relaxed">{plan.exercise}</p>
                   </div>
                 </div>
 
                 {/* Motivation */}
                 <div className="relative group/section">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-lg opacity-30 group-hover/section:opacity-40 transition-opacity" />
-                  <div className="relative bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-xl p-8 rounded-2xl border border-purple-500/30">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <span className="text-2xl">✨</span>
+                  <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl md:rounded-2xl blur-md md:blur-lg opacity-30 group-hover/section:opacity-40 transition-opacity" />
+                  <div className="relative bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-xl p-4 md:p-8 rounded-xl md:rounded-2xl border border-purple-500/30">
+                    <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                        <span className="text-xl md:text-2xl">✨</span>
                       </div>
-                      <h3 className="font-bold text-3xl text-white">Motivasyon</h3>
+                      <h3 className="font-bold text-xl md:text-3xl text-white">Motivasyon</h3>
                     </div>
-                    <p className="text-gray-300 italic text-xl font-medium leading-relaxed">{plan.motivation}</p>
+                    <p className="text-gray-300 italic text-base md:text-xl font-medium leading-relaxed">{plan.motivation}</p>
                   </div>
                 </div>
 
                 {/* Shopping List */}
                 <div className="relative group/section">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
-                  <div className="relative bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl p-8 rounded-2xl border border-green-500/30">
+                  <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl md:rounded-2xl blur-md md:blur-lg opacity-20 group-hover/section:opacity-30 transition-opacity" />
+                  <div className="relative bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xl p-4 md:p-8 rounded-xl md:rounded-2xl border border-green-500/30">
                     <ShoppingList
                       planId={plan.id}
                       planTitle={plan.title}
@@ -551,43 +565,43 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
         </div>
 
         {/* Comments Section */}
-        <div className="mt-12">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-              <MessageCircle className="w-6 h-6 text-white" />
+        <div className="mt-8 md:mt-12">
+          <div className="flex items-center gap-2 md:gap-3 mb-6 md:mb-8">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
-            <h3 className="text-4xl font-bold text-white">
+            <h3 className="text-2xl md:text-4xl font-bold text-white">
               Yorumlar <span className="text-gray-500">({comments.length})</span>
             </h3>
           </div>
 
           {session ? (
-            <form onSubmit={handleComment} className="mb-8">
+            <form onSubmit={handleComment} className="mb-6 md:mb-8">
               <div className="relative group/form">
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-lg opacity-20 group-hover/form:opacity-30 transition-opacity" />
+                <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl md:rounded-2xl blur-md md:blur-lg opacity-20 group-hover/form:opacity-30 transition-opacity" />
                 <Card className="relative bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border border-white/10">
-                  <CardContent className="pt-6">
+                  <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
                     <Textarea
                       value={commentBody}
                       onChange={(e) => setCommentBody(e.target.value)}
                       placeholder="Düşüncelerinizi paylaşın..."
-                      className="mb-4 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 resize-none"
-                      rows={4}
+                      className="mb-3 md:mb-4 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 rounded-lg md:rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 resize-none text-sm md:text-base"
+                      rows={3}
                       required
                     />
                     <Button
                       type="submit"
                       disabled={submitting}
-                      className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all"
+                      className="w-full h-12 md:h-14 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg md:rounded-xl font-bold text-base md:text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all"
                     >
                       {submitting ? (
                         <span className="flex items-center gap-2">
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                           Gönderiliyor...
                         </span>
                       ) : (
                         <span className="flex items-center gap-2">
-                          <MessageCircle className="w-5 h-5" />
+                          <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
                           Yorum Yap
                         </span>
                       )}
@@ -597,16 +611,16 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
               </div>
             </form>
           ) : (
-            <Card className="mb-8 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-xl border border-yellow-500/30">
-              <CardContent className="pt-6 text-center py-8">
-                <div className="w-16 h-16 bg-yellow-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-4xl">💡</span>
+            <Card className="mb-6 md:mb-8 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-xl border border-yellow-500/30">
+              <CardContent className="pt-4 md:pt-6 text-center py-6 md:py-8 px-3 md:px-6">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-yellow-500/30 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                  <span className="text-3xl md:text-4xl">💡</span>
                 </div>
-                <p className="text-xl font-bold text-white mb-2">
+                <p className="text-lg md:text-xl font-bold text-white mb-2">
                   Yorum yapmak için giriş yapmalısınız
                 </p>
                 <Link href="/login">
-                  <Button className="mt-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold">
+                  <Button className="mt-3 md:mt-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold text-sm md:text-base">
                     Giriş Yap
                   </Button>
                 </Link>
@@ -614,17 +628,17 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
             </Card>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             {comments.length === 0 ? (
               <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-xl border border-gray-700">
-                <CardContent className="pt-6 text-center py-12">
-                  <div className="w-20 h-20 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-5xl">📭</span>
+                <CardContent className="pt-4 md:pt-6 text-center py-8 md:py-12 px-3 md:px-6">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                    <span className="text-4xl md:text-5xl">📭</span>
                   </div>
-                  <p className="text-2xl font-bold text-white mb-2">
+                  <p className="text-xl md:text-2xl font-bold text-white mb-2">
                     Henüz yorum yok
                   </p>
-                  <p className="text-gray-400">
+                  <p className="text-sm md:text-base text-gray-400">
                     İlk yorumu yapan siz olun!
                   </p>
                 </CardContent>
@@ -632,28 +646,28 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
             ) : (
               comments.map((comment: any) => (
                 <div key={comment.id} className="relative group/comment">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-2xl blur opacity-0 group-hover/comment:opacity-100 transition-opacity" />
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl md:rounded-2xl blur opacity-0 group-hover/comment:opacity-100 transition-opacity" />
                   <Card className="relative bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start gap-4">
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
+                    <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
+                      <div className="flex items-start gap-3 md:gap-4">
+                        <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-base md:text-lg flex-shrink-0 shadow-lg">
                           {comment.user.image ? (
                             <Image
                               src={comment.user.image}
                               alt={comment.user.name || "Profil"}
                               fill
-                              sizes="48px"
+                              sizes="(max-width: 768px) 40px, 48px"
                               className="object-cover"
                             />
                           ) : (
                             <span>{comment.user.name?.[0]?.toUpperCase() || "?"}</span>
                           )}
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-3">
-                              <span className="font-bold text-white text-lg">{comment.user.name || "Anonim"}</span>
-                              <span className="text-sm text-gray-500">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-2 md:mb-3 gap-2">
+                            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                              <span className="font-bold text-white text-sm md:text-lg truncate">{comment.user.name || "Anonim"}</span>
+                              <span className="text-xs md:text-sm text-gray-500 flex-shrink-0">
                                 {new Date(comment.createdAt).toLocaleDateString("tr-TR", {
                                   year: 'numeric',
                                   month: 'short',
@@ -666,13 +680,13 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleDeleteComment(comment.id)}
-                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 font-semibold"
+                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 font-semibold text-xs md:text-sm px-2 md:px-3 flex-shrink-0"
                               >
-                                🗑️ Sil
+                                🗑️ <span className="hidden sm:inline ml-1">Sil</span>
                               </Button>
                             )}
                           </div>
-                          <p className="text-gray-300 text-base leading-relaxed">{comment.body}</p>
+                          <p className="text-gray-300 text-sm md:text-base leading-relaxed break-words">{comment.body}</p>
 
                           {/* Emoji Reactions */}
                           <CommentReactions
@@ -694,44 +708,44 @@ export function PlanDetail({ plan, similarPlans = [] }: PlanDetailProps) {
 
         {/* Similar Plans */}
         {similarPlans.length > 0 && (
-          <div className="mt-16">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-2xl">🔍</span>
+          <div className="mt-12 md:mt-16">
+            <div className="flex items-center gap-2 md:gap-3 mb-6 md:mb-8">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-xl md:text-2xl">🔍</span>
               </div>
-              <h3 className="text-4xl font-bold text-white">
+              <h3 className="text-2xl md:text-4xl font-bold text-white">
                 Benzer Planlar
               </h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {similarPlans.map((similarPlan: any) => {
                 const weightLoss = similarPlan.startWeight - similarPlan.goalWeight
                 return (
                   <Link key={similarPlan.id} href={`/plan/${similarPlan.slug}`}>
                     <div className="relative group/similar h-full">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur-lg opacity-20 group-hover/similar:opacity-40 transition-opacity" />
+                      <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl md:rounded-2xl blur-md md:blur-lg opacity-20 group-hover/similar:opacity-40 transition-opacity" />
                       <Card className="relative h-full bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border border-white/10 hover:border-blue-500/50 transition-all">
-                        <CardHeader>
-                          <h4 className="font-bold text-xl text-white line-clamp-2 group-hover/similar:text-blue-400 transition-colors">
+                        <CardHeader className="p-4 md:p-6">
+                          <h4 className="font-bold text-base md:text-xl text-white line-clamp-2 group-hover/similar:text-blue-400 transition-colors">
                             {similarPlan.title}
                           </h4>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6 pt-0">
                           <div className="flex gap-2 flex-wrap">
-                            <span className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl text-sm font-bold shadow-lg">
+                            <span className="px-3 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg md:rounded-xl text-xs md:text-sm font-bold shadow-lg">
                               -{weightLoss}kg
                             </span>
-                            <span className="px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl text-sm font-semibold border border-gray-600">
+                            <span className="px-3 py-1.5 md:px-4 md:py-2 bg-gray-700/50 text-gray-300 rounded-lg md:rounded-xl text-xs md:text-sm font-semibold border border-gray-600">
                               {similarPlan.durationText}
                             </span>
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-gray-400 font-medium">
-                            <span className="flex items-center gap-2">
-                              <Eye className="w-4 h-4" />
+                          <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm text-gray-400 font-medium">
+                            <span className="flex items-center gap-1.5 md:gap-2">
+                              <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               {similarPlan.views}
                             </span>
-                            <span className="flex items-center gap-2">
-                              <Heart className="w-4 h-4 text-red-400" />
+                            <span className="flex items-center gap-1.5 md:gap-2">
+                              <Heart className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-400" />
                               {similarPlan._count.likes}
                             </span>
                           </div>

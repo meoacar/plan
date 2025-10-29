@@ -52,12 +52,12 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
         <div className="flex items-center h-16 md:justify-between">
           {/* Mobile: Hamburger Left (Hidden) */}
           <div className="md:hidden w-10"></div>
-          
+
           {/* Logo - Centered on Mobile, Left on Desktop */}
           <Link href="/" className="flex items-center gap-2 transition-all hover:scale-105 group flex-1 justify-center md:justify-start md:flex-initial">
             {logoUrl ? (
-              <img 
-                src={logoUrl} 
+              <img
+                src={logoUrl}
                 alt={siteTitle}
                 className="h-12 sm:h-12 w-auto object-contain transition-transform group-hover:scale-110"
               />
@@ -356,7 +356,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
               <>
                 {/* Bildirim İkonu */}
                 <NotificationBell />
-                
+
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -377,75 +377,151 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute top-full mt-2 right-0 w-72 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-800">
-                          {session.user?.name || "Kullanıcı"}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {session.user?.email}
-                        </p>
+                    <div className="absolute top-full mt-2 right-0 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 py-3 z-50">
+                      {/* Kullanıcı Bilgileri */}
+                      <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-[#2d7a4a]/5 to-[#4caf50]/5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
+                            {session.user?.image ? (
+                              <img
+                                src={session.user.image}
+                                alt={session.user.name || "Profil"}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span>{session.user?.name?.[0]?.toUpperCase() || "?"}</span>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-base font-bold text-gray-900 truncate">
+                              {session.user?.name || "Kullanıcı"}
+                            </p>
+                            <p className="text-xs text-gray-600 truncate mt-0.5">
+                              {session.user?.email}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <Link
-                        href={`/profile/${session.user?.username || session.user?.id}`}
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                      >
-                        <User className="w-4 h-4" />
-                        <span>Profilim</span>
-                      </Link>
-                      <Link
-                        href="/bildirimler"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                      >
-                        <Settings className="w-4 h-4" />
-                        <span>Bildirimler</span>
-                      </Link>
-                      <Link
-                        href={`/profile/${session.user?.username || session.user?.id}/following`}
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                      >
-                        <Users className="w-4 h-4" />
-                        <span>Takip Edilenler</span>
-                      </Link>
-                      <Link
-                        href="/takip-istekleri"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                      >
-                        <User className="w-4 h-4" />
-                        <span>Takip İstekleri</span>
-                      </Link>
-                      <Link
-                        href="/ayarlar"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                      >
-                        <Settings className="w-4 h-4" />
-                        <span>Ayarlar</span>
-                      </Link>
-                      {session.user?.role === "ADMIN" && (
+
+                      {/* Profil Bölümü */}
+                      <div className="py-2">
                         <Link
-                          href="/admin"
+                          href={`/profile/${session.user?.username || session.user?.id}`}
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                          className="flex items-center gap-3 px-5 py-3 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
                         >
-                          <Settings className="w-4 h-4" />
-                          <span>Admin Panel</span>
+                          <div className="w-9 h-9 rounded-lg bg-[#2d7a4a]/10 flex items-center justify-center group-hover:bg-[#2d7a4a]/20 transition-colors">
+                            <User className="w-5 h-5 text-[#2d7a4a]" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-semibold text-gray-800 group-hover:text-[#2d7a4a] block">Profilim</span>
+                            <span className="text-xs text-gray-500">Profil sayfanı görüntüle</span>
+                          </div>
                         </Link>
+                      </div>
+
+                      <div className="border-t border-gray-100 my-1"></div>
+
+                      {/* Bildirimler & Takip */}
+                      <div className="py-2">
+                        <div className="px-5 py-2">
+                          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sosyal</p>
+                        </div>
+                        <Link
+                          href="/bildirimler"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                        >
+                          <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                            <span className="text-lg">🔔</span>
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-medium text-gray-700 group-hover:text-[#2d7a4a]">Bildirimler</span>
+                          </div>
+                        </Link>
+                        <Link
+                          href={`/profile/${session.user?.username || session.user?.id}/following`}
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                        >
+                          <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+                            <Users className="w-5 h-5 text-purple-600" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-medium text-gray-700 group-hover:text-[#2d7a4a]">Takip Edilenler</span>
+                          </div>
+                        </Link>
+                        <Link
+                          href="/takip-istekleri"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                        >
+                          <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center group-hover:bg-orange-100 transition-colors">
+                            <User className="w-5 h-5 text-orange-600" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-medium text-gray-700 group-hover:text-[#2d7a4a]">Takip İstekleri</span>
+                          </div>
+                        </Link>
+                      </div>
+
+                      <div className="border-t border-gray-100 my-1"></div>
+
+                      {/* Ayarlar */}
+                      <div className="py-2">
+                        <Link
+                          href="/ayarlar"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                        >
+                          <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                            <Settings className="w-5 h-5 text-gray-600" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-medium text-gray-700 group-hover:text-[#2d7a4a]">Ayarlar</span>
+                          </div>
+                        </Link>
+                      </div>
+
+                      {/* Admin Panel */}
+                      {session.user?.role === "ADMIN" && (
+                        <>
+                          <div className="border-t border-gray-100 my-1"></div>
+                          <div className="py-2">
+                            <Link
+                              href="/admin"
+                              onClick={() => setUserMenuOpen(false)}
+                              className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all group"
+                            >
+                              <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
+                                <Settings className="w-5 h-5 text-indigo-600" />
+                              </div>
+                              <div className="flex-1">
+                                <span className="font-semibold text-indigo-600 group-hover:text-indigo-700">Admin Panel</span>
+                              </div>
+                            </Link>
+                          </div>
+                        </>
                       )}
-                      <button
-                        onClick={() => {
-                          setUserMenuOpen(false)
-                          signOut({ callbackUrl: "/" })
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>Çıkış Yap</span>
-                      </button>
+
+                      {/* Çıkış Yap */}
+                      <div className="border-t border-gray-100 my-1"></div>
+                      <div className="py-2">
+                        <button
+                          onClick={() => {
+                            setUserMenuOpen(false)
+                            signOut({ callbackUrl: "/" })
+                          }}
+                          className="flex items-center gap-3 px-5 py-3 text-sm hover:bg-red-50 transition-all w-full group"
+                        >
+                          <div className="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                            <LogOut className="w-5 h-5 text-red-600" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="font-semibold text-red-600 group-hover:text-red-700">Çıkış Yap</span>
+                          </div>
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

@@ -225,10 +225,10 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
 
         {/* Main Content */}
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Main Article - 8 columns */}
-            <article className="lg:col-span-8">
+            <article className="lg:col-span-8 mx-auto w-full max-w-4xl lg:max-w-none">
               {/* Featured Image */}
               {post.featuredImage && (
                 <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-8 shadow-2xl">
@@ -320,18 +320,20 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
 
               {/* Article Content */}
-              <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
+              <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 mb-6">
                 <div
-                  className="prose prose-lg max-w-none
-                  prose-headings:text-gray-900 prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-8
+                  className="prose prose-lg md:prose-xl max-w-none mx-auto
+                  prose-headings:text-gray-900 prose-headings:font-bold prose-headings:mb-6 prose-headings:mt-10
+                  prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
                   prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg
                   prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
                   prose-strong:text-gray-900 prose-strong:font-bold
-                  prose-ul:my-6 prose-li:my-2 prose-li:text-gray-700
-                  prose-ol:my-6
-                  prose-img:rounded-xl prose-img:shadow-xl prose-img:my-8
-                  prose-blockquote:border-l-4 prose-blockquote:border-green-500 prose-blockquote:bg-green-50 prose-blockquote:pl-6 prose-blockquote:py-4 prose-blockquote:italic prose-blockquote:text-gray-700
-                  prose-code:text-green-600 prose-code:bg-green-50 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm"
+                  prose-ul:my-6 prose-ul:list-disc prose-ul:pl-6 prose-li:my-2 prose-li:text-gray-700 prose-li:text-lg
+                  prose-ol:my-6 prose-ol:list-decimal prose-ol:pl-6
+                  prose-img:rounded-xl prose-img:shadow-xl prose-img:my-8 prose-img:mx-auto prose-img:max-w-full
+                  prose-blockquote:border-l-4 prose-blockquote:border-green-500 prose-blockquote:bg-green-50 prose-blockquote:pl-6 prose-blockquote:py-4 prose-blockquote:italic prose-blockquote:text-gray-700 prose-blockquote:my-6
+                  prose-code:text-green-600 prose-code:bg-green-50 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm
+                  prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto"
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
               </div>
@@ -379,7 +381,7 @@ export default async function BlogPostPage({ params }: Props) {
             </article>
 
             {/* Sidebar - 4 columns */}
-            <aside className="lg:col-span-4 space-y-6">
+            <aside className="lg:col-span-4 space-y-6 mx-auto w-full max-w-md lg:max-w-none">
               {/* Recent Posts */}
               <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">

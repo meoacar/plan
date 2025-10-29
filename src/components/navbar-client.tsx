@@ -360,9 +360,9 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50 transition-all duration-200"
                   >
-                    <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center text-white font-bold text-sm shadow-md">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center text-white font-bold shadow-lg ring-2 ring-white">
                       {session.user?.image ? (
                         <img
                           src={session.user.image}
@@ -370,18 +370,19 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span>{session.user?.name?.[0]?.toUpperCase() || "?"}</span>
+                        <span className="text-base">{session.user?.name?.[0]?.toUpperCase() || "?"}</span>
                       )}
                     </div>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute top-full mt-2 right-0 w-[420px] max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-2xl border border-gray-100 py-3 z-50">
-                      {/* Kullanıcı Bilgileri */}
-                      <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-[#2d7a4a]/5 to-[#4caf50]/5">
-                        <div className="flex items-center gap-3">
-                          <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
+                    <div className="fixed md:absolute top-16 md:top-full right-0 md:right-0 left-0 md:left-auto md:mt-2 w-full md:w-[480px] bg-white md:rounded-2xl shadow-2xl border-t md:border border-gray-200 overflow-hidden z-[100] max-h-[calc(100vh-5rem)] md:max-h-[85vh] overflow-y-auto">
+                      
+                      {/* Header - Kullanıcı Bilgileri */}
+                      <div className="sticky top-0 bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] px-6 py-5 text-white">
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-xl shadow-xl ring-4 ring-white/30">
                             {session.user?.image ? (
                               <img
                                 src={session.user.image}
@@ -393,135 +394,138 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-base font-bold text-gray-900 truncate">
+                            <h3 className="text-lg font-bold truncate">
                               {session.user?.name || "Kullanıcı"}
-                            </p>
-                            <p className="text-xs text-gray-600 truncate mt-0.5">
+                            </h3>
+                            <p className="text-sm text-white/80 truncate">
                               {session.user?.email}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      {/* Profil Bölümü */}
-                      <div className="py-2">
+                      {/* Ana Profil Linki */}
+                      <div className="p-3 border-b border-gray-100">
                         <Link
                           href={`/profile/${session.user?.username || session.user?.id}`}
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-5 py-3 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                          className="flex items-center gap-4 px-4 py-3.5 rounded-xl hover:bg-gradient-to-r hover:from-[#2d7a4a]/10 hover:to-[#4caf50]/10 transition-all duration-200 group"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-[#2d7a4a]/10 flex items-center justify-center group-hover:bg-[#2d7a4a]/20 transition-colors">
-                            <User className="w-5 h-5 text-[#2d7a4a]" />
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-lg">
+                            <User className="w-6 h-6 text-white" />
                           </div>
                           <div className="flex-1">
-                            <span className="font-semibold text-gray-800 group-hover:text-[#2d7a4a] block">Profilim</span>
-                            <span className="text-xs text-gray-500">Profil sayfanı görüntüle</span>
+                            <div className="font-bold text-gray-900 group-hover:text-[#2d7a4a] transition-colors">Profilimi Görüntüle</div>
+                            <div className="text-xs text-gray-500">Profil sayfana git</div>
                           </div>
+                          <ChevronDown className="w-5 h-5 text-gray-400 -rotate-90 group-hover:translate-x-1 transition-transform" />
                         </Link>
                       </div>
 
-                      <div className="border-t border-gray-100 my-1"></div>
-
-                      {/* Bildirimler & Takip */}
-                      <div className="py-2">
-                        <div className="px-5 py-2">
-                          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sosyal</p>
+                      {/* Sosyal Bölüm */}
+                      <div className="p-3 border-b border-gray-100">
+                        <div className="px-4 py-2 mb-1">
+                          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sosyal</h4>
                         </div>
+                        
                         <Link
                           href="/bildirimler"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                          className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-blue-50 transition-all duration-200 group"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                            <span className="text-lg">🔔</span>
+                          <div className="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <span className="text-2xl">🔔</span>
                           </div>
                           <div className="flex-1">
-                            <span className="font-medium text-gray-700 group-hover:text-[#2d7a4a]">Bildirimler</span>
+                            <div className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">Bildirimler</div>
+                            <div className="text-xs text-gray-500">Yeni bildirimlerini gör</div>
                           </div>
                         </Link>
+
                         <Link
                           href={`/profile/${session.user?.username || session.user?.id}/following`}
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                          className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-purple-50 transition-all duration-200 group"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
-                            <Users className="w-5 h-5 text-purple-600" />
+                          <div className="w-11 h-11 rounded-xl bg-purple-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <Users className="w-6 h-6 text-purple-600" />
                           </div>
                           <div className="flex-1">
-                            <span className="font-medium text-gray-700 group-hover:text-[#2d7a4a]">Takip Edilenler</span>
+                            <div className="font-semibold text-gray-800 group-hover:text-purple-600 transition-colors">Takip Edilenler</div>
+                            <div className="text-xs text-gray-500">Takip ettiğin kişiler</div>
                           </div>
                         </Link>
+
                         <Link
                           href="/takip-istekleri"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                          className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-orange-50 transition-all duration-200 group"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                            <User className="w-5 h-5 text-orange-600" />
+                          <div className="w-11 h-11 rounded-xl bg-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <User className="w-6 h-6 text-orange-600" />
                           </div>
                           <div className="flex-1">
-                            <span className="font-medium text-gray-700 group-hover:text-[#2d7a4a]">Takip İstekleri</span>
+                            <div className="font-semibold text-gray-800 group-hover:text-orange-600 transition-colors">Takip İstekleri</div>
+                            <div className="text-xs text-gray-500">Bekleyen istekler</div>
                           </div>
                         </Link>
                       </div>
 
-                      <div className="border-t border-gray-100 my-1"></div>
-
-                      {/* Ayarlar */}
-                      <div className="py-2">
+                      {/* Ayarlar Bölümü */}
+                      <div className="p-3 border-b border-gray-100">
                         <Link
                           href="/ayarlar"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                          className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                            <Settings className="w-5 h-5 text-gray-600" />
+                          <div className="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <Settings className="w-6 h-6 text-gray-600" />
                           </div>
                           <div className="flex-1">
-                            <span className="font-medium text-gray-700 group-hover:text-[#2d7a4a]">Ayarlar</span>
+                            <div className="font-semibold text-gray-800 group-hover:text-gray-900 transition-colors">Ayarlar</div>
+                            <div className="text-xs text-gray-500">Hesap ayarlarını düzenle</div>
                           </div>
                         </Link>
                       </div>
 
                       {/* Admin Panel */}
                       {session.user?.role === "ADMIN" && (
-                        <>
-                          <div className="border-t border-gray-100 my-1"></div>
-                          <div className="py-2">
-                            <Link
-                              href="/admin"
-                              onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all group"
-                            >
-                              <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
-                                <Settings className="w-5 h-5 text-indigo-600" />
-                              </div>
-                              <div className="flex-1">
-                                <span className="font-semibold text-indigo-600 group-hover:text-indigo-700">Admin Panel</span>
-                              </div>
-                            </Link>
-                          </div>
-                        </>
+                        <div className="p-3 border-b border-gray-100">
+                          <Link
+                            href="/admin"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200 group"
+                          >
+                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-lg">
+                              <Settings className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-bold text-indigo-600 group-hover:text-indigo-700 transition-colors">Admin Panel</div>
+                              <div className="text-xs text-indigo-500">Yönetim paneline git</div>
+                            </div>
+                          </Link>
+                        </div>
                       )}
 
                       {/* Çıkış Yap */}
-                      <div className="border-t border-gray-100 my-1"></div>
-                      <div className="py-2">
+                      <div className="p-3">
                         <button
                           onClick={() => {
                             setUserMenuOpen(false)
                             signOut({ callbackUrl: "/" })
                           }}
-                          className="flex items-center gap-3 px-5 py-3 text-sm hover:bg-red-50 transition-all w-full group"
+                          className="flex items-center gap-4 px-4 py-3.5 rounded-xl hover:bg-red-50 transition-all duration-200 w-full group"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
-                            <LogOut className="w-5 h-5 text-red-600" />
+                          <div className="w-11 h-11 rounded-xl bg-red-100 flex items-center justify-center group-hover:scale-110 group-hover:bg-red-200 transition-all duration-200">
+                            <LogOut className="w-6 h-6 text-red-600" />
                           </div>
                           <div className="flex-1 text-left">
-                            <span className="font-semibold text-red-600 group-hover:text-red-700">Çıkış Yap</span>
+                            <div className="font-bold text-red-600 group-hover:text-red-700 transition-colors">Çıkış Yap</div>
+                            <div className="text-xs text-red-500">Hesabından çıkış yap</div>
                           </div>
                         </button>
                       </div>
+
                     </div>
                   )}
                 </div>

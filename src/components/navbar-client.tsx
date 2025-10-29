@@ -377,7 +377,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute top-full mt-2 right-0 min-w-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[100] max-h-[85vh] overflow-y-auto">
+                    <div className="absolute top-full mt-2 right-0 w-[95vw] sm:w-auto sm:min-w-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[100] max-h-[85vh] overflow-y-auto">
 
                       {/* Header - Kullanıcı Bilgileri */}
                       <div className="sticky top-0 bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] px-8 py-6 text-white">

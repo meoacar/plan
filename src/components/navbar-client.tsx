@@ -49,19 +49,23 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
   return (
     <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 transition-all hover:scale-105 group">
+        <div className="flex items-center h-16 md:justify-between">
+          {/* Mobile: Hamburger Left (Hidden) */}
+          <div className="md:hidden w-10"></div>
+          
+          {/* Logo - Centered on Mobile, Left on Desktop */}
+          <Link href="/" className="flex items-center gap-2 transition-all hover:scale-105 group flex-1 justify-center md:justify-start md:flex-initial">
             {logoUrl ? (
               <img 
                 src={logoUrl} 
                 alt={siteTitle}
-                className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-110"
+                className="h-12 sm:h-12 w-auto object-contain transition-transform group-hover:scale-110"
               />
             ) : (
               <>
-                <Logo size={40} className="transition-transform group-hover:rotate-12" />
-                <span className="text-lg sm:text-xl font-bold text-[#2d7a4a] truncate max-w-[180px] sm:max-w-none">
+                <Logo size={48} className="md:hidden transition-transform group-hover:rotate-12" />
+                <Logo size={40} className="hidden md:block transition-transform group-hover:rotate-12" />
+                <span className="text-xl sm:text-xl font-bold text-[#2d7a4a] truncate max-w-[180px] sm:max-w-none">
                   {siteTitle}
                 </span>
               </>

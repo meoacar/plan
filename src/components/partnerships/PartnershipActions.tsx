@@ -19,12 +19,16 @@ export default function PartnershipActions({ partnershipId }: PartnershipActions
     try {
       const res = await fetch(`/api/partnerships/${partnershipId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        },
         body: JSON.stringify({ status }),
       });
 
       if (res.ok) {
-        router.refresh();
+        // Sayfayı yenile ve cache'i temizle
+        window.location.reload();
       } else {
         const data = await res.json();
         alert(data.error || 'Bir hata oluştu');

@@ -56,6 +56,7 @@ export async function PATCH(
         where: { id: session.user.id },
         data: { xp: { increment: 20 } },
       });
+      console.log('Partnership accepted:', { id, status, acceptedAt: updateData.acceptedAt, userId: session.user.id });
     } else if (status === 'ENDED') {
       updateData.endedAt = new Date();
     }

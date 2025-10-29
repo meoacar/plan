@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { Users, UserPlus, Clock } from 'lucide-react';
 import PartnershipActions from '@/components/partnerships/PartnershipActions';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata = {
   title: 'Hesap Verebilirlik Partnerleri',
   description: 'Partnerlerinizi yönetin ve yeni partnerler bulun',

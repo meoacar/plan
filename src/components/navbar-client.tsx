@@ -377,8 +377,8 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   </button>
 
                   {userMenuOpen && (
-                    <div className="fixed md:absolute top-16 md:top-full right-0 md:right-0 left-0 md:left-auto md:mt-2 w-full md:w-[480px] bg-white md:rounded-2xl shadow-2xl border-t md:border border-gray-200 overflow-hidden z-[100] max-h-[calc(100vh-5rem)] md:max-h-[85vh] overflow-y-auto">
-                      
+                    <div className="absolute top-full mt-2 right-0 w-[480px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[100] max-h-[85vh] overflow-y-auto">
+
                       {/* Header - Kullanıcı Bilgileri */}
                       <div className="sticky top-0 bg-gradient-to-br from-[#2d7a4a] to-[#4caf50] px-6 py-5 text-white">
                         <div className="flex items-center gap-4">
@@ -427,7 +427,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                         <div className="px-4 py-2 mb-1">
                           <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sosyal</h4>
                         </div>
-                        
+
                         <Link
                           href="/bildirimler"
                           onClick={() => setUserMenuOpen(false)}

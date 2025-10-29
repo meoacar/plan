@@ -3,7 +3,8 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Users, UserPlus, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Users, UserPlus, Clock } from 'lucide-react';
+import PartnershipActions from '@/components/partnerships/PartnershipActions';
 
 export const metadata = {
   title: 'Hesap Verebilirlik Partnerleri',
@@ -178,28 +179,7 @@ export default async function PartnershipsPage() {
                           "{partnership.message}"
                         </p>
                       )}
-                      <div className="flex gap-2 mt-4">
-                        <form action={`/api/partnerships/${partnership.id}`} method="POST">
-                          <input type="hidden" name="status" value="ACTIVE" />
-                          <button
-                            type="submit"
-                            className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                            Kabul Et
-                          </button>
-                        </form>
-                        <form action={`/api/partnerships/${partnership.id}`} method="POST">
-                          <input type="hidden" name="status" value="REJECTED" />
-                          <button
-                            type="submit"
-                            className="flex items-center gap-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
-                          >
-                            <XCircle className="w-4 h-4" />
-                            Reddet
-                          </button>
-                        </form>
-                      </div>
+                      <PartnershipActions partnershipId={partnership.id} />
                     </div>
                   </div>
                 </div>

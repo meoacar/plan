@@ -158,20 +158,20 @@ export default async function BlogPostPage({ params }: Props) {
   ]);
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zayiflamaplanim.com';
-  
+
   // Breadcrumb items
   const breadcrumbItems = [
     { name: 'Ana Sayfa', url: '/' },
     { name: 'Blog', url: '/blog' },
   ];
-  
+
   if (post.category) {
     breadcrumbItems.push({
       name: post.category.name,
       url: `/blog/kategori/${post.category.slug}`,
     });
   }
-  
+
   breadcrumbItems.push({
     name: post.title,
     url: `/blog/${post.slug}`,
@@ -240,7 +240,7 @@ export default async function BlogPostPage({ params }: Props) {
                     loading="eager"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                  
+
                   {/* Category Badge */}
                   {post.category && (
                     <div className="absolute top-6 left-6">
@@ -265,7 +265,7 @@ export default async function BlogPostPage({ params }: Props) {
                     {post.category.name}
                   </span>
                 )}
-                
+
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                   {post.title}
                 </h1>
@@ -285,7 +285,7 @@ export default async function BlogPostPage({ params }: Props) {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4 ml-auto">
                     {post.readTime && (
                       <div className="flex items-center gap-1.5 text-gray-500">
@@ -358,7 +358,7 @@ export default async function BlogPostPage({ params }: Props) {
 
               {/* Author Box */}
               <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
-                <BlogAuthorBox 
+                <BlogAuthorBox
                   authorName={post.authorName}
                   publishedAt={post.publishedAt}
                   readTime={post.readTime}
@@ -372,8 +372,8 @@ export default async function BlogPostPage({ params }: Props) {
 
               {/* Comments */}
               <div className="bg-white rounded-2xl shadow-lg p-8">
-                <BlogComments 
-                  postId={post.id} 
+                <BlogComments
+                  postId={post.id}
                   userId={session?.user?.id}
                   userName={session?.user?.name}
                 />

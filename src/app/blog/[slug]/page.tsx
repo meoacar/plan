@@ -179,69 +179,70 @@ export default async function BlogPostPage({ params }: Props) {
       />
 
       <div className="min-h-screen bg-gray-50">
-        <article className="container mx-auto px-4 py-8 max-w-5xl">
-        {/* Breadcrumb */}
-        <nav className="mb-6 text-sm">
-          <div className="flex items-center gap-2 text-gray-600">
-            <Link href="/" className="hover:text-green-600 transition">Ana Sayfa</Link>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            <Link href="/blog" className="hover:text-green-600 transition">Blog</Link>
-            {post.category && (
-              <>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <article className="max-w-4xl mx-auto">
+            {/* Breadcrumb */}
+            <nav className="mb-6 text-sm">
+              <div className="flex items-center gap-2 text-gray-600">
+                <Link href="/" className="hover:text-green-600 transition">Ana Sayfa</Link>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                <Link href={`/blog/kategori/${post.category.slug}`} className="hover:text-green-600 transition">
-                  {post.category.name}
-                </Link>
-              </>
-            )}
-          </div>
-        </nav>
+                <Link href="/blog" className="hover:text-green-600 transition">Blog</Link>
+                {post.category && (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <Link href={`/blog/kategori/${post.category.slug}`} className="hover:text-green-600 transition">
+                      {post.category.name}
+                    </Link>
+                  </>
+                )}
+              </div>
+            </nav>
 
-        {/* Main Content Card */}
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-8">
-          {/* Featured Image */}
-          {post.featuredImage && (
-            <div className="relative h-[400px] md:h-[500px] overflow-hidden">
-              <img
-                src={post.featuredImage}
-                alt={post.featuredImageAlt || post.title}
-                title={post.title}
-                className="w-full h-full object-cover"
-                loading="eager"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              
-              {/* Category Badge on Image */}
-              {post.category && (
-                <div className="absolute top-6 left-6">
+            {/* Main Content Card */}
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-8">
+              {/* Featured Image */}
+              {post.featuredImage && (
+                <div className="relative h-[400px] md:h-[500px] overflow-hidden rounded-t-3xl">
+                  <img
+                    src={post.featuredImage}
+                    alt={post.featuredImageAlt || post.title}
+                    title={post.title}
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  
+                  {/* Category Badge on Image */}
+                  {post.category && (
+                    <div className="absolute top-6 left-6">
+                      <span
+                        className="inline-block px-4 py-2 rounded-full text-sm font-semibold text-white backdrop-blur-sm"
+                        style={{ backgroundColor: post.category.color + 'dd' }}
+                      >
+                        {post.category.name}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Header */}
+              <header className="px-6 md:px-12 lg:px-16 pt-8 pb-6">
+                {!post.featuredImage && post.category && (
                   <span
-                    className="inline-block px-4 py-2 rounded-full text-sm font-semibold text-white backdrop-blur-sm"
-                    style={{ backgroundColor: post.category.color + 'dd' }}
+                    className="inline-block px-4 py-2 rounded-full text-sm font-semibold text-white mb-4"
+                    style={{ backgroundColor: post.category.color }}
                   >
                     {post.category.name}
                   </span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Header */}
-          <header className="px-6 md:px-12 pt-8 pb-6">
-            {!post.featuredImage && post.category && (
-              <span
-                className="inline-block px-4 py-2 rounded-full text-sm font-semibold text-white mb-4"
-                style={{ backgroundColor: post.category.color }}
-              >
-                {post.category.name}
-              </span>
-            )}
-            <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-              {post.title}
-            </h1>
+                )}
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                  {post.title}
+                </h1>
             
             {/* Meta Info */}
             <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-gray-600 pb-6 border-b border-gray-200">
@@ -287,107 +288,108 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </header>
 
-          {/* Author Box */}
-          <div className="px-6 md:px-12 pt-6">
-            <BlogAuthorBox 
-              authorName={post.authorName}
-              publishedAt={post.publishedAt}
-              readTime={post.readTime}
-            />
-          </div>
-
-          {/* Content */}
-          <div className="px-6 md:px-12 py-8">
-            <div
-              className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-img:rounded-xl prose-img:shadow-lg"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-          </div>
-
-          {/* Social Share */}
-          <div className="px-6 md:px-12 py-6 border-t border-gray-200">
-            <BlogSocialShare title={post.title} url={`/blog/${post.slug}`} />
-          </div>
-
-          {/* Reactions */}
-          <div className="px-6 md:px-12 py-6 border-t border-gray-200">
-            <BlogReactions postId={post.id} userId={session?.user?.id} />
-          </div>
-
-          {/* Tags */}
-          {post.tags.length > 0 && (
-            <div className="px-6 md:px-12 py-6 border-t border-gray-200">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Etiketler</h3>
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map(({ tag }) => (
-                  <Link
-                    key={tag.id}
-                    href={`/blog/etiket/${tag.slug}`}
-                    className="px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium hover:bg-green-100 transition"
-                  >
-                    #{tag.name}
-                  </Link>
-                ))}
+              {/* Author Box */}
+              <div className="px-6 md:px-12 lg:px-16 pt-6">
+                <BlogAuthorBox 
+                  authorName={post.authorName}
+                  publishedAt={post.publishedAt}
+                  readTime={post.readTime}
+                />
               </div>
+
+              {/* Content */}
+              <div className="px-6 md:px-12 lg:px-16 py-8">
+                <div
+                  className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto"
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
+              </div>
+
+              {/* Social Share */}
+              <div className="px-6 md:px-12 lg:px-16 py-6 border-t border-gray-200">
+                <BlogSocialShare title={post.title} url={`/blog/${post.slug}`} />
+              </div>
+
+              {/* Reactions */}
+              <div className="px-6 md:px-12 lg:px-16 py-6 border-t border-gray-200">
+                <BlogReactions postId={post.id} userId={session?.user?.id} />
+              </div>
+
+              {/* Tags */}
+              {post.tags.length > 0 && (
+                <div className="px-6 md:px-12 lg:px-16 py-6 border-t border-gray-200">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Etiketler</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map(({ tag }) => (
+                      <Link
+                        key={tag.id}
+                        href={`/blog/etiket/${tag.slug}`}
+                        className="px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium hover:bg-green-100 transition"
+                      >
+                        #{tag.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Comments Section */}
-        <div className="bg-white rounded-3xl shadow-xl p-6 md:p-12 mb-8">
-          <BlogComments 
-            postId={post.id} 
-            userId={session?.user?.id}
-            userName={session?.user?.name}
-          />
-        </div>
+            {/* Comments Section */}
+            <div className="bg-white rounded-3xl shadow-xl p-6 md:p-12 lg:p-16 mb-8">
+              <BlogComments 
+                postId={post.id} 
+                userId={session?.user?.id}
+                userName={session?.user?.name}
+              />
+            </div>
 
-        {/* Related Posts */}
-        {relatedPosts.length > 0 && (
-          <div className="bg-white rounded-3xl shadow-xl p-6 md:p-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              İlgili Yazılar
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {relatedPosts.map((related) => (
-                <Link
-                  key={related.id}
-                  href={`/blog/${related.slug}`}
-                  className="group"
-                >
-                  {related.featuredImage && (
-                    <div className="relative h-48 rounded-xl overflow-hidden mb-4 shadow-md">
-                      <img
-                        src={related.featuredImage}
-                        alt={related.featuredImageAlt || related.title}
-                        title={related.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  )}
-                  {related.category && (
-                    <span
-                      className="inline-block px-3 py-1 rounded-full text-xs font-semibold text-white mb-2"
-                      style={{ backgroundColor: related.category.color }}
+            {/* Related Posts */}
+            {relatedPosts.length > 0 && (
+              <div className="bg-white rounded-3xl shadow-xl p-6 md:p-12 lg:p-16">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                  <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  İlgili Yazılar
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {relatedPosts.map((related) => (
+                    <Link
+                      key={related.id}
+                      href={`/blog/${related.slug}`}
+                      className="group"
                     >
-                      {related.category.name}
-                    </span>
-                  )}
-                  <h3 className="font-bold text-gray-900 group-hover:text-green-600 transition line-clamp-2 text-lg">
-                    {related.title}
-                  </h3>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-      </article>
-    </div>
+                      {related.featuredImage && (
+                        <div className="relative h-48 rounded-xl overflow-hidden mb-4 shadow-md">
+                          <img
+                            src={related.featuredImage}
+                            alt={related.featuredImageAlt || related.title}
+                            title={related.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      )}
+                      {related.category && (
+                        <span
+                          className="inline-block px-3 py-1 rounded-full text-xs font-semibold text-white mb-2"
+                          style={{ backgroundColor: related.category.color }}
+                        >
+                          {related.category.name}
+                        </span>
+                      )}
+                      <h3 className="font-bold text-gray-900 group-hover:text-green-600 transition line-clamp-2 text-lg">
+                        {related.title}
+                      </h3>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </article>
+        </div>
+      </div>
     </>
   );
 }

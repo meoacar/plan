@@ -184,21 +184,21 @@ export default function GamificationInfo() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-white font-bold text-lg">{userStats.xp.toLocaleString()} XP</div>
-                      <div className="text-white/70 text-sm">/ {userStats.nextLevelXp.toLocaleString()} XP</div>
+                      <div className="text-white font-bold text-lg">{(userStats.xp || 0).toLocaleString()} XP</div>
+                      <div className="text-white/70 text-sm">/ {(userStats.nextLevelXp || 100).toLocaleString()} XP</div>
                     </div>
                   </div>
                   <div className="relative h-4 bg-white/20 rounded-full overflow-hidden">
                     <div 
                       className="absolute inset-0 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 rounded-full transition-all duration-1000" 
-                      style={{ width: `${Math.min((userStats.xp / userStats.nextLevelXp) * 100, 100)}%` }}
+                      style={{ width: `${Math.min(((userStats.xp || 0) / (userStats.nextLevelXp || 100)) * 100, 100)}%` }}
                     >
                       <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
                     </div>
                   </div>
                   <div className="text-center mt-4 text-white/80 text-sm">
                     <Zap className="w-4 h-4 inline mr-1" />
-                    {(userStats.nextLevelXp - userStats.xp).toLocaleString()} XP kaldı bir sonraki seviyeye!
+                    {((userStats.nextLevelXp || 100) - (userStats.xp || 0)).toLocaleString()} XP kaldı bir sonraki seviyeye!
                   </div>
                 </>
               ) : null}

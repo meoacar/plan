@@ -1586,23 +1586,3 @@ enum PromoSectionType {
   CTA
   STATS
 }
-
-
-
-enum GroupStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum GroupMemberRole {
-  ADMIN
-  MODERATOR
-  MEMBER
-}
-
-enum JoinRequestStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}

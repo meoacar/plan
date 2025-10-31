@@ -12,6 +12,7 @@ async function main() {
             title: "Gerçek Planlar",
             description: "Kendine ait bir plan oluştur. Takipçilerin seni alkışlasın.",
             color: "#10b981",
+            link: "/plan",
             order: 1,
         },
         {
@@ -19,6 +20,7 @@ async function main() {
             title: "Günah Duvarı",
             description: "'Yeme Günahı Duvarı'nda itiraf et, gülüşleri topla.",
             color: "#f59e0b",
+            link: "/gunah-itiraf",
             order: 2,
         },
         {
@@ -26,6 +28,7 @@ async function main() {
             title: "Tarif Alanı",
             description: "İstersen tarif ekle, istersen hikâyeni anlat.",
             color: "#ef4444",
+            link: "/recipes",
             order: 3,
         },
         {
@@ -33,6 +36,7 @@ async function main() {
             title: "XP Sistemi",
             description: "Her adımında XP kazan, seviye atla!",
             color: "#8b5cf6",
+            link: "/gamification",
             order: 4,
         },
     ];

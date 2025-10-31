@@ -1517,6 +1517,7 @@ model PromoFeature {
   title       String
   description String
   color       String   @default("#10b981")
+  link        String?
   order       Int      @default(0)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())

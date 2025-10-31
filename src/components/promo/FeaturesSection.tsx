@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Target, MessageSquare, Utensils, Zap, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface Feature {
   id: string;
@@ -9,6 +10,7 @@ interface Feature {
   title: string;
   description: string;
   color: string;
+  link?: string;
 }
 
 const iconMap: Record<string, any> = {
@@ -81,12 +83,8 @@ export default function FeaturesSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {features.map((feature, index) => {
             const Icon = iconMap[feature.icon] || Target;
-            return (
-              <div
-                key={feature.id}
-                className="group relative bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-gray-100 overflow-hidden"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
+            const CardContent = (
+              <>
                 {/* Hover Gradient Effect */}
                 <div 
                   className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500"
@@ -124,6 +122,25 @@ export default function FeaturesSection() {
                   <span>Keşfet</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
+              </>
+            );
+
+            return feature.link ? (
+              <Link
+                key={feature.id}
+                href={feature.link}
+                className="group relative bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-gray-100 overflow-hidden block cursor-pointer"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {CardContent}
+              </Link>
+            ) : (
+              <div
+                key={feature.id}
+                className="group relative bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-gray-100 overflow-hidden"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {CardContent}
               </div>
             );
           })}

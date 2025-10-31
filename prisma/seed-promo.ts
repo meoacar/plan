@@ -12,7 +12,7 @@ async function main() {
             title: "Gerçek Planlar",
             description: "Kendine ait bir plan oluştur. Takipçilerin seni alkışlasın.",
             color: "#10b981",
-            link: "/plan",
+            link: "/",
             order: 1,
         },
         {

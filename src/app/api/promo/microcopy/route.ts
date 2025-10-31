@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
-    }
+    const { searchParams } = new URL(req.url);
+    const location = searchParams.get("location");
+
+    const where = location 
+      ? { isActive: true, location }
+      : { isActive: true };
 
     const microcopies = await prisma.microCopy.findMany({
-      orderBy: [{ location: "asc" }, { key: "asc" }],
+      where,
+      orderBy: { key: "asc" },
     });
 
     return NextResponse.json(microcopies);

@@ -13,7 +13,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 overflow-x-hidden">
 
       {/* Hero Section - Yeni Modern Tasarım */}
-      <section className="relative overflow-hidden min-h-[90vh] flex items-center w-full">
+      <section className="relative overflow-hidden min-h-[90vh] flex items-center">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 via-fuchsia-500/5 to-orange-500/5"></div>
 
@@ -22,9 +22,7 @@ export default function Home() {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-violet-200/10 to-fuchsia-200/10 rounded-full blur-3xl"></div>
 
-        <div className="w-full px-4 py-16 relative z-10">
-          <div className="max-w-6xl mx-auto">
-
+        <div className="px-4 py-16 relative z-10 mx-auto max-w-6xl">
             {/* Animated Badge */}
             <div className="flex justify-center mb-8 animate-fade-in">
               <div className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 text-white rounded-full shadow-2xl hover:shadow-violet-500/50 transition-all duration-300 hover:scale-105">
@@ -128,14 +126,13 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-white relative overflow-hidden w-full">
+      <section className="py-20 bg-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-violet-50/50 to-transparent"></div>
-        <div className="w-full px-4 relative z-10">
+        <div className="px-4 relative z-10 mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-4">
               Neden <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600">Biz?</span>
@@ -145,7 +142,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-violet-50 to-white border border-violet-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
               <div className="w-20 h-20 bg-gradient-to-br from-violet-500 to-violet-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <CheckCircle2 className="w-10 h-10 text-white" />
@@ -180,8 +177,8 @@ export default function Home() {
       </section>
 
       {/* Plans Section */}
-      <section id="plans" className="relative bg-gradient-to-b from-slate-50 to-white py-20 w-full">
-        <div className="w-full px-4">
+      <section id="plans" className="relative bg-gradient-to-b from-slate-50 to-white py-20">
+        <div className="px-4 mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-4">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600">Başarı Hikayeleri</span>

@@ -2,8 +2,35 @@
 
 import { Trophy, Heart, MessageCircle, Share2, Award, Zap, Target, Star } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+
+interface UserStats {
+  level: number;
+  xp: number;
+  nextLevelXp: number;
+  title: string;
+}
 
 export default function GamificationInfo() {
+  const { data: session } = useSession();
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (session?.user) {
+      setLoading(true);
+      fetch("/api/gamification/stats")
+        .then((res) => res.json())
+        .then((data) => {
+          setUserStats(data);
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+    }
+  }, [session]);
   const rewards = [
     {
       icon: Heart,
@@ -136,49 +163,73 @@ export default function GamificationInfo() {
           </div>
         </div>
 
-        {/* Progress Bar Example */}
-        <div className="max-w-3xl mx-auto mb-12">
-          <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center font-black text-white text-xl shadow-lg">
-                  12
+        {/* Progress Bar - Only show if user is logged in */}
+        {session?.user && (
+          <div className="max-w-3xl mx-auto mb-12">
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20">
+              {loading ? (
+                <div className="text-center text-white/70">
+                  <div className="animate-pulse">Yükleniyor...</div>
                 </div>
-                <div>
-                  <div className="text-white font-bold text-lg">Seviye 12</div>
-                  <div className="text-white/70 text-sm">Deneyimli Kullanıcı</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-white font-bold text-lg">2,450 XP</div>
-                <div className="text-white/70 text-sm">/ 3,000 XP</div>
-              </div>
-            </div>
-            <div className="relative h-4 bg-white/20 rounded-full overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 rounded-full" style={{ width: '82%' }}>
-                <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
-              </div>
-            </div>
-            <div className="text-center mt-4 text-white/80 text-sm">
-              <Zap className="w-4 h-4 inline mr-1" />
-              550 XP kaldı bir sonraki seviyeye!
+              ) : userStats ? (
+                <>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center font-black text-white text-xl shadow-lg">
+                        {userStats.level}
+                      </div>
+                      <div>
+                        <div className="text-white font-bold text-lg">Seviye {userStats.level}</div>
+                        <div className="text-white/70 text-sm">{userStats.title}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-white font-bold text-lg">{userStats.xp.toLocaleString()} XP</div>
+                      <div className="text-white/70 text-sm">/ {userStats.nextLevelXp.toLocaleString()} XP</div>
+                    </div>
+                  </div>
+                  <div className="relative h-4 bg-white/20 rounded-full overflow-hidden">
+                    <div 
+                      className="absolute inset-0 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 rounded-full transition-all duration-1000" 
+                      style={{ width: `${Math.min((userStats.xp / userStats.nextLevelXp) * 100, 100)}%` }}
+                    >
+                      <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
+                    </div>
+                  </div>
+                  <div className="text-center mt-4 text-white/80 text-sm">
+                    <Zap className="w-4 h-4 inline mr-1" />
+                    {(userStats.nextLevelXp - userStats.xp).toLocaleString()} XP kaldı bir sonraki seviyeye!
+                  </div>
+                </>
+              ) : null}
             </div>
           </div>
-        </div>
+        )}
 
         {/* CTA */}
         <div className="text-center">
           <p className="text-white/90 text-xl mb-8 font-semibold">
             Oyunlaştırma ile motivasyonunu yüksek tut! 🚀
           </p>
-          <Link
-            href="/register"
-            className="inline-flex items-center gap-3 bg-white text-purple-600 px-12 py-5 rounded-full font-black text-xl hover:bg-gray-100 transition-all hover:scale-110 shadow-2xl hover:shadow-white/50"
-          >
-            <Target className="w-6 h-6" />
-            Hemen Başla
-            <Star className="w-6 h-6 fill-current text-yellow-500" />
-          </Link>
+          {session?.user ? (
+            <Link
+              href="/gamification"
+              className="inline-flex items-center gap-3 bg-white text-purple-600 px-12 py-5 rounded-full font-black text-xl hover:bg-gray-100 transition-all hover:scale-110 shadow-2xl hover:shadow-white/50"
+            >
+              <Trophy className="w-6 h-6" />
+              Lider Tablosunu Gör
+              <Star className="w-6 h-6 fill-current text-yellow-500" />
+            </Link>
+          ) : (
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-3 bg-white text-purple-600 px-12 py-5 rounded-full font-black text-xl hover:bg-gray-100 transition-all hover:scale-110 shadow-2xl hover:shadow-white/50"
+            >
+              <Target className="w-6 h-6" />
+              Hemen Başla
+              <Star className="w-6 h-6 fill-current text-yellow-500" />
+            </Link>
+          )}
         </div>
       </div>
     </section>

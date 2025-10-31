@@ -142,6 +142,7 @@ export default function PromoSectionsPage() {
                   <button
                     onClick={() => router.push(`/admin/promo/sections/${section.id}/edit`)}
                     className="text-blue-600 hover:text-blue-900"
+                    title="Düzenle"
                   >
                     <Edit className="w-4 h-4" />
                   </button>

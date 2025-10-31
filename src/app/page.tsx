@@ -74,7 +74,7 @@ export default function Home() {
                   <ArrowRight className="w-5 h-5 ml-2 relative z-10 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link href="#plans" className="w-full sm:w-auto">
+              <Link href="/kesfet" className="w-full sm:w-auto">
                 <Button variant="outline" className="w-full sm:w-auto h-16 px-10 border-2 border-violet-300 hover:border-violet-600 hover:bg-violet-50 rounded-2xl font-bold text-lg text-violet-700 hover:text-violet-900 transition-all duration-300 hover:scale-105 shadow-lg">
                   <Heart className="w-6 h-6 mr-2" />
                   Hikayeleri Keşfet

@@ -1,15 +1,14 @@
+"use client";
+
 import FeaturesSection from "@/components/promo/FeaturesSection";
 import UserStoriesSection from "@/components/promo/UserStoriesSection";
 import GamificationInfo from "@/components/promo/GamificationInfo";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
-
-export const metadata = {
-  title: "Keşfet - Zayıflama Planım",
-  description: "Zayıflama Planım'da neler yapabileceğini keşfet. Gerçek planlar, günah duvarı, tarif alanı ve daha fazlası!",
-};
+import { ArrowRight, Sparkles, LayoutDashboard } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export default function KesfetPage() {
+  const { data: session } = useSession();
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -27,13 +26,23 @@ export default function KesfetPage() {
             <p className="text-xl md:text-2xl text-green-50 mb-8">
               Gerçek insanlardan, gerçek planlar. Kendine özel kilo planını oluştur, paylaş, ilham al.
             </p>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 bg-white text-green-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-green-50 transition-all hover:scale-105 shadow-xl"
-            >
-              Hemen Başla
-              <ArrowRight className="w-5 h-5" />
-            </Link>
+            {session ? (
+              <Link
+                href="/submit"
+                className="inline-flex items-center gap-2 bg-white text-green-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-green-50 transition-all hover:scale-105 shadow-xl"
+              >
+                <LayoutDashboard className="w-5 h-5" />
+                Paneline Git
+              </Link>
+            ) : (
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 bg-white text-green-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-green-50 transition-all hover:scale-105 shadow-xl"
+              >
+                Hemen Başla
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -58,19 +67,39 @@ export default function KesfetPage() {
               Yolculuğuna bugün başla. Seni bekleyen bir topluluk var! 🎉
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/register"
-                className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-green-700 transition-all hover:scale-105 shadow-xl"
-              >
-                Ücretsiz Kayıt Ol
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                href="/plan"
-                className="inline-flex items-center justify-center gap-2 bg-white text-green-600 border-2 border-green-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-green-50 transition-all hover:scale-105 shadow-lg"
-              >
-                Planları İncele
-              </Link>
+              {session ? (
+                <>
+                  <Link
+                    href="/submit"
+                    className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-green-700 transition-all hover:scale-105 shadow-xl"
+                  >
+                    <LayoutDashboard className="w-5 h-5" />
+                    Plan Oluştur
+                  </Link>
+                  <Link
+                    href={`/profile/${session.user.id}`}
+                    className="inline-flex items-center justify-center gap-2 bg-white text-green-600 border-2 border-green-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-green-50 transition-all hover:scale-105 shadow-lg"
+                  >
+                    Profilime Git
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-green-700 transition-all hover:scale-105 shadow-xl"
+                  >
+                    Ücretsiz Kayıt Ol
+                    <ArrowRight className="w-5 h-5" />
+                  </Link>
+                  <Link
+                    href="/plan"
+                    className="inline-flex items-center justify-center gap-2 bg-white text-green-600 border-2 border-green-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-green-50 transition-all hover:scale-105 shadow-lg"
+                  >
+                    Planları İncele
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

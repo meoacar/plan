@@ -189,7 +189,9 @@ export default async function RootLayout({
           <PWAInstallPrompt />
           <Navbar />
           <main className="min-h-screen bg-[#f8f8f8]">
-            {children}
+            <div className="max-w-[1400px] mx-auto">
+              {children}
+            </div>
           </main>
           <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-t border-gray-700 py-12">
             <div className="container mx-auto px-4">

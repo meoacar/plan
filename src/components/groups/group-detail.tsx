@@ -106,6 +106,7 @@ export default function GroupDetail({ group }: GroupDetailProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'about' | 'members' | 'challenges'>('about');
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   const config = goalTypeConfig[group.goalType as keyof typeof goalTypeConfig] || goalTypeConfig['weight-loss'];
   const Icon = config.icon;
@@ -167,6 +168,39 @@ export default function GroupDetail({ group }: GroupDetailProps) {
     }
   };
 
+  const handleToggleNotifications = () => {
+    setNotificationsEnabled(!notificationsEnabled);
+    // TODO: API call to update notification preferences
+    alert(notificationsEnabled ? 'Bildirimler kapatıldı' : 'Bildirimler açıldı');
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: group.name,
+          text: group.description,
+          url: url,
+        });
+      } catch (err) {
+        console.log('Share cancelled');
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      navigator.clipboard.writeText(url);
+      alert('Grup linki kopyalandı!');
+    }
+  };
+
+  const handleSettings = () => {
+    router.push(`/groups/${group.slug}/settings`);
+  };
+
+  const handleCreateChallenge = () => {
+    router.push(`/groups/${group.slug}/challenges/create`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
@@ -226,14 +260,26 @@ export default function GroupDetail({ group }: GroupDetailProps) {
                   </button>
                 ) : (
                   <>
-                    <button className="flex items-center gap-2 bg-white/10 backdrop-blur-md text-white px-4 py-3 rounded-full font-bold hover:bg-white/20 transition-all border border-white/20">
-                      <Bell className="w-5 h-5" />
+                    <button 
+                      onClick={handleToggleNotifications}
+                      className="flex items-center gap-2 bg-white/10 backdrop-blur-md text-white px-4 py-3 rounded-full font-bold hover:bg-white/20 transition-all border border-white/20"
+                      title={notificationsEnabled ? 'Bildirimleri Kapat' : 'Bildirimleri Aç'}
+                    >
+                      {notificationsEnabled ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
                     </button>
-                    <button className="flex items-center gap-2 bg-white/10 backdrop-blur-md text-white px-4 py-3 rounded-full font-bold hover:bg-white/20 transition-all border border-white/20">
+                    <button 
+                      onClick={handleShare}
+                      className="flex items-center gap-2 bg-white/10 backdrop-blur-md text-white px-4 py-3 rounded-full font-bold hover:bg-white/20 transition-all border border-white/20"
+                      title="Grubu Paylaş"
+                    >
                       <Share2 className="w-5 h-5" />
                     </button>
                     {group.memberRole === 'ADMIN' && (
-                      <button className="flex items-center gap-2 bg-white/10 backdrop-blur-md text-white px-4 py-3 rounded-full font-bold hover:bg-white/20 transition-all border border-white/20">
+                      <button 
+                        onClick={handleSettings}
+                        className="flex items-center gap-2 bg-white/10 backdrop-blur-md text-white px-4 py-3 rounded-full font-bold hover:bg-white/20 transition-all border border-white/20"
+                        title="Grup Ayarları"
+                      >
                         <Settings className="w-5 h-5" />
                       </button>
                     )}
@@ -400,7 +446,10 @@ export default function GroupDetail({ group }: GroupDetailProps) {
                     <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                     <p className="text-gray-500 mb-4">Henüz aktif challenge bulunmuyor</p>
                     {group.memberRole === 'ADMIN' && (
-                      <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-full font-bold hover:shadow-lg transition-all">
+                      <button 
+                        onClick={handleCreateChallenge}
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-full font-bold hover:shadow-lg transition-all"
+                      >
                         Challenge Oluştur
                       </button>
                     )}

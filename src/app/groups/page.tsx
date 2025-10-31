@@ -2,13 +2,56 @@ import { Suspense } from "react";
 import Link from "next/link";
 import GroupList from "@/components/groups/group-list";
 import { Users, Plus, TrendingUp, Award, Heart } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "Gruplar - Zayıflama Planım",
   description: "Ortak hedefler için gruplara katılın",
 };
 
-export default function GroupsPage() {
+async function getGroupStats() {
+  try {
+    const [totalGroups, totalMembers, totalChallenges, totalPosts] = await Promise.all([
+      prisma.group.count({ where: { status: 'APPROVED' } }),
+      prisma.groupMember.count(),
+      prisma.challenge.count({ where: { groupId: { not: null } } }),
+      prisma.groupPost.count(),
+    ]);
+
+    return {
+      totalGroups,
+      totalMembers,
+      totalChallenges,
+      totalPosts,
+    };
+  } catch (error) {
+    console.error('Stats error:', error);
+    return {
+      totalGroups: 0,
+      totalMembers: 0,
+      totalChallenges: 0,
+      totalPosts: 0,
+    };
+  }
+}
+
+function formatNumber(num: number): string {
+  if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}K+`;
+  }
+  return `${num}+`;
+}
+
+export default async function GroupsPage() {
+  const stats = await getGroupStats();
+
+  const statsData = [
+    { icon: Users, label: "Aktif Grup", value: stats.totalGroups > 0 ? `${stats.totalGroups}` : "0" },
+    { icon: TrendingUp, label: "Toplam Üye", value: stats.totalMembers > 0 ? formatNumber(stats.totalMembers) : "0" },
+    { icon: Award, label: "Challenge", value: stats.totalChallenges > 0 ? `${stats.totalChallenges}` : "0" },
+    { icon: Heart, label: "Destek Mesajı", value: stats.totalPosts > 0 ? formatNumber(stats.totalPosts) : "0" },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
@@ -38,12 +81,7 @@ export default function GroupsPage() {
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-12">
-            {[
-              { icon: Users, label: "Aktif Grup", value: "50+" },
-              { icon: TrendingUp, label: "Toplam Üye", value: "2,500+" },
-              { icon: Award, label: "Challenge", value: "100+" },
-              { icon: Heart, label: "Destek Mesajı", value: "10K+" },
-            ].map((stat, i) => (
+            {statsData.map((stat, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center border border-white/20">
                 <stat.icon className="w-8 h-8 mx-auto mb-2 text-yellow-300" />
                 <div className="text-2xl font-black">{stat.value}</div>

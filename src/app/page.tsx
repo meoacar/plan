@@ -22,8 +22,8 @@ export default function Home() {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-violet-200/10 to-fuchsia-200/10 rounded-full blur-3xl"></div>
 
-        <div className="container mx-auto px-4 py-16 relative z-10">
-          <div className="max-w-7xl mx-auto">
+        <div className="px-4 py-16 relative z-10">
+          <div className="max-w-6xl mx-auto">
 
             {/* Animated Badge */}
             <div className="flex justify-center mb-8 animate-fade-in">

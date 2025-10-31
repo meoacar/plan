@@ -189,7 +189,7 @@ export default async function RootLayout({
           <PWAInstallPrompt />
           <Navbar />
           <main className="min-h-screen bg-[#f8f8f8]">
-            <div className="max-w-[1400px] mx-auto">
+            <div className="max-w-7xl mx-auto px-4">
               {children}
             </div>
           </main>

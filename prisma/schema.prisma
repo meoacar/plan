@@ -875,6 +875,7 @@ model GroupMember {
   role     GroupMemberRole @default(MEMBER)
   joinedAt DateTime        @default(now())
   group    Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user     User            @relation("GroupMembers", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([groupId, userId])
   @@index([userId])
@@ -1586,84 +1587,7 @@ enum PromoSectionType {
   STATS
 }
 
-// Grup Sistemi
-model Group {
-  id              String              @id @default(cuid())
-  name            String
-  slug            String              @unique
-  description     String
-  goalType        String
-  targetWeight    Int?
-  isPrivate       Boolean             @default(false)
-  maxMembers      Int?
-  imageUrl        String?
-  createdBy       String
-  status          GroupStatus         @default(PENDING)
-  rejectionReason String?
-  approvedAt      DateTime?
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  members         GroupMember[]
-  challenges      GroupChallenge[]
-  posts           GroupPost[]
-  joinRequests    GroupJoinRequest[]
 
-  @@index([status, createdAt])
-  @@index([createdBy])
-  @@index([slug])
-}
-
-model GroupMember {
-  id        String   @id @default(cuid())
-  groupId   String
-  userId    String
-  role      GroupRole @default(MEMBER)
-  joinedAt  DateTime @default(now())
-  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user      User     @relation("GroupMembers", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId])
-  @@index([groupId])
-  @@index([userId])
-}
-
-model GroupChallenge {
-  id          String   @id @default(cuid())
-  groupId     String
-  title       String
-  description String
-  startDate   DateTime
-  endDate     DateTime
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@index([groupId, isActive])
-}
-
-model GroupPost {
-  id        String   @id @default(cuid())
-  groupId   String
-  userId    String
-  content   String
-  createdAt DateTime @default(now())
-  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@index([groupId, createdAt])
-}
-
-model GroupJoinRequest {
-  id        String              @id @default(cuid())
-  groupId   String
-  userId    String
-  message   String?
-  status    JoinRequestStatus   @default(PENDING)
-  createdAt DateTime            @default(now())
-  group     Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId])
-  @@index([groupId, status])
-}
 
 enum GroupStatus {
   PENDING
@@ -1671,7 +1595,7 @@ enum GroupStatus {
   REJECTED
 }
 
-enum GroupRole {
+enum GroupMemberRole {
   ADMIN
   MODERATOR
   MEMBER

@@ -76,6 +76,8 @@ model User {
   showWeight             Boolean                     @default(true)
   allowMessages          Boolean                     @default(true)
   requireFollowApproval  Boolean                     @default(false)
+  createdChallenges      Challenge[]
+  challengeParticipations ChallengeParticipant[]
 
   @@index([xp, level])
 }
@@ -1586,3 +1588,86 @@ enum PromoSectionType {
   CTA
   STATS
 }
+
+model Group {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String
+  goalType    String
+  imageUrl    String?
+  isPrivate   Boolean       @default(false)
+  maxMembers  Int?
+  status      String        @default("PENDING")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  members     GroupMember[]
+  challenges  Challenge[]
+  posts       GroupPost[]
+
+  @@index([status])
+  @@index([goalType])
+}
+
+model GroupMember {
+  id       String   @id @default(cuid())
+  groupId  String
+  userId   String
+  role     String   @default("MEMBER")
+  joinedAt DateTime @default(now())
+  group    Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user     User     @relation("GroupMembers", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model GroupPost {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+}
+
+model Challenge {
+  id           String              @id @default(cuid())
+  title        String
+  description  String
+  type         String
+  target       Float?
+  unit         String?
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean             @default(true)
+  groupId      String?
+  createdBy    String
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  group        Group?              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  creator      User                @relation(fields: [createdBy], references: [id])
+  participants ChallengeParticipant[]
+
+  @@index([groupId])
+  @@index([isActive])
+  @@index([startDate])
+}
+
+model ChallengeParticipant {
+  id          String    @id @default(cuid())
+  challengeId String
+  userId      String
+  joinedAt    DateTime  @default(now())
+  progress    Float?
+  completed   Boolean   @default(false)
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([userId])
+}
+

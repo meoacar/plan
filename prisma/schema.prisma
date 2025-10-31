@@ -1490,3 +1490,96 @@ model ConfessionReaction {
   @@index([confessionId])
   @@index([userId])
 }
+
+// Tanıtım Sistemi Modelleri
+model PromoSection {
+  id          String            @id @default(cuid())
+  type        PromoSectionType
+  title       String
+  subtitle    String?
+  content     String?
+  imageUrl    String?
+  videoUrl    String?
+  buttonText  String?
+  buttonUrl   String?
+  order       Int               @default(0)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([type, order])
+  @@index([isActive])
+}
+
+model PromoFeature {
+  id          String   @id @default(cuid())
+  icon        String
+  title       String
+  description String
+  color       String   @default("#10b981")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+  @@index([isActive])
+}
+
+model MicroCopy {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  location  String
+  text      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([location])
+  @@index([isActive])
+}
+
+model UserStory {
+  id          String   @id @default(cuid())
+  name        String
+  beforeImage String?
+  afterImage  String?
+  beforeWeight Int?
+  afterWeight  Int?
+  duration    String?
+  story       String
+  quote       String?
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive, order])
+  @@index([isFeatured])
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  avatar    String?
+  role      String?
+  text      String
+  rating    Int      @default(5)
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, order])
+}
+
+enum PromoSectionType {
+  HERO
+  VIDEO
+  FEATURES
+  HOW_IT_WORKS
+  TESTIMONIALS
+  CTA
+  STATS
+}

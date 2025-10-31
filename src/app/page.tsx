@@ -13,7 +13,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 overflow-x-hidden">
 
       {/* Hero Section - Yeni Modern Tasarım */}
-      <section className="relative overflow-hidden min-h-[90vh] flex items-center">
+      <section className="relative overflow-hidden min-h-[90vh] flex items-center w-full">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 via-fuchsia-500/5 to-orange-500/5"></div>
 
@@ -22,7 +22,7 @@ export default function Home() {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-violet-200/10 to-fuchsia-200/10 rounded-full blur-3xl"></div>
 
-        <div className="px-4 py-16 relative z-10">
+        <div className="w-full px-4 py-16 relative z-10">
           <div className="max-w-6xl mx-auto">
 
             {/* Animated Badge */}
@@ -133,9 +133,9 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-white relative overflow-hidden">
+      <section className="py-20 bg-white relative overflow-hidden w-full">
         <div className="absolute inset-0 bg-gradient-to-b from-violet-50/50 to-transparent"></div>
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="w-full px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-4">
               Neden <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600">Biz?</span>
@@ -180,8 +180,8 @@ export default function Home() {
       </section>
 
       {/* Plans Section */}
-      <section id="plans" className="relative bg-gradient-to-b from-slate-50 to-white py-20">
-        <div className="container mx-auto px-4">
+      <section id="plans" className="relative bg-gradient-to-b from-slate-50 to-white py-20 w-full">
+        <div className="w-full px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-4">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600">Başarı Hikayeleri</span>

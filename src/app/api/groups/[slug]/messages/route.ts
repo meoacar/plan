@@ -1,15 +1,197 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { triggerPusherEvent } from '@/lib/pusher-server';
+import { notifyGroupMembers, getGroupName, getUserName, groupNotificationTemplates } from '@/lib/group-notifications';
+import { z } from 'zod';
 
-export async function GET(
-  request: NextRequest,
+// Validation schema
+const createMessageSchema = z.object({
+  content: z.string().min(1).max(1000),
+  messageType: z.enum(['TEXT', 'EMOJI', 'GIF', 'SYSTEM']).default('TEXT'),
+  metadata: z.any().optional(),
+});
+
+// POST /api/groups/[slug]/messages - Send message
+export async function POST(
+  req: NextRequest,
   { params }: { params: { slug: string } }
 ) {
-  return NextResponse.json({ message: 'Messages endpoint - Coming soon' });
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { slug } = params;
+
+    // Get group by slug
+    const group = await prisma.group.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+
+    if (!group) {
+      return NextResponse.json(
+        { error: 'Group not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if user is a member of the group
+    const membership = await prisma.groupMember.findUnique({
+      where: {
+        groupId_userId: {
+          groupId: group.id,
+          userId: session.user.id!,
+        },
+      },
+    });
+
+    if (!membership) {
+      return NextResponse.json(
+        { error: 'You are not a member of this group' },
+        { status: 403 }
+      );
+    }
+
+    const body = await req.json();
+    const validatedData = createMessageSchema.parse(body);
+
+    // Create message
+    const message = await prisma.groupMessage.create({
+      data: {
+        groupId: group.id,
+        userId: session.user.id!,
+        content: validatedData.content,
+        messageType: validatedData.messageType,
+        metadata: validatedData.metadata,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            username: true,
+          },
+        },
+      },
+    });
+
+    // Broadcast message via Pusher
+    await triggerPusherEvent(
+      `presence-group-${group.id}`,
+      'new-message',
+      message
+    );
+
+    // Send notifications to group members (async, don't wait)
+    const groupName = await getGroupName(group.id);
+    const authorName = await getUserName(session.user.id!);
+    const notification = groupNotificationTemplates.newMessage(groupName, authorName);
+    
+    notifyGroupMembers({
+      groupId: group.id,
+      type: 'GROUP_NEW_MESSAGE',
+      title: notification.title,
+      message: notification.message,
+      actionUrl: `/groups/${slug}/chat`,
+      actorId: session.user.id!,
+      relatedId: message.id,
+      excludeUserId: session.user.id!, // Don't notify the sender
+    }).catch(err => console.error('Failed to send message notifications:', err));
+
+    return NextResponse.json(message, { status: 201 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: error.issues },
+        { status: 400 }
+      );
+    }
+
+    console.error('Error creating message:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
 }
 
-export async function POST(
-  request: NextRequest,
+// GET /api/groups/[slug]/messages - Get recent messages
+export async function GET(
+  req: NextRequest,
   { params }: { params: { slug: string } }
 ) {
-  return NextResponse.json({ message: 'Send message - Coming soon' });
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { slug } = params;
+
+    // Get group by slug
+    const group = await prisma.group.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+
+    if (!group) {
+      return NextResponse.json(
+        { error: 'Group not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if user is a member of the group
+    const membership = await prisma.groupMember.findUnique({
+      where: {
+        groupId_userId: {
+          groupId: group.id,
+          userId: session.user.id!,
+        },
+      },
+    });
+
+    if (!membership) {
+      return NextResponse.json(
+        { error: 'You are not a member of this group' },
+        { status: 403 }
+      );
+    }
+
+    // Get last 50 messages
+    const messages = await prisma.groupMessage.findMany({
+      where: { groupId: group.id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            username: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
+
+    // Return in chronological order
+    return NextResponse.json(messages.reverse());
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
 }

@@ -31,11 +31,12 @@ interface OnlineMember {
 
 interface GroupChatProps {
   groupId: string;
+  groupSlug: string;
   currentUserId: string;
   initialMessages: Message[];
 }
 
-export function GroupChat({ groupId, currentUserId, initialMessages }: GroupChatProps) {
+export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }: GroupChatProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [onlineMembers, setOnlineMembers] = useState<OnlineMember[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -79,7 +80,7 @@ export function GroupChat({ groupId, currentUserId, initialMessages }: GroupChat
 
   const handleSendMessage = useCallback(async (content: string) => {
     try {
-      const response = await fetch(`/api/groups/${groupId}/messages`, {
+      const response = await fetch(`/api/groups/${groupSlug}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ export function GroupChat({ groupId, currentUserId, initialMessages }: GroupChat
       console.error('Error sending message:', error);
       throw error;
     }
-  }, [groupId]);
+  }, [groupSlug]);
 
   const handleEmojiSelect = useCallback((emoji: string) => {
     // Add emoji to message input

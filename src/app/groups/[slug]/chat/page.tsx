@@ -126,6 +126,7 @@ export default async function GroupChatPage({ params }: PageProps) {
             >
               <GroupChat
                 groupId={data.group.id}
+                groupSlug={params.slug}
                 currentUserId={session.user.id}
                 initialMessages={data.messages}
               />

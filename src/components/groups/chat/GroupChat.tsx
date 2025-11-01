@@ -33,7 +33,7 @@ interface GroupChatProps {
   groupId: string;
   groupSlug: string;
   currentUserId: string;
-  userRole?: 'MEMBER' | 'MODERATOR' | 'LEADER';
+  userRole?: 'MEMBER' | 'MODERATOR' | 'LEADER' | 'ADMIN';
   initialMessages: Message[];
 }
 
@@ -186,16 +186,16 @@ export function GroupChat({ groupId, groupSlug, currentUserId, userRole = 'MEMBE
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#f9fafb', borderRadius: '0.75rem', overflow: 'hidden' }}>
-      {/* Online Members */}
+    <div className="flex flex-col h-full bg-gradient-to-br from-gray-50 to-gray-100/50 overflow-hidden">
+      {/* Online Members - Modern Header */}
       {onlineMembers.length > 0 && (
-        <div style={{ flexShrink: 0 }}>
+        <div className="flex-shrink-0 bg-white/80 backdrop-blur-sm border-b border-gray-200/50">
           <OnlineMembers members={onlineMembers} />
         </div>
       )}
 
-      {/* Messages */}
-      <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+      {/* Messages Area - Scrollable */}
+      <div className="flex-1 overflow-y-auto min-h-0 px-4 py-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
         <MessageList 
           messages={messages} 
           currentUserId={currentUserId}
@@ -205,14 +205,16 @@ export function GroupChat({ groupId, groupSlug, currentUserId, userRole = 'MEMBE
         />
       </div>
 
-      {/* Input - Always visible at bottom */}
-      <div style={{ flexShrink: 0, borderTop: '1px solid #e5e7eb', backgroundColor: 'white', position: 'relative' }}>
+      {/* Input Area - Modern Sticky Bottom */}
+      <div className="flex-shrink-0 relative bg-white/90 backdrop-blur-xl border-t border-gray-200/50 shadow-lg">
         {showEmojiPicker && (
-          <div style={{ position: 'absolute', bottom: '100%', left: 0, right: 0, marginBottom: '0.5rem', zIndex: 50 }}>
-            <EmojiPicker
-              onEmojiSelect={handleEmojiSelect}
-              onClose={() => setShowEmojiPicker(false)}
-            />
+          <div className="absolute bottom-full left-0 right-0 mb-2 z-50 px-4">
+            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+              <EmojiPicker
+                onEmojiSelect={handleEmojiSelect}
+                onClose={() => setShowEmojiPicker(false)}
+              />
+            </div>
           </div>
         )}
         <MessageInput

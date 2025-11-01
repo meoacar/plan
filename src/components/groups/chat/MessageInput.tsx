@@ -36,46 +36,51 @@ export function MessageInput({ onSendMessage, onToggleEmojiPicker }: MessageInpu
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-3 sm:p-4 safe-area-bottom">
-      <div className="flex items-end gap-2">
+    <form onSubmit={handleSubmit} className="p-4 sm:p-6 safe-area-bottom">
+      <div className="flex items-end gap-3">
         {/* Emoji Picker Button */}
         {onToggleEmojiPicker && (
           <button
             type="button"
             onClick={onToggleEmojiPicker}
-            className="flex-shrink-0 rounded-lg p-2 text-gray-500 hover:bg-gray-100 active:bg-gray-200 hover:text-gray-700 transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="group flex-shrink-0 rounded-xl p-3 bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 text-yellow-600 hover:from-yellow-100 hover:to-orange-100 hover:border-yellow-300 hover:text-yellow-700 active:scale-95 transition-all duration-200 touch-manipulation min-h-[48px] min-w-[48px] flex items-center justify-center shadow-sm hover:shadow-md"
             aria-label="Emoji ekle"
           >
-            <Smile className="h-5 w-5 sm:h-6 sm:w-6" />
+            <Smile className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110" />
           </button>
         )}
 
-        {/* Message Input */}
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Mesajınızı yazın..."
-          className="flex-1 resize-none rounded-lg border border-gray-300 px-3 sm:px-4 py-2 text-sm sm:text-base focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 min-h-[44px]"
-          rows={1}
-          maxLength={1000}
-          disabled={isSending}
-        />
+        {/* Message Input - Modern Design */}
+        <div className="flex-1 relative">
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Mesajınızı yazın..."
+            className="w-full resize-none rounded-2xl border-2 border-gray-200 bg-white px-4 sm:px-5 py-3 text-sm sm:text-base focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all duration-200 min-h-[48px] placeholder:text-gray-400"
+            rows={1}
+            maxLength={1000}
+            disabled={isSending}
+          />
+          {/* Character Count - Inside Input */}
+          <div className="absolute bottom-2 right-3 text-xs text-gray-400 font-medium">
+            {message.length}/1000
+          </div>
+        </div>
 
-        {/* Send Button */}
+        {/* Send Button - Modern Gradient */}
         <button
           type="submit"
           disabled={!message.trim() || isSending}
-          className="flex-shrink-0 rounded-lg bg-green-500 p-2 text-white hover:bg-green-600 active:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+          className="group flex-shrink-0 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 p-3 text-white hover:from-purple-600 hover:to-pink-600 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 touch-manipulation min-h-[48px] min-w-[48px] flex items-center justify-center shadow-lg hover:shadow-xl disabled:shadow-sm"
           aria-label="Gönder"
         >
-          <Send className="h-5 w-5 sm:h-6 sm:w-6" />
+          {isSending ? (
+            <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Send className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:translate-x-0.5" />
+          )}
         </button>
-      </div>
-      
-      {/* Character Count */}
-      <div className="mt-1 text-right text-xs text-gray-500">
-        {message.length}/1000
       </div>
     </form>
   );

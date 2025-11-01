@@ -120,19 +120,21 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
   return (
     <div className="flex h-full flex-col bg-gray-50 rounded-xl overflow-hidden">
       {/* Online Members */}
-      <div className="flex-shrink-0">
-        <OnlineMembers members={onlineMembers} />
-      </div>
+      {onlineMembers.length > 0 && (
+        <div className="flex-shrink-0">
+          <OnlineMembers members={onlineMembers} />
+        </div>
+      )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
         <MessageList messages={messages} currentUserId={currentUserId} />
       </div>
 
-      {/* Input */}
-      <div className="relative flex-shrink-0 border-t border-gray-200 bg-white">
+      {/* Input - Always visible at bottom */}
+      <div className="flex-shrink-0 border-t border-gray-200 bg-white">
         {showEmojiPicker && (
-          <div className="absolute bottom-full left-0 right-0 sm:left-auto sm:right-4 sm:w-80 mb-2">
+          <div className="absolute bottom-full left-0 right-0 sm:left-auto sm:right-4 sm:w-80 mb-2 z-50">
             <EmojiPicker
               onEmojiSelect={handleEmojiSelect}
               onClose={() => setShowEmojiPicker(false)}

@@ -20,6 +20,10 @@ export function StatsClient({ groupId, initialDays }: StatsClientProps) {
   };
 
   const handleRefresh = async () => {
+    if (!confirm('İstatistikler yeniden hesaplanacak. Bu işlem birkaç saniye sürebilir. Devam etmek istiyor musunuz?')) {
+      return;
+    }
+
     setIsRefreshing(true);
     try {
       const response = await fetch(`/api/groups/${groupId}/stats/calculate`, {
@@ -27,15 +31,17 @@ export function StatsClient({ groupId, initialDays }: StatsClientProps) {
       });
 
       if (response.ok) {
+        // Başarılı mesajı göster
+        alert('İstatistikler başarıyla güncellendi!');
         // Sayfayı yenile
         window.location.reload();
       } else {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ error: 'Bilinmeyen hata' }));
         alert(error.error || 'İstatistikler güncellenirken bir hata oluştu');
       }
     } catch (error) {
       console.error('İstatistik güncelleme hatası:', error);
-      alert('İstatistikler güncellenirken bir hata oluştu');
+      alert('İstatistikler güncellenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
     } finally {
       setIsRefreshing(false);
     }

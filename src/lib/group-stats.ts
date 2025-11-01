@@ -48,82 +48,32 @@ export async function calculateActiveMembers(groupId: string): Promise<number> {
 
 /**
  * Toplam kilo kaybını hesaplar (tüm üyelerin kilo kayıpları toplamı)
+ * Not: WeightLog modeli olmadığı için şimdilik 0 döndürüyoruz
  */
 export async function calculateTotalWeightLoss(groupId: string): Promise<number> {
-  const members = await prisma.groupMember.findMany({
-    where: {
-      groupId,
-    },
-    include: {
-      user: {
-        include: {
-          weightLogs: {
-            orderBy: {
-              createdAt: 'asc',
-            },
-          },
-        },
-      },
-    },
-  });
-
-  let totalWeightLoss = 0;
-
-  for (const member of members) {
-    const weightLogs = member.user.weightLogs;
-    if (weightLogs.length >= 2) {
-      const firstWeight = weightLogs[0].weight;
-      const lastWeight = weightLogs[weightLogs.length - 1].weight;
-      const weightLoss = firstWeight - lastWeight;
-      if (weightLoss > 0) {
-        totalWeightLoss += weightLoss;
-      }
-    }
+  try {
+    // WeightLog modeli olmadığı için şimdilik 0 döndür
+    // İleride bu özellik eklendiğinde güncellenecek
+    return 0;
+  } catch (error) {
+    console.error('Toplam kilo kaybı hesaplama hatası:', error);
+    return 0;
   }
-
-  return Math.round(totalWeightLoss * 10) / 10; // 1 ondalık basamak
 }
 
 /**
  * Ortalama kilo kaybını hesaplar
+ * Not: WeightLog modeli olmadığı için şimdilik 0 döndürüyoruz
  */
 export async function calculateAverageWeightLoss(groupId: string): Promise<number> {
-  const members = await prisma.groupMember.findMany({
-    where: {
-      groupId,
-    },
-    include: {
-      user: {
-        include: {
-          weightLogs: {
-            orderBy: {
-              createdAt: 'asc',
-            },
-          },
-        },
-      },
-    },
-  });
-
-  let totalWeightLoss = 0;
-  let membersWithWeightLoss = 0;
-
-  for (const member of members) {
-    const weightLogs = member.user.weightLogs;
-    if (weightLogs.length >= 2) {
-      const firstWeight = weightLogs[0].weight;
-      const lastWeight = weightLogs[weightLogs.length - 1].weight;
-      const weightLoss = firstWeight - lastWeight;
-      if (weightLoss > 0) {
-        totalWeightLoss += weightLoss;
-        membersWithWeightLoss++;
-      }
-    }
+  try {
+    // WeightLog modeli olmadığı için şimdilik 0 döndür
+    // İleride bu özellik eklendiğinde güncellenecek
+    return 0;
+  } catch (error) {
+    console.error('Ortalama kilo kaybı hesaplama hatası:', error);
+    return 0;
   }
-
-  if (membersWithWeightLoss === 0) return 0;
-
-  return Math.round((totalWeightLoss / membersWithWeightLoss) * 10) / 10;
 }
 
 /**

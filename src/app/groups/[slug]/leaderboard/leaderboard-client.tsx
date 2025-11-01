@@ -54,7 +54,7 @@ export function LeaderboardClient({
       setError(null);
 
       const response = await fetch(
-        `/api/groups/${groupId}/leaderboard/${period.toLowerCase()}`,
+        `/api/groups/${groupSlug}/leaderboard/${period.toLowerCase()}`,
         {
           method: 'GET',
           headers: {

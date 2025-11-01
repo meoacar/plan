@@ -44,38 +44,43 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
 
   // Initialize Pusher connection
   useEffect(() => {
-    const pusher = getPusherClient();
-    const presenceChannel = pusher.subscribe(`presence-group-${groupId}`) as Channel;
+    try {
+      const pusher = getPusherClient();
+      const presenceChannel = pusher.subscribe(`presence-group-${groupId}`) as Channel;
 
-    // Handle new messages
-    presenceChannel.bind('new-message', (message: Message) => {
-      setMessages((prev) => [...prev, message]);
-    });
-
-    // Handle presence (online members)
-    presenceChannel.bind('pusher:subscription_succeeded', (members: any) => {
-      const membersList: OnlineMember[] = [];
-      members.each((member: OnlineMember) => {
-        membersList.push(member);
+      // Handle new messages
+      presenceChannel.bind('new-message', (message: Message) => {
+        setMessages((prev) => [...prev, message]);
       });
-      setOnlineMembers(membersList);
-    });
 
-    presenceChannel.bind('pusher:member_added', (member: OnlineMember) => {
-      setOnlineMembers((prev) => [...prev, member]);
-    });
+      // Handle presence (online members)
+      presenceChannel.bind('pusher:subscription_succeeded', (members: any) => {
+        const membersList: OnlineMember[] = [];
+        members.each((member: OnlineMember) => {
+          membersList.push(member);
+        });
+        setOnlineMembers(membersList);
+      });
 
-    presenceChannel.bind('pusher:member_removed', (member: OnlineMember) => {
-      setOnlineMembers((prev) => prev.filter((m) => m.id !== member.id));
-    });
+      presenceChannel.bind('pusher:member_added', (member: OnlineMember) => {
+        setOnlineMembers((prev) => [...prev, member]);
+      });
 
-    setChannel(presenceChannel);
+      presenceChannel.bind('pusher:member_removed', (member: OnlineMember) => {
+        setOnlineMembers((prev) => prev.filter((m) => m.id !== member.id));
+      });
 
-    // Cleanup
-    return () => {
-      presenceChannel.unbind_all();
-      presenceChannel.unsubscribe();
-    };
+      setChannel(presenceChannel);
+
+      // Cleanup
+      return () => {
+        presenceChannel.unbind_all();
+        presenceChannel.unsubscribe();
+      };
+    } catch (error) {
+      console.error('Pusher connection error:', error);
+      // Continue without real-time updates
+    }
   }, [groupId]);
 
   const handleSendMessage = useCallback(async (content: string) => {
@@ -92,8 +97,14 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Failed to send message:', errorData);
+        throw new Error(errorData.error || 'Failed to send message');
       }
+
+      const newMessage = await response.json();
+      // Manually add message to list if Pusher is not working
+      setMessages((prev) => [...prev, newMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;

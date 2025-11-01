@@ -114,23 +114,12 @@ export default async function GroupChatPage({ params }: PageProps) {
         {/* Chat Container */}
         <div className="overflow-hidden rounded-lg border bg-white shadow-lg">
           <div className="h-[calc(100vh-300px)] min-h-[500px]">
-            <Suspense
-              fallback={
-                <div className="flex h-full items-center justify-center">
-                  <div className="text-center">
-                    <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-500 border-r-transparent"></div>
-                    <p className="text-gray-600">Sohbet yükleniyor...</p>
-                  </div>
-                </div>
-              }
-            >
-              <GroupChat
-                groupId={data.group.id}
-                groupSlug={params.slug}
-                currentUserId={session.user.id}
-                initialMessages={data.messages}
-              />
-            </Suspense>
+            <GroupChat
+              groupId={data.group.id}
+              groupSlug={params.slug}
+              currentUserId={session.user.id}
+              initialMessages={data.messages}
+            />
           </div>
         </div>
 

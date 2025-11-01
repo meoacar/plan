@@ -36,14 +36,14 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
 
   if (messages.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center text-gray-500">
+      <div className="flex h-full items-center justify-center text-gray-500 p-4">
         <p>Henüz mesaj yok. İlk mesajı siz gönderin!</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 space-y-4 overflow-y-auto p-4">
+    <div className="h-full space-y-4 overflow-y-auto p-4">
       {messages.map((message) => {
         const isOwnMessage = message.user.id === currentUserId;
         const messageDate = typeof message.createdAt === 'string' 

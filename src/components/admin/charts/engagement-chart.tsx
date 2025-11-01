@@ -1,7 +1,7 @@
 "use client"
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
-import { format, parseISO } from "date-fns"
+import { format } from "date-fns"
 import { tr } from "date-fns/locale"
 
 interface EngagementChartProps {
@@ -9,10 +9,34 @@ interface EngagementChartProps {
 }
 
 export function EngagementChart({ data }: EngagementChartProps) {
-  const formattedData = data.map((item) => ({
-    ...item,
-    formattedDate: format(parseISO(item.date), "d MMM", { locale: tr }),
-  }))
+  if (!data || data.length === 0) {
+    return (
+      <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">Etkileşim Aktivitesi</h3>
+        <div className="flex h-[300px] items-center justify-center text-gray-500">
+          Veri bulunamadı
+        </div>
+      </div>
+    )
+  }
+
+  const formattedData = data.map((item) => {
+    try {
+      const dateStr = item.date.includes('T') ? item.date.split('T')[0] : item.date
+      const [year, month, day] = dateStr.split('-')
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+      return {
+        ...item,
+        formattedDate: format(date, "d MMM", { locale: tr }),
+      }
+    } catch (error) {
+      console.error('Date parsing error:', error, item.date)
+      return {
+        ...item,
+        formattedDate: item.date,
+      }
+    }
+  })
 
   return (
     <div className="rounded-lg border bg-white p-6 shadow-sm">

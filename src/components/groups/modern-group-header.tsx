@@ -159,6 +159,7 @@ export function ModernGroupHeader({ group }: GroupHeaderProps) {
               alt={group.name}
               fill
               className="object-cover opacity-20"
+              unoptimized
             />
           </div>
         )}
@@ -168,13 +169,14 @@ export function ModernGroupHeader({ group }: GroupHeaderProps) {
           <div className="flex items-end gap-4">
             {/* Group Avatar */}
             <div className="relative">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-white/20 backdrop-blur-md border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-white/20 backdrop-blur-md border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden relative">
                 {group.imageUrl ? (
                   <Image
                     src={group.imageUrl}
                     alt={group.name}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                 ) : (
                   <GoalIcon className="w-12 h-12 sm:w-16 sm:h-16 text-white" />

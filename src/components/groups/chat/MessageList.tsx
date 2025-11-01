@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { Trash2 } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -21,10 +22,14 @@ interface Message {
 interface MessageListProps {
   messages: Message[];
   currentUserId: string;
+  userRole?: 'MEMBER' | 'MODERATOR' | 'LEADER';
+  groupSlug: string;
+  onMessageDeleted?: (messageId: string) => void;
 }
 
-export function MessageList({ messages, currentUserId }: MessageListProps) {
+export function MessageList({ messages, currentUserId, userRole = 'MEMBER', groupSlug, onMessageDeleted }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [deletingMessageId, setDeletingMessageId] = useState<string | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,6 +38,38 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!confirm('Bu mesajı silmek istediğinizden emin misiniz?')) {
+      return;
+    }
+
+    setDeletingMessageId(messageId);
+    try {
+      const response = await fetch(`/api/groups/${groupSlug}/messages/${messageId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete message');
+      }
+
+      onMessageDeleted?.(messageId);
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      alert('Mesaj silinirken bir hata oluştu');
+    } finally {
+      setDeletingMessageId(null);
+    }
+  };
+
+  const canDeleteMessage = (message: Message) => {
+    return (
+      message.user.id === currentUserId || // Own message
+      userRole === 'LEADER' || // Group leader
+      userRole === 'MODERATOR' // Moderator
+    );
+  };
 
   if (messages.length === 0) {
     return (
@@ -91,16 +128,32 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
                   })}
                 </span>
               </div>
-              <div
-                className={`rounded-2xl px-4 py-2 ${
-                  isOwnMessage
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-100 text-gray-900'
-                }`}
-              >
-                <p className="whitespace-pre-wrap break-words">
-                  {message.content}
-                </p>
+              <div className="flex items-start gap-2">
+                <div
+                  className={`rounded-2xl px-4 py-2 ${
+                    isOwnMessage
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-100 text-gray-900'
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap break-words">
+                    {message.content}
+                  </p>
+                </div>
+                {canDeleteMessage(message) && (
+                  <button
+                    onClick={() => handleDeleteMessage(message.id)}
+                    disabled={deletingMessageId === message.id}
+                    className={`flex-shrink-0 rounded-lg p-1.5 transition-colors ${
+                      isOwnMessage
+                        ? 'text-red-600 hover:bg-red-50'
+                        : 'text-red-600 hover:bg-red-50'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    title="Mesajı sil"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             </div>
           </div>

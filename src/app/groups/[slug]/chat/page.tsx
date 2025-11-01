@@ -38,6 +38,9 @@ async function getGroupAndMessages(slug: string, userId: string) {
         userId,
       },
     },
+    select: {
+      role: true,
+    },
   });
 
   if (!membership) {
@@ -64,6 +67,7 @@ async function getGroupAndMessages(slug: string, userId: string) {
   return {
     group,
     messages: messages.reverse(), // Return in chronological order
+    userRole: membership.role,
   };
 }
 
@@ -117,6 +121,7 @@ export default async function GroupChatPage({ params }: PageProps) {
             groupId={data.group.id}
             groupSlug={params.slug}
             currentUserId={session.user.id}
+            userRole={data.userRole}
             initialMessages={data.messages}
           />
         </div>

@@ -33,10 +33,11 @@ interface GroupChatProps {
   groupId: string;
   groupSlug: string;
   currentUserId: string;
+  userRole?: 'MEMBER' | 'MODERATOR' | 'LEADER';
   initialMessages: Message[];
 }
 
-export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }: GroupChatProps) {
+export function GroupChat({ groupId, groupSlug, currentUserId, userRole = 'MEMBER', initialMessages }: GroupChatProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [onlineMembers, setOnlineMembers] = useState<OnlineMember[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -72,6 +73,11 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
       // Handle new messages
       presenceChannel.bind('new-message', (message: Message) => {
         setMessages((prev) => [...prev, message]);
+      });
+
+      // Handle message deletion
+      presenceChannel.bind('message-deleted', (data: { messageId: string }) => {
+        setMessages((prev) => prev.filter((m) => m.id !== data.messageId));
       });
 
       // Handle presence (online members)
@@ -156,6 +162,10 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
     handleSendMessage(emoji);
   }, [handleSendMessage]);
 
+  const handleMessageDeleted = useCallback((messageId: string) => {
+    setMessages((prev) => prev.filter((m) => m.id !== messageId));
+  }, []);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#f9fafb', borderRadius: '0.75rem', overflow: 'hidden' }}>
       {/* Online Members */}
@@ -167,7 +177,13 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
 
       {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
-        <MessageList messages={messages} currentUserId={currentUserId} />
+        <MessageList 
+          messages={messages} 
+          currentUserId={currentUserId}
+          userRole={userRole}
+          groupSlug={groupSlug}
+          onMessageDeleted={handleMessageDeleted}
+        />
       </div>
 
       {/* Input - Always visible at bottom */}

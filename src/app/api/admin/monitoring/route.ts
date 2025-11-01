@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { auth } from '@/lib/auth';
 import { apiLogger, performanceMonitor } from '@/lib/api-logger';
 import { prisma } from '@/lib/prisma';
 

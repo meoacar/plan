@@ -1,7 +1,7 @@
 "use client"
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { format } from "date-fns"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
+import { format, parseISO } from "date-fns"
 import { tr } from "date-fns/locale"
 
 interface UserGrowthChartProps {
@@ -11,7 +11,7 @@ interface UserGrowthChartProps {
 export function UserGrowthChart({ data }: UserGrowthChartProps) {
   const formattedData = data.map((item) => ({
     ...item,
-    displayDate: format(new Date(item.date), "dd MMM", { locale: tr }),
+    formattedDate: format(parseISO(item.date), "d MMM", { locale: tr }),
   }))
 
   return (
@@ -19,9 +19,9 @@ export function UserGrowthChart({ data }: UserGrowthChartProps) {
       <h3 className="mb-4 text-lg font-semibold text-gray-900">Kullanıcı Büyümesi</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={formattedData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis
-            dataKey="displayDate"
+            dataKey="formattedDate"
             stroke="#6b7280"
             fontSize={12}
             tickLine={false}
@@ -30,20 +30,22 @@ export function UserGrowthChart({ data }: UserGrowthChartProps) {
             stroke="#6b7280"
             fontSize={12}
             tickLine={false}
-            allowDecimals={false}
+            axisLine={false}
           />
           <Tooltip
             contentStyle={{
               backgroundColor: "#fff",
               border: "1px solid #e5e7eb",
-              borderRadius: "0.5rem",
+              borderRadius: "8px",
+              padding: "8px 12px",
             }}
             labelStyle={{ color: "#374151", fontWeight: 600 }}
-            formatter={(value: number) => [`${value} kullanıcı`, "Yeni Kullanıcı"]}
           />
+          <Legend />
           <Line
             type="monotone"
             dataKey="count"
+            name="Yeni Kullanıcılar"
             stroke="#3b82f6"
             strokeWidth={2}
             dot={{ fill: "#3b82f6", r: 4 }}

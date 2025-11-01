@@ -1,17 +1,7 @@
 "use client"
 
-import {
-  ComposedChart,
-  Line,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts"
-import { format } from "date-fns"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
+import { format, parseISO } from "date-fns"
 import { tr } from "date-fns/locale"
 
 interface EngagementChartProps {
@@ -21,17 +11,17 @@ interface EngagementChartProps {
 export function EngagementChart({ data }: EngagementChartProps) {
   const formattedData = data.map((item) => ({
     ...item,
-    displayDate: format(new Date(item.date), "dd MMM", { locale: tr }),
+    formattedDate: format(parseISO(item.date), "d MMM", { locale: tr }),
   }))
 
   return (
     <div className="rounded-lg border bg-white p-6 shadow-sm">
       <h3 className="mb-4 text-lg font-semibold text-gray-900">Etkileşim Aktivitesi</h3>
       <ResponsiveContainer width="100%" height={300}>
-        <ComposedChart data={formattedData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+        <LineChart data={formattedData}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis
-            dataKey="displayDate"
+            dataKey="formattedDate"
             stroke="#6b7280"
             fontSize={12}
             tickLine={false}
@@ -40,35 +30,37 @@ export function EngagementChart({ data }: EngagementChartProps) {
             stroke="#6b7280"
             fontSize={12}
             tickLine={false}
-            allowDecimals={false}
+            axisLine={false}
           />
           <Tooltip
             contentStyle={{
               backgroundColor: "#fff",
               border: "1px solid #e5e7eb",
-              borderRadius: "0.5rem",
+              borderRadius: "8px",
+              padding: "8px 12px",
             }}
             labelStyle={{ color: "#374151", fontWeight: 600 }}
           />
-          <Legend
-            wrapperStyle={{ paddingTop: "20px" }}
-            iconType="circle"
-          />
-          <Bar
+          <Legend />
+          <Line
+            type="monotone"
             dataKey="comments"
-            fill="#8b5cf6"
-            radius={[4, 4, 0, 0]}
             name="Yorumlar"
+            stroke="#8b5cf6"
+            strokeWidth={2}
+            dot={{ fill: "#8b5cf6", r: 4 }}
+            activeDot={{ r: 6 }}
           />
           <Line
             type="monotone"
             dataKey="likes"
-            stroke="#ef4444"
-            strokeWidth={2}
-            dot={{ fill: "#ef4444", r: 4 }}
             name="Beğeniler"
+            stroke="#ec4899"
+            strokeWidth={2}
+            dot={{ fill: "#ec4899", r: 4 }}
+            activeDot={{ r: 6 }}
           />
-        </ComposedChart>
+        </LineChart>
       </ResponsiveContainer>
     </div>
   )

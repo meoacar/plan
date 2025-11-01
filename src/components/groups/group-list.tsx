@@ -4,12 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Users, Trophy, TrendingDown, Dumbbell, Apple, Heart, Lock, ChevronRight, Sparkles, Filter as FilterIcon, Eye } from 'lucide-react';
+import { Users, Trophy, TrendingDown, Dumbbell, Apple, Heart, Lock, ChevronRight, Sparkles, Filter as FilterIcon } from 'lucide-react';
 import GroupFilters from './group-filters';
 import FilterChips from './filter-chips';
 import FilterModal from './filter-modal';
 import CategoryBadge from './category-badge';
-import GroupPreviewModal from './group-preview-modal';
 
 interface Group {
   id: string;
@@ -79,7 +78,6 @@ export default function GroupList() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [previewSlug, setPreviewSlug] = useState<string | null>(null);
   
   // Initialize filters from URL params
   const [filters, setFilters] = useState<FilterOptions>({
@@ -271,15 +269,10 @@ export default function GroupList() {
           const Icon = config.icon;
           
           return (
-            <div
+            <Link
               key={group.id}
-              className="group bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden hover:-translate-y-1 sm:hover:-translate-y-2 cursor-pointer relative active:scale-95"
-              onClick={(e) => {
-                // Eğer link tıklanmadıysa önizleme aç
-                if (!(e.target as HTMLElement).closest('a')) {
-                  setPreviewSlug(group.slug);
-                }
-              }}
+              href={`/groups/${group.slug}`}
+              className="group bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden hover:-translate-y-1 sm:hover:-translate-y-2 cursor-pointer relative active:scale-95 block"
             >
               {/* Image */}
               <div className="relative h-40 sm:h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
@@ -351,30 +344,13 @@ export default function GroupList() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPreviewSlug(group.slug);
-                      }}
-                      className="p-2 hover:bg-purple-50 active:bg-purple-100 rounded-full transition-colors touch-manipulation"
-                      title="Önizleme"
-                      aria-label="Grup önizlemesi"
-                    >
-                      <Eye className="w-4 h-4 text-purple-600" />
-                    </button>
-                    <Link
-                      href={`/groups/${group.slug}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-1 text-purple-600 hover:text-purple-700 active:text-purple-800 font-semibold text-sm touch-manipulation"
-                    >
-                      <span className="hidden xs:inline">Detay</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </Link>
+                  <div className="flex items-center gap-1 text-purple-600 hover:text-purple-700 active:text-purple-800 font-semibold text-sm">
+                    <span className="hidden xs:inline">Detay</span>
+                    <ChevronRight className="w-4 h-4" />
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
@@ -421,15 +397,6 @@ export default function GroupList() {
         filters={filters}
         onApplyFilters={handleFilterChange}
       />
-
-      {/* Preview Modal */}
-      {previewSlug && (
-        <GroupPreviewModal
-          slug={previewSlug}
-          isOpen={!!previewSlug}
-          onClose={() => setPreviewSlug(null)}
-        />
-      )}
     </div>
   );
 }

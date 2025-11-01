@@ -40,33 +40,36 @@ export function OnlineMembers({ members }: OnlineMembersProps) {
 
       {isExpanded && (
         <div className="mt-3 space-y-2">
-          {members.map((member) => (
-            <div
-              key={member.id}
-              className="flex items-center gap-2"
-            >
-              <div className="relative">
-                {member.user_info.image ? (
-                  <Image
-                    src={member.user_info.image}
-                    alt={member.user_info.name || 'User'}
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
-                ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white text-sm font-semibold">
-                    {member.user_info.name?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                )}
-                {/* Online indicator */}
-                <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
+          {members.map((member) => {
+            const userInfo = member.user_info || { name: null, image: null };
+            return (
+              <div
+                key={member.id}
+                className="flex items-center gap-2"
+              >
+                <div className="relative">
+                  {userInfo.image ? (
+                    <Image
+                      src={userInfo.image}
+                      alt={userInfo.name || 'User'}
+                      width={32}
+                      height={32}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white text-sm font-semibold">
+                      {userInfo.name?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                  )}
+                  {/* Online indicator */}
+                  <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
+                </div>
+                <span className="text-sm text-gray-700">
+                  {userInfo.name || 'Anonim'}
+                </span>
               </div>
-              <span className="text-sm text-gray-700">
-                {member.user_info.name || 'Anonim'}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

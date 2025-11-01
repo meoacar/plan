@@ -66,9 +66,17 @@ export function GroupChat({ groupId, groupSlug, currentUserId, userRole = 'MEMBE
       return;
     }
 
+    let presenceChannel: Channel | null = null;
+
     try {
       const pusher = getPusherClient();
-      const presenceChannel = pusher.subscribe(`presence-group-${groupId}`) as Channel;
+      presenceChannel = pusher.subscribe(`presence-group-${groupId}`) as Channel;
+
+      // Handle subscription errors
+      presenceChannel.bind('pusher:subscription_error', (error: any) => {
+        console.error('Pusher subscription error:', error);
+        setUsePusher(false);
+      });
 
       // Handle new messages
       presenceChannel.bind('new-message', (message: Message) => {
@@ -101,12 +109,23 @@ export function GroupChat({ groupId, groupSlug, currentUserId, userRole = 'MEMBE
 
       // Cleanup
       return () => {
-        presenceChannel.unbind_all();
-        presenceChannel.unsubscribe();
+        if (presenceChannel) {
+          presenceChannel.unbind_all();
+          presenceChannel.unsubscribe();
+        }
       };
     } catch (error) {
       console.error('Pusher connection error:', error);
       setUsePusher(false);
+      // Fallback to polling
+      if (presenceChannel) {
+        try {
+          presenceChannel.unbind_all();
+          presenceChannel.unsubscribe();
+        } catch (e) {
+          // Ignore cleanup errors
+        }
+      }
     }
   }, [groupId]);
 

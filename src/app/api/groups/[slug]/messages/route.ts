@@ -15,7 +15,7 @@ const createMessageSchema = z.object({
 // POST /api/groups/[slug]/messages - Send message
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const session = await auth();
@@ -26,7 +26,7 @@ export async function POST(
       );
     }
 
-    const { slug } = params;
+    const { slug } = await params;
 
     // Get group by slug
     const group = await prisma.group.findUnique({
@@ -125,7 +125,7 @@ export async function POST(
 // GET /api/groups/[slug]/messages - Get recent messages
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const session = await auth();
@@ -136,7 +136,7 @@ export async function GET(
       );
     }
 
-    const { slug } = params;
+    const { slug } = await params;
 
     // Get group by slug
     const group = await prisma.group.findUnique({

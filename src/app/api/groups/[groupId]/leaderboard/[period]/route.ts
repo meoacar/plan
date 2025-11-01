@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { getLeaderboard, getUserLeaderboardPosition } from '@/lib/group-leaderboard';
+import { getLeaderboard, getUserLeaderboardPosition, calculateGroupLeaderboard } from '@/lib/group-leaderboard';
 
 type LeaderboardPeriod = 'WEEKLY' | 'MONTHLY' | 'ALL_TIME';
 
@@ -52,7 +52,18 @@ export async function GET(
     }
 
     // Liderlik tablosunu getir
-    const leaderboard = await getLeaderboard(groupId, leaderboardPeriod, limit);
+    let leaderboard = await getLeaderboard(groupId, leaderboardPeriod, limit);
+
+    // Eğer liderlik tablosu boşsa, hesapla
+    if (leaderboard.length === 0) {
+      try {
+        await calculateGroupLeaderboard(groupId, leaderboardPeriod);
+        leaderboard = await getLeaderboard(groupId, leaderboardPeriod, limit);
+      } catch (calcError) {
+        console.error('Liderlik tablosu hesaplama hatası:', calcError);
+        // Hesaplama hatası olsa bile boş array döndür
+      }
+    }
 
     // Kullanıcının kendi pozisyonunu getir
     const userPosition = await getUserLeaderboardPosition(

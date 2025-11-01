@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Settings, ArrowLeft, Users, Lock, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { Settings, ArrowLeft, Users, Lock, Upload, Trash2, X } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Group {
   id: string;
@@ -23,8 +24,10 @@ interface GroupSettingsFormProps {
 export default function GroupSettingsForm({ group }: GroupSettingsFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [imagePreview, setImagePreview] = useState<string | null>(group.imageUrl || null);
 
   const [formData, setFormData] = useState({
     name: group.name,
@@ -32,7 +35,60 @@ export default function GroupSettingsForm({ group }: GroupSettingsFormProps) {
     goalType: group.goalType,
     isPrivate: group.isPrivate,
     maxMembers: group.maxMembers?.toString() || '',
+    imageUrl: group.imageUrl || '',
   });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Dosya boyutu 5MB\'dan küçük olmalıdır');
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setError('Sadece resim dosyaları yüklenebilir');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      setError('');
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+
+      const res = await fetch('/api/upload/group', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Yükleme başarısız');
+      }
+
+      const data = await res.json();
+      setFormData({ ...formData, imageUrl: data.imageUrl });
+    } catch (err: any) {
+      setError(err.message || 'Resim yüklenirken bir hata oluştu');
+      setImagePreview(group.imageUrl || null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImagePreview(null);
+    setFormData({ ...formData, imageUrl: '' });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,6 +182,55 @@ export default function GroupSettingsForm({ group }: GroupSettingsFormProps) {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Grup Resmi */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Grup Resmi
+          </label>
+          <div className="space-y-4">
+            {imagePreview ? (
+              <div className="relative w-full h-48 rounded-xl overflow-hidden border-2 border-gray-200">
+                <Image
+                  src={imagePreview}
+                  alt="Grup resmi"
+                  fill
+                  className="object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute top-3 right-3 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-purple-500 hover:bg-purple-50 transition-colors">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <Upload className="w-10 h-10 text-gray-400 mb-3" />
+                  <p className="mb-2 text-sm text-gray-500">
+                    <span className="font-semibold">Resim yüklemek için tıklayın</span>
+                  </p>
+                  <p className="text-xs text-gray-500">PNG, JPG veya WEBP (Max. 5MB)</p>
+                </div>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                />
+              </label>
+            )}
+            {uploading && (
+              <div className="text-center">
+                <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                <p className="text-sm text-gray-600 mt-2">Yükleniyor...</p>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Name */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -220,7 +325,7 @@ export default function GroupSettingsForm({ group }: GroupSettingsFormProps) {
           </Link>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploading}
             className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}

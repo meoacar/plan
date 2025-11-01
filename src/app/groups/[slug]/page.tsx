@@ -2,9 +2,8 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import GroupDetail from "@/components/groups/group-detail";
+import { ModernGroupHeader } from "@/components/groups/modern-group-header";
 import GroupFeed from "@/components/groups/group-feed";
-import { MobileGroupTabs } from "@/components/groups/mobile-group-tabs";
 
 interface PageProps {
   params: {
@@ -104,25 +103,79 @@ export default async function GroupPage({ params, searchParams }: PageProps) {
   const isAdmin = group.memberRole === 'ADMIN';
 
   return (
-    <div>
-      <Suspense fallback={<div className="text-center py-8">Yükleniyor...</div>}>
-        <GroupDetail group={group} activeTab={activeTab} />
-      </Suspense>
+    <div className="min-h-screen bg-gray-50">
+      {/* Modern Header */}
+      <ModernGroupHeader group={group} />
 
-      {/* Mobil Tab Navigasyonu */}
-      <MobileGroupTabs groupSlug={params.slug} isAdmin={isAdmin} />
-
-      {/* Tab İçeriği */}
+      {/* Content */}
       <div className="container mx-auto px-4 py-6 sm:py-8">
-        {activeTab === 'feed' && (
-          <Suspense fallback={<div className="text-center py-8">Yükleniyor...</div>}>
-            <GroupFeed
-              groupSlug={params.slug}
-              groupId={group.id}
-              isMember={group.isMember}
-            />
-          </Suspense>
-        )}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Feed */}
+          <div className="lg:col-span-2">
+            <Suspense fallback={
+              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                <p className="mt-4 text-gray-600">Yükleniyor...</p>
+              </div>
+            }>
+              <GroupFeed
+                groupSlug={params.slug}
+                groupId={group.id}
+                isMember={group.isMember}
+              />
+            </Suspense>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 space-y-6">
+              {/* Quick Stats */}
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Grup İstatistikleri</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Toplam Üye</span>
+                    <span className="font-semibold text-gray-900">{group._count.members}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Aktif Challenge</span>
+                    <span className="font-semibold text-gray-900">{group._count.challenges}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Gizlilik</span>
+                    <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
+                      {group.isPrivate ? 'Özel' : 'Herkese Açık'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent Members */}
+              {group.members.length > 0 && (
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">Son Katılanlar</h3>
+                  <div className="space-y-3">
+                    {group.members.slice(0, 5).map((member) => (
+                      <div key={member.id} className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-medium">
+                          {member.user.name?.[0] || '?'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {member.user.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {member.role === 'ADMIN' ? 'Yönetici' : 'Üye'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

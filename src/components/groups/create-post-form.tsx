@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ImagePlus, Send, X, TrendingUp, Trophy, Heart, Camera } from 'lucide-react';
+import { ImagePlus, Send, X, TrendingUp, Trophy, Heart, Camera, Upload, Link as LinkIcon } from 'lucide-react';
 
 interface CreatePostFormProps {
   groupSlug: string;
@@ -24,12 +24,58 @@ const postTypes = [
 
 export default function CreatePostForm({ groupSlug, user }: CreatePostFormProps) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [content, setContent] = useState('');
   const [postType, setPostType] = useState<string>('UPDATE');
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [showImageInput, setShowImageInput] = useState(false);
+  const [imageInputMode, setImageInputMode] = useState<'url' | 'upload'>('upload');
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Dosya boyutu kontrolü (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Dosya boyutu 5MB\'dan küçük olmalıdır');
+      return;
+    }
+
+    // Dosya tipi kontrolü
+    if (!file.type.startsWith('image/')) {
+      setError('Sadece resim dosyaları yüklenebilir');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      setError('');
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/upload/group', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Resim yüklenemedi');
+      }
+
+      const data = await res.json();
+      setImageUrl(data.imageUrl);
+      setShowImageInput(false);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,6 +111,7 @@ export default function CreatePostForm({ groupSlug, user }: CreatePostFormProps)
       setImageUrl('');
       setPostType('UPDATE');
       setShowImageInput(false);
+      setImageInputMode('upload');
 
       // Sayfayı yenile
       router.refresh();
@@ -113,26 +160,98 @@ export default function CreatePostForm({ groupSlug, user }: CreatePostFormProps)
           <span>{content.length} / 5000</span>
         </div>
 
-        {/* Resim URL Girişi */}
+        {/* Resim Ekleme Seçenekleri */}
         {showImageInput && (
-          <div className="relative">
-            <input
-              type="url"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="Resim URL'si girin..."
-              className="w-full p-3 pr-10 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all"
-              disabled={loading}
-            />
+          <div className="space-y-3">
+            {/* Mod Seçimi */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setImageInputMode('upload')}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+                  imageInputMode === 'upload'
+                    ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-2 border-transparent'
+                }`}
+                disabled={loading || uploading}
+              >
+                <Upload className="w-4 h-4" />
+                Cihazdan Yükle
+              </button>
+              <button
+                type="button"
+                onClick={() => setImageInputMode('url')}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+                  imageInputMode === 'url'
+                    ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-2 border-transparent'
+                }`}
+                disabled={loading || uploading}
+              >
+                <LinkIcon className="w-4 h-4" />
+                URL Gir
+              </button>
+            </div>
+
+            {/* Dosya Yükleme */}
+            {imageInputMode === 'upload' && (
+              <div className="relative">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  disabled={loading || uploading}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading || uploading}
+                  className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-purple-400 hover:bg-purple-50/50 transition-all flex flex-col items-center gap-2 text-gray-600 hover:text-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploading ? (
+                    <>
+                      <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                      <span className="font-semibold">Yükleniyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8" />
+                      <span className="font-semibold">Resim Seç</span>
+                      <span className="text-sm text-gray-500">Maksimum 5MB</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* URL Girişi */}
+            {imageInputMode === 'url' && (
+              <div className="relative">
+                <input
+                  type="url"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="Resim URL'si girin..."
+                  className="w-full p-3 pr-10 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all"
+                  disabled={loading || uploading}
+                />
+              </div>
+            )}
+
+            {/* Kapat Butonu */}
             <button
               type="button"
               onClick={() => {
                 setShowImageInput(false);
                 setImageUrl('');
+                setImageInputMode('upload');
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="w-full text-gray-600 hover:text-gray-800 font-semibold py-2 transition-colors"
+              disabled={loading || uploading}
             >
-              <X className="w-5 h-5" />
+              İptal
             </button>
           </div>
         )}
@@ -187,7 +306,7 @@ export default function CreatePostForm({ groupSlug, user }: CreatePostFormProps)
             type="button"
             onClick={() => setShowImageInput(!showImageInput)}
             className="flex items-center gap-2 text-gray-600 hover:text-purple-600 font-semibold transition-colors"
-            disabled={loading}
+            disabled={loading || uploading}
           >
             <ImagePlus className="w-5 h-5" />
             Resim Ekle
@@ -195,7 +314,7 @@ export default function CreatePostForm({ groupSlug, user }: CreatePostFormProps)
 
           <button
             type="submit"
-            disabled={loading || !content.trim()}
+            disabled={loading || uploading || !content.trim()}
             className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-full font-bold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (

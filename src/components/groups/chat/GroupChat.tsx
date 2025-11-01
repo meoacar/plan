@@ -41,9 +41,30 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
   const [onlineMembers, setOnlineMembers] = useState<OnlineMember[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [channel, setChannel] = useState<Channel | null>(null);
+  const [usePusher, setUsePusher] = useState(true);
+
+  // Fetch new messages (fallback when Pusher is not available)
+  const fetchMessages = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/groups/${groupSlug}/messages`);
+      if (response.ok) {
+        const newMessages = await response.json();
+        setMessages(newMessages);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  }, [groupSlug]);
 
   // Initialize Pusher connection
   useEffect(() => {
+    // Check if Pusher is configured
+    if (!process.env.NEXT_PUBLIC_PUSHER_KEY) {
+      console.log('Pusher not configured, using polling instead');
+      setUsePusher(false);
+      return;
+    }
+
     try {
       const pusher = getPusherClient();
       const presenceChannel = pusher.subscribe(`presence-group-${groupId}`) as Channel;
@@ -79,9 +100,18 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
       };
     } catch (error) {
       console.error('Pusher connection error:', error);
-      // Continue without real-time updates
+      setUsePusher(false);
     }
   }, [groupId]);
+
+  // Polling fallback when Pusher is not available
+  useEffect(() => {
+    if (!usePusher) {
+      // Poll for new messages every 3 seconds
+      const interval = setInterval(fetchMessages, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [usePusher, fetchMessages]);
 
   const handleSendMessage = useCallback(async (content: string) => {
     try {
@@ -103,13 +133,22 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
       }
 
       const newMessage = await response.json();
-      // Manually add message to list if Pusher is not working
-      setMessages((prev) => [...prev, newMessage]);
+      
+      // If not using Pusher, manually add message to list
+      if (!usePusher) {
+        setMessages((prev) => {
+          // Check if message already exists
+          if (prev.some(m => m.id === newMessage.id)) {
+            return prev;
+          }
+          return [...prev, newMessage];
+        });
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
     }
-  }, [groupSlug]);
+  }, [groupSlug, usePusher]);
 
   const handleEmojiSelect = useCallback((emoji: string) => {
     // Add emoji to message input

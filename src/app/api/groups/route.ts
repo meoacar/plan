@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '12');
     const goalType = searchParams.get('goalType');
     const search = searchParams.get('search');
+    const level = searchParams.get('level');
+    const gender = searchParams.get('gender');
+    const ageGroup = searchParams.get('ageGroup');
     const skip = (page - 1) * limit;
 
     const where: any = {
@@ -17,6 +20,18 @@ export async function GET(request: NextRequest) {
 
     if (goalType) {
       where.goalType = goalType;
+    }
+
+    if (level) {
+      where.level = level;
+    }
+
+    if (gender) {
+      where.gender = gender;
+    }
+
+    if (ageGroup) {
+      where.ageGroup = ageGroup;
     }
 
     if (search) {

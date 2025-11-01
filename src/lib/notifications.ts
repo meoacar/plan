@@ -96,6 +96,20 @@ function shouldSendInApp(type: NotificationType, preferences: any): boolean {
     MENTION: 'inAppComment',
     LEVEL_UP: 'inAppBadge',
     COMMENT_REACTION: 'inAppComment',
+    // Grup bildirimleri - şimdilik mevcut tercihleri kullan
+    GROUP_NEW_POST: 'inAppComment',
+    GROUP_NEW_COMMENT: 'inAppComment',
+    GROUP_NEW_MESSAGE: 'inAppComment',
+    GROUP_POST_LIKE: 'inAppLike',
+    GROUP_EVENT_CREATED: 'inAppComment',
+    GROUP_EVENT_REMINDER: 'inAppComment',
+    GROUP_MEMBER_JOINED: 'inAppComment',
+    GROUP_ROLE_CHANGED: 'inAppComment',
+    GROUP_WEEKLY_GOAL: 'inAppComment',
+    GROUP_LEADERBOARD_RANK: 'inAppBadge',
+    GROUP_JOIN_REQUEST: 'inAppComment',
+    GROUP_JOIN_APPROVED: 'inAppComment',
+    GROUP_JOIN_REJECTED: 'inAppComment',
   };
 
   const key = mapping[type];
@@ -128,6 +142,20 @@ function shouldSendPushNotification(type: NotificationType, preferences: any): b
     MENTION: 'pushComment',
     LEVEL_UP: 'pushBadge',
     COMMENT_REACTION: 'pushComment',
+    // Grup bildirimleri
+    GROUP_NEW_POST: 'pushComment',
+    GROUP_NEW_COMMENT: 'pushComment',
+    GROUP_NEW_MESSAGE: 'pushComment',
+    GROUP_POST_LIKE: 'pushLike',
+    GROUP_EVENT_CREATED: 'pushComment',
+    GROUP_EVENT_REMINDER: 'pushComment',
+    GROUP_MEMBER_JOINED: 'pushComment',
+    GROUP_ROLE_CHANGED: 'pushComment',
+    GROUP_WEEKLY_GOAL: 'pushComment',
+    GROUP_LEADERBOARD_RANK: 'pushBadge',
+    GROUP_JOIN_REQUEST: 'pushComment',
+    GROUP_JOIN_APPROVED: 'pushComment',
+    GROUP_JOIN_REJECTED: 'pushComment',
   };
 
   const key = mapping[type];
@@ -160,6 +188,20 @@ function shouldSendEmailNotification(type: NotificationType, preferences: any): 
     MENTION: 'emailComment',
     LEVEL_UP: 'emailBadge',
     COMMENT_REACTION: 'emailComment',
+    // Grup bildirimleri
+    GROUP_NEW_POST: 'emailComment',
+    GROUP_NEW_COMMENT: 'emailComment',
+    GROUP_NEW_MESSAGE: 'emailComment',
+    GROUP_POST_LIKE: 'emailLike',
+    GROUP_EVENT_CREATED: 'emailComment',
+    GROUP_EVENT_REMINDER: 'emailComment',
+    GROUP_MEMBER_JOINED: 'emailComment',
+    GROUP_ROLE_CHANGED: 'emailComment',
+    GROUP_WEEKLY_GOAL: 'emailComment',
+    GROUP_LEADERBOARD_RANK: 'emailBadge',
+    GROUP_JOIN_REQUEST: 'emailComment',
+    GROUP_JOIN_APPROVED: 'emailComment',
+    GROUP_JOIN_REJECTED: 'emailComment',
   };
 
   const key = mapping[type];

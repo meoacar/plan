@@ -23,6 +23,7 @@ import {
   Bell,
   BellOff,
   Sparkles,
+  BarChart3,
 } from 'lucide-react';
 
 interface GroupMember {
@@ -68,6 +69,7 @@ interface Group {
 
 interface GroupDetailProps {
   group: Group;
+  activeTab?: string;
 }
 
 const goalTypeConfig = {
@@ -101,12 +103,25 @@ const goalTypeConfig = {
   },
 };
 
-export default function GroupDetail({ group }: GroupDetailProps) {
+export default function GroupDetail({ group, activeTab: initialActiveTab = 'feed' }: GroupDetailProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'about' | 'members' | 'challenges'>('about');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+  const handleTabChange = (tab: string) => {
+    if (tab === 'chat') {
+      router.push(`/groups/${group.slug}/chat`);
+    } else if (tab === 'stats') {
+      router.push(`/groups/${group.slug}/stats`);
+    } else if (tab === 'events') {
+      router.push(`/groups/${group.slug}/events`);
+    } else if (tab === 'leaderboard') {
+      router.push(`/groups/${group.slug}/leaderboard`);
+    } else {
+      router.push(`/groups/${group.slug}?tab=${tab}`);
+    }
+  };
 
   const config = goalTypeConfig[group.goalType as keyof typeof goalTypeConfig] || goalTypeConfig['weight-loss'];
   const Icon = config.icon;
@@ -305,17 +320,22 @@ export default function GroupDetail({ group }: GroupDetailProps) {
         <div className="container mx-auto px-4">
           <div className="flex gap-8 overflow-x-auto">
             {[
+              { id: 'feed', label: 'Akış', icon: MessageCircle },
+              { id: 'chat', label: 'Sohbet', icon: MessageCircle, requiresMembership: true },
+              { id: 'events', label: 'Etkinlikler', icon: Calendar, requiresMembership: true },
+              { id: 'leaderboard', label: 'Liderlik', icon: Trophy, requiresMembership: true },
+              { id: 'stats', label: 'İstatistikler', icon: BarChart3, requiresMembership: true },
               { id: 'about', label: 'Hakkında', icon: Sparkles },
               { id: 'members', label: 'Üyeler', icon: Users },
               { id: 'challenges', label: 'Challenge\'lar', icon: Trophy },
-            ].map((tab) => {
+            ].filter(tab => !tab.requiresMembership || group.isMember).map((tab) => {
               const TabIcon = tab.icon;
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 px-4 py-4 font-semibold border-b-2 transition-colors whitespace-nowrap ${
-                    activeTab === tab.id
+                    initialActiveTab === tab.id
                       ? 'border-purple-600 text-purple-600'
                       : 'border-transparent text-gray-600 hover:text-gray-900'
                   }`}
@@ -334,7 +354,7 @@ export default function GroupDetail({ group }: GroupDetailProps) {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {activeTab === 'about' && (
+            {initialActiveTab === 'about' && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
                 <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
                   <Sparkles className="w-6 h-6 text-purple-600" />
@@ -357,7 +377,7 @@ export default function GroupDetail({ group }: GroupDetailProps) {
               </div>
             )}
 
-            {activeTab === 'members' && (
+            {initialActiveTab === 'members' && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                   <Users className="w-6 h-6 text-purple-600" />
@@ -407,7 +427,7 @@ export default function GroupDetail({ group }: GroupDetailProps) {
               </div>
             )}
 
-            {activeTab === 'challenges' && (
+            {initialActiveTab === 'challenges' && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                   <Trophy className="w-6 h-6 text-yellow-500" />

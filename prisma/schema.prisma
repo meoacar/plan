@@ -8,76 +8,86 @@ datasource db {
 }
 
 model User {
-  id                     String                      @id @default(cuid())
-  email                  String                      @unique
-  passwordHash           String?
-  name                   String?
-  image                  String?
-  bio                    String?
-  startWeight            Int?
-  goalWeight             Int?
-  role                   Role                        @default(USER)
-  createdAt              DateTime                    @default(now())
-  updatedAt              DateTime                    @updatedAt
-  instagram              String?
-  tiktok                 String?
-  twitter                String?
-  website                String?
-  youtube                String?
-  lastActiveDate         DateTime?
-  level                  Int                         @default(1)
-  streak                 Int                         @default(0)
-  xp                     Int                         @default(0)
-  city                   String?
-  username               String?                     @unique
-  resetToken             String?
-  resetTokenExpiry       DateTime?
-  accounts               Account[]
-  partnerReceived        AccountabilityPartnership[] @relation("PartnerReceiver")
-  partnerRequests        AccountabilityPartnership[] @relation("PartnerRequester")
-  activityLogs           ActivityLog[]
-  backups                Backup[]
-  bannedWords            BannedWord[]
-  calorieGoal            CalorieGoal?
-  checkIns               CheckIn[]
-  collections            Collection[]
-  comments               Comment[]
-  commentReactions       CommentReaction[]
-  crisisButtons          CrisisButton[]
-  emailCampaigns         EmailCampaign[]
-  favorites              Favorite[]
-  following              Follow[]                    @relation("UserFollowing")
-  followers              Follow[]                    @relation("UserFollowers")
-  likes                  Like[]
-  meals                  Meal[]
-  measurements           Measurement[]
-  moodLogs               MoodLog[]
-  notifications          Notification[]
-  notificationPreference NotificationPreference?
-  plans                  Plan[]
-  polls                  Poll[]
-  pollVotes              PollVote[]
-  progressPhotos         ProgressPhoto[]
-  pushSubscriptions      PushSubscription[]
-  recipeComments         RecipeComment[]
-  sessions               Session[]
-  siteSettings           SiteSettings[]
-  badges                 UserBadge[]
-  goals                  UserGoal[]
-  wallPostsWritten       WallPost[]                  @relation("WallPostAuthor")
-  wallPosts              WallPost[]                  @relation("WallPostOwner")
-  weightLogs             WeightLog[]
-  cheatMeals             CheatMeal[]
-  cheatChallenges        CheatChallenge[]
-  profileCustomization   ProfileCustomization?
-  groupMemberships       GroupMember[]               @relation("GroupMembers")
-  isPrivate              Boolean                     @default(false)
-  showEmail              Boolean                     @default(false)
-  showWeight             Boolean                     @default(true)
-  allowMessages          Boolean                     @default(true)
-  requireFollowApproval  Boolean                     @default(false)
-  createdChallenges      Challenge[]
-  challengeParticipations ChallengeParticipant[]
+  id                       String                      @id @default(cuid())
+  email                    String                      @unique
+  passwordHash             String?
+  name                     String?
+  image                    String?
+  bio                      String?
+  startWeight              Int?
+  goalWeight               Int?
+  role                     Role                        @default(USER)
+  createdAt                DateTime                    @default(now())
+  updatedAt                DateTime                    @updatedAt
+  instagram                String?
+  tiktok                   String?
+  twitter                  String?
+  website                  String?
+  youtube                  String?
+  lastActiveDate           DateTime?
+  level                    Int                         @default(1)
+  streak                   Int                         @default(0)
+  xp                       Int                         @default(0)
+  city                     String?
+  username                 String?                     @unique
+  resetToken               String?
+  resetTokenExpiry         DateTime?
+  allowMessages            Boolean                     @default(true)
+  isPrivate                Boolean                     @default(false)
+  requireFollowApproval    Boolean                     @default(false)
+  showEmail                Boolean                     @default(false)
+  showWeight               Boolean                     @default(true)
+  accounts                 Account[]
+  partnerReceived          AccountabilityPartnership[] @relation("PartnerReceiver")
+  partnerRequests          AccountabilityPartnership[] @relation("PartnerRequester")
+  activityLogs             ActivityLog[]
+  backups                  Backup[]
+  bannedWords              BannedWord[]
+  calorieGoal              CalorieGoal?
+  createdChallenges        Challenge[]
+  challengeParticipations  ChallengeParticipant[]
+  cheatChallenges          CheatChallenge[]
+  cheatMeals               CheatMeal[]
+  checkIns                 CheckIn[]
+  collections              Collection[]
+  comments                 Comment[]
+  commentReactions         CommentReaction[]
+  crisisButtons            CrisisButton[]
+  emailCampaigns           EmailCampaign[]
+  favorites                Favorite[]
+  following                Follow[]                    @relation("UserFollowing")
+  followers                Follow[]                    @relation("UserFollowers")
+  groupEvents              GroupEvent[]                @relation("GroupEvents")
+  groupEventParticipations GroupEventParticipant[]     @relation("GroupEventParticipants")
+  groupGoalProgress        GroupGoalProgress[]         @relation("GroupGoalProgress")
+  groupLeaderboard         GroupLeaderboard[]          @relation("GroupLeaderboard")
+  groupMemberships         GroupMember[]               @relation("GroupMembers")
+  groupMessages            GroupMessage[]              @relation("GroupMessages")
+  groupPosts               GroupPost[]                 @relation("GroupPosts")
+  groupPostComments        GroupPostComment[]          @relation("GroupPostComments")
+  groupPostLikes           GroupPostLike[]             @relation("GroupPostLikes")
+  groupResources           GroupResource[]             @relation("GroupResources")
+  groupWeeklyGoals         GroupWeeklyGoal[]           @relation("GroupWeeklyGoals")
+  likes                    Like[]
+  meals                    Meal[]
+  measurements             Measurement[]
+  moodLogs                 MoodLog[]
+  notifications            Notification[]
+  notificationPreference   NotificationPreference?
+  plans                    Plan[]
+  polls                    Poll[]
+  pollVotes                PollVote[]
+  profileCustomization     ProfileCustomization?
+  progressPhotos           ProgressPhoto[]
+  pushSubscriptions        PushSubscription[]
+  recipeComments           RecipeComment[]
+  sessions                 Session[]
+  siteSettings             SiteSettings[]
+  badges                   UserBadge[]
+  goals                    UserGoal[]
+  wallPostsWritten         WallPost[]                  @relation("WallPostAuthor")
+  wallPosts                WallPost[]                  @relation("WallPostOwner")
+  weightLogs               WeightLog[]
 
   @@index([xp, level])
 }
@@ -126,6 +136,9 @@ model Comment {
   plan      Plan              @relation(fields: [planId], references: [id], onDelete: Cascade)
   user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   reactions CommentReaction[]
+  
+  @@index([planId, createdAt])
+  @@index([userId])
 }
 
 model CommentReaction {
@@ -151,6 +164,8 @@ model Like {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([planId, userId])
+  @@index([userId])
+  @@index([planId])
 }
 
 model Favorite {
@@ -182,6 +197,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -190,6 +206,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }
 
 model VerificationToken {
@@ -222,8 +240,8 @@ model SiteSettings {
   googleClientId          String?
   googleClientSecret      String?
   googleOAuthEnabled      Boolean      @default(false)
-  googleSearchConsoleCode String?
   googleAnalyticsId       String?
+  googleSearchConsoleCode String?
   footerLinks             FooterLink[]
   updatedByUser           User         @relation(fields: [updatedBy], references: [id])
 }
@@ -278,6 +296,8 @@ model BannedWord {
   createdAt DateTime @default(now())
   createdBy String
   creator   User     @relation(fields: [createdBy], references: [id])
+  
+  @@index([createdBy])
 }
 
 model ActivityLog {
@@ -321,6 +341,9 @@ model Backup {
   createdBy String?
   createdAt DateTime @default(now())
   creator   User?    @relation(fields: [createdBy], references: [id])
+  
+  @@index([createdAt])
+  @@index([createdBy])
 }
 
 model Badge {
@@ -332,6 +355,8 @@ model Badge {
   xpReward    Int         @default(0)
   createdAt   DateTime    @default(now())
   users       UserBadge[]
+  
+  @@index([type])
 }
 
 model UserBadge {
@@ -355,6 +380,8 @@ model Goal {
   xpReward    Int        @default(0)
   createdAt   DateTime   @default(now())
   users       UserGoal[]
+  
+  @@index([type])
 }
 
 model UserGoal {
@@ -371,6 +398,8 @@ model UserGoal {
 
   @@unique([userId, goalId, startDate])
   @@index([userId, completed])
+  @@index([goalId])
+  @@index([endDate])
 }
 
 model WeightLog {
@@ -717,6 +746,7 @@ model ShoppingList {
 
   @@index([userId, createdAt])
   @@index([planId])
+  @@index([userId, isCompleted])
 }
 
 model ShoppingListItem {
@@ -766,6 +796,7 @@ model Recipe {
   @@index([status, createdAt])
   @@index([category])
   @@index([slug])
+  @@index([status, views])
 }
 
 model RecipeImage {
@@ -788,6 +819,7 @@ model RecipeLike {
 
   @@unique([recipeId, userId])
   @@index([userId])
+  @@index([recipeId])
 }
 
 model RecipeComment {
@@ -842,113 +874,6 @@ model Page {
   @@index([showInFooter, order])
   @@index([showInNavbar, order])
   @@index([showInTopNavbar, order])
-}
-
-model Group {
-  id              String             @id @default(cuid())
-  name            String
-  slug            String             @unique
-  description     String
-  imageUrl        String?
-  goalType        String
-  targetWeight    Int?
-  isPrivate       Boolean            @default(false)
-  maxMembers      Int?
-  status          GroupStatus        @default(PENDING)
-  rejectionReason String?
-  createdBy       String
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  approvedAt      DateTime?
-  challenges      Challenge[]
-  joinRequests    GroupJoinRequest[]
-  members         GroupMember[]
-  posts           GroupPost[]
-
-  @@index([status, createdAt])
-  @@index([goalType])
-  @@index([slug])
-}
-
-model GroupMember {
-  id       String          @id @default(cuid())
-  groupId  String
-  userId   String
-  role     GroupMemberRole @default(MEMBER)
-  joinedAt DateTime        @default(now())
-  group    Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user     User            @relation("GroupMembers", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId])
-  @@index([userId])
-  @@index([groupId, role])
-}
-
-model GroupJoinRequest {
-  id        String            @id @default(cuid())
-  groupId   String
-  userId    String
-  message   String?
-  status    JoinRequestStatus @default(PENDING)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  group     Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId])
-  @@index([userId, status])
-  @@index([groupId, status])
-}
-
-model GroupPost {
-  id        String   @id @default(cuid())
-  groupId   String
-  userId    String
-  content   String
-  imageUrl  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@index([groupId, createdAt])
-  @@index([userId])
-}
-
-model Challenge {
-  id           String                 @id @default(cuid())
-  groupId      String?
-  title        String
-  description  String
-  type         ChallengeType
-  target       Float
-  unit         String
-  startDate    DateTime
-  endDate      DateTime
-  isActive     Boolean                @default(true)
-  createdBy    String
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
-  group        Group?                 @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  leaderboard  ChallengeLeaderboard[]
-  participants ChallengeParticipant[]
-
-  @@index([groupId, isActive])
-  @@index([type, isActive])
-  @@index([startDate, endDate])
-}
-
-model ChallengeParticipant {
-  id          String    @id @default(cuid())
-  challengeId String
-  userId      String
-  progress    Float     @default(0)
-  completed   Boolean   @default(false)
-  completedAt DateTime?
-  joinedAt    DateTime  @default(now())
-  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-
-  @@unique([challengeId, userId])
-  @@index([userId])
-  @@index([challengeId, completed])
 }
 
 model ChallengeLeaderboard {
@@ -1054,6 +979,649 @@ model WebVitals {
   @@index([metricName])
   @@index([createdAt])
   @@index([rating])
+}
+
+model BlogPost {
+  id               String         @id @default(cuid())
+  title            String
+  slug             String         @unique
+  excerpt          String
+  content          String
+  featuredImage    String?
+  authorId         String
+  categoryId       String?
+  status           BlogStatus     @default(DRAFT)
+  isPublished      Boolean        @default(false)
+  publishedAt      DateTime?
+  metaTitle        String?
+  metaDescription  String?
+  metaKeywords     String?
+  views            Int            @default(0)
+  readTime         Int?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  authorName       String         @default("Admin")
+  featuredImageAlt String?
+  comments         BlogComment[]
+  category         BlogCategory?  @relation(fields: [categoryId], references: [id])
+  tags             BlogPostTag[]
+  reactions        BlogReaction[]
+
+  @@index([slug])
+  @@index([status, publishedAt])
+  @@index([categoryId, status])
+  @@index([authorId])
+}
+
+model BlogCategory {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  color       String     @default("#10b981")
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  posts       BlogPost[]
+
+  @@index([slug])
+  @@index([order])
+}
+
+model BlogTag {
+  id        String        @id @default(cuid())
+  name      String        @unique
+  slug      String        @unique
+  createdAt DateTime      @default(now())
+  posts     BlogPostTag[]
+
+  @@index([slug])
+}
+
+model BlogPostTag {
+  id     String   @id @default(cuid())
+  postId String
+  tagId  String
+  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId])
+  @@index([postId])
+  @@index([tagId])
+}
+
+model BlogComment {
+  id         String   @id @default(cuid())
+  postId     String
+  authorId   String
+  content    String
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  post       BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId, isApproved, createdAt])
+  @@index([authorId])
+}
+
+model BlogReaction {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId, emoji])
+  @@index([postId])
+  @@index([userId])
+}
+
+model CheatMeal {
+  id        String    @id @default(cuid())
+  userId    String
+  type      CheatType
+  note      String?
+  date      DateTime  @default(now())
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@index([type])
+}
+
+model CheatChallenge {
+  id        String   @id @default(cuid())
+  userId    String
+  weekStart DateTime
+  weekEnd   DateTime
+  limit     Int      @default(2)
+  penalty   String?
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart])
+}
+
+model ProfileCustomization {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  activeFrame         String?
+  activeBackground    String?
+  activeTheme         String?
+  activeBadges        String[]
+  unlockedFrames      String[]
+  unlockedBackgrounds String[]
+  unlockedThemes      String[]
+  unlockedBadges      String[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CustomizationItem {
+  id              String            @id @default(cuid())
+  type            CustomizationType
+  code            String            @unique
+  name            String
+  description     String?
+  imageUrl        String?
+  previewUrl      String?
+  cssClass        String?
+  colors          Json?
+  unlockCondition String
+  badgeType       BadgeType?
+  badgeCount      Int?
+  level           Int?
+  xpRequired      Int?
+  isDefault       Boolean           @default(false)
+  isSpecial       Boolean           @default(false)
+  order           Int               @default(0)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([type, order])
+  @@index([badgeType])
+  @@index([isDefault])
+}
+
+model Confession {
+  id              String               @id @default(cuid())
+  userId          String
+  text            String
+  aiReply         String?
+  isAnonymous     Boolean              @default(true)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  approvedAt      DateTime?
+  approvedBy      String?
+  rejectionReason String?
+  status          ConfessionStatus     @default(PENDING)
+  comments        ConfessionComment[]
+  likes           ConfessionLike[]
+  reactions       ConfessionReaction[]
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([status, createdAt])
+  @@index([approvedBy])
+}
+
+model ConfessionLike {
+  id           String     @id @default(cuid())
+  confessionId String
+  userId       String
+  createdAt    DateTime   @default(now())
+  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@unique([confessionId, userId])
+  @@index([confessionId])
+  @@index([userId])
+}
+
+model ConfessionComment {
+  id           String        @id @default(cuid())
+  confessionId String
+  userId       String
+  content      String
+  isAnonymous  Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  status       CommentStatus @default(PENDING)
+  confession   Confession    @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@index([confessionId, createdAt])
+  @@index([userId])
+  @@index([status])
+}
+
+model ConfessionReaction {
+  id           String     @id @default(cuid())
+  confessionId String
+  userId       String
+  emoji        String
+  createdAt    DateTime   @default(now())
+  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@unique([confessionId, userId, emoji])
+  @@index([confessionId])
+  @@index([userId])
+}
+
+model PromoSection {
+  id         String           @id @default(cuid())
+  type       PromoSectionType
+  title      String
+  subtitle   String?
+  content    String?
+  imageUrl   String?
+  videoUrl   String?
+  buttonText String?
+  buttonUrl  String?
+  order      Int              @default(0)
+  isActive   Boolean          @default(true)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@index([type, order])
+  @@index([isActive])
+}
+
+model PromoFeature {
+  id          String   @id @default(cuid())
+  icon        String
+  title       String
+  description String
+  color       String   @default("#10b981")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  link        String?
+
+  @@index([order])
+  @@index([isActive])
+}
+
+model MicroCopy {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  location  String
+  text      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([location])
+  @@index([isActive])
+}
+
+model UserStory {
+  id           String   @id @default(cuid())
+  name         String
+  beforeImage  String?
+  afterImage   String?
+  beforeWeight Int?
+  afterWeight  Int?
+  duration     String?
+  story        String
+  quote        String?
+  isActive     Boolean  @default(true)
+  isFeatured   Boolean  @default(false)
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isActive, order])
+  @@index([isFeatured])
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  avatar    String?
+  role      String?
+  text      String
+  rating    Int      @default(5)
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, order])
+}
+
+model Group {
+  id              String              @id @default(cuid())
+  name            String
+  slug            String              @unique
+  description     String
+  imageUrl        String?
+  goalType        String
+  targetWeight    Int?
+  isPrivate       Boolean             @default(false)
+  maxMembers      Int?
+  status          GroupStatus         @default(PENDING)
+  rejectionReason String?
+  createdBy       String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  approvedAt      DateTime?
+  level           GroupLevel?
+  gender          GroupGender?
+  ageGroup        GroupAgeGroup?
+  challenges      Challenge[]
+  events          GroupEvent[]
+  joinRequests    GroupJoinRequest[]
+  leaderboard     GroupLeaderboard[]
+  members         GroupMember[]
+  messages        GroupMessage[]
+  posts           GroupPost[]
+  resources       GroupResource[]
+  stats           GroupStats?
+  statsHistory    GroupStatsHistory[]
+  weeklyGoals     GroupWeeklyGoal[]
+
+  @@index([status, createdAt])
+  @@index([goalType])
+  @@index([slug])
+  @@index([level])
+  @@index([gender])
+  @@index([ageGroup])
+  @@index([createdBy])
+  @@index([status, goalType])
+  @@index([isPrivate, status])
+}
+
+model GroupMember {
+  id           String          @id @default(cuid())
+  groupId      String
+  userId       String
+  role         GroupMemberRole @default(MEMBER)
+  joinedAt     DateTime        @default(now())
+  lastActiveAt DateTime?
+  permissions  Json?
+  group        Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user         User            @relation("GroupMembers", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@index([groupId, role])
+  @@index([groupId, lastActiveAt])
+}
+
+model GroupJoinRequest {
+  id        String            @id @default(cuid())
+  groupId   String
+  userId    String
+  message   String?
+  status    JoinRequestStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  group     Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId, status])
+  @@index([groupId, status])
+}
+
+model GroupPost {
+  id        String             @id @default(cuid())
+  groupId   String
+  userId    String
+  content   String
+  imageUrl  String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  metadata  Json?
+  postType  GroupPostType      @default(UPDATE)
+  group     Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User               @relation("GroupPosts", fields: [userId], references: [id], onDelete: Cascade)
+  comments  GroupPostComment[]
+  likes     GroupPostLike[]
+
+  @@index([groupId, createdAt])
+  @@index([userId])
+  @@index([postType])
+  @@index([groupId, postType, createdAt])
+}
+
+model GroupPostLike {
+  id        String    @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime  @default(now())
+  post      GroupPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User      @relation("GroupPostLikes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([postId])
+}
+
+model GroupPostComment {
+  id        String    @id @default(cuid())
+  postId    String
+  userId    String
+  content   String
+  createdAt DateTime  @default(now())
+  post      GroupPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User      @relation("GroupPostComments", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+  @@index([userId])
+}
+
+model GroupMessage {
+  id          String           @id @default(cuid())
+  groupId     String
+  userId      String
+  content     String
+  messageType GroupMessageType @default(TEXT)
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+  group       Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user        User             @relation("GroupMessages", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, createdAt])
+  @@index([userId])
+  @@index([messageType])
+}
+
+model GroupEvent {
+  id              String                  @id @default(cuid())
+  groupId         String
+  title           String
+  description     String?
+  eventType       GroupEventType
+  startDate       DateTime
+  endDate         DateTime?
+  location        String?
+  maxParticipants Int?
+  createdBy       String
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  creator         User                    @relation("GroupEvents", fields: [createdBy], references: [id])
+  group           Group                   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  participants    GroupEventParticipant[]
+
+  @@index([groupId, startDate])
+  @@index([createdBy])
+  @@index([eventType])
+  @@index([startDate])
+}
+
+model GroupEventParticipant {
+  id       String            @id @default(cuid())
+  eventId  String
+  userId   String
+  status   ParticipantStatus @default(GOING)
+  joinedAt DateTime          @default(now())
+  event    GroupEvent        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user     User              @relation("GroupEventParticipants", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([userId])
+  @@index([eventId, status])
+}
+
+model GroupLeaderboard {
+  id              String            @id @default(cuid())
+  groupId         String
+  userId          String
+  period          LeaderboardPeriod
+  periodStart     DateTime
+  periodEnd       DateTime
+  activityScore   Int               @default(0)
+  weightLossScore Float             @default(0)
+  streakScore     Int               @default(0)
+  totalScore      Float             @default(0)
+  rank            Int?
+  updatedAt       DateTime          @updatedAt
+  group           Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user            User              @relation("GroupLeaderboard", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId, period, periodStart])
+  @@index([groupId, period, totalScore])
+  @@index([userId])
+  @@index([groupId, period, rank])
+  @@index([periodStart, periodEnd])
+}
+
+model GroupStats {
+  id              String   @id @default(cuid())
+  groupId         String   @unique
+  totalMembers    Int      @default(0)
+  activeMembers   Int      @default(0)
+  totalWeightLoss Float    @default(0)
+  avgWeightLoss   Float    @default(0)
+  totalPosts      Int      @default(0)
+  totalMessages   Int      @default(0)
+  activeRate      Float    @default(0)
+  lastCalculated  DateTime @updatedAt
+  group           Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+}
+
+model GroupStatsHistory {
+  id              String   @id @default(cuid())
+  groupId         String
+  date            DateTime
+  activeMembers   Int
+  totalWeightLoss Float
+  postsCount      Int
+  messagesCount   Int
+  group           Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, date])
+  @@index([groupId, date])
+}
+
+model GroupResource {
+  id           String            @id @default(cuid())
+  groupId      String
+  title        String
+  description  String?
+  resourceType GroupResourceType
+  url          String?
+  fileUrl      String?
+  content      String?
+  category     String
+  tags         String[]
+  views        Int               @default(0)
+  uploadedBy   String
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  group        Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  uploader     User              @relation("GroupResources", fields: [uploadedBy], references: [id])
+
+  @@index([groupId, category])
+  @@index([groupId, views])
+  @@index([resourceType])
+  @@index([uploadedBy])
+}
+
+model GroupWeeklyGoal {
+  id           String              @id @default(cuid())
+  groupId      String
+  weekStart    DateTime
+  weekEnd      DateTime
+  title        String
+  description  String?
+  targetType   String
+  targetValue  Float
+  currentValue Float               @default(0)
+  completed    Boolean             @default(false)
+  createdBy    String
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  progress     GroupGoalProgress[]
+  creator      User                @relation("GroupWeeklyGoals", fields: [createdBy], references: [id])
+  group        Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, weekStart])
+  @@index([groupId, weekStart])
+  @@index([groupId, completed])
+  @@index([weekStart, weekEnd])
+}
+
+model GroupGoalProgress {
+  id        String          @id @default(cuid())
+  goalId    String
+  userId    String
+  value     Float
+  createdAt DateTime        @default(now())
+  goal      GroupWeeklyGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  user      User            @relation("GroupGoalProgress", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([goalId, userId])
+  @@index([userId])
+  @@index([goalId, createdAt])
+}
+
+model Challenge {
+  id           String                 @id @default(cuid())
+  groupId      String?
+  title        String
+  description  String
+  type         ChallengeType
+  target       Float
+  unit         String
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean                @default(true)
+  createdBy    String
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  creator      User                   @relation(fields: [createdBy], references: [id])
+  group        Group?                 @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  leaderboard  ChallengeLeaderboard[]
+  participants ChallengeParticipant[]
+
+  @@index([groupId, isActive])
+  @@index([type, isActive])
+  @@index([startDate, endDate])
+  @@index([createdBy])
+  @@index([isActive, startDate])
+}
+
+model ChallengeParticipant {
+  id          String    @id @default(cuid())
+  challengeId String
+  userId      String
+  progress    Float     @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  joinedAt    DateTime  @default(now())
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([userId])
+  @@index([challengeId, completed])
 }
 
 enum PlanStatus {
@@ -1180,6 +1748,25 @@ enum GroupStatus {
   REJECTED
 }
 
+enum GroupLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum GroupGender {
+  MALE
+  FEMALE
+  MIXED
+}
+
+enum GroupAgeGroup {
+  AGE_18_25
+  AGE_26_35
+  AGE_36_45
+  AGE_46_PLUS
+}
+
 enum GroupMemberRole {
   ADMIN
   MODERATOR
@@ -1190,6 +1777,50 @@ enum JoinRequestStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum GroupPostType {
+  UPDATE
+  ACHIEVEMENT
+  MOTIVATION
+  PROGRESS
+  PHOTO
+}
+
+enum GroupMessageType {
+  TEXT
+  EMOJI
+  GIF
+  SYSTEM
+}
+
+enum GroupEventType {
+  MEETUP
+  WEBINAR
+  WORKSHOP
+  CHALLENGE
+  OTHER
+}
+
+enum ParticipantStatus {
+  GOING
+  MAYBE
+  NOT_GOING
+}
+
+enum LeaderboardPeriod {
+  WEEKLY
+  MONTHLY
+  ALL_TIME
+}
+
+enum GroupResourceType {
+  VIDEO
+  RECIPE
+  EXERCISE
+  PDF
+  ARTICLE
+  LINK
 }
 
 enum ChallengeType {
@@ -1230,102 +1861,19 @@ enum NotificationType {
   RECIPE_LIKE
   PLAN_COMMENT
   PLAN_LIKE
-}
-
-model BlogPost {
-  id              String         @id @default(cuid())
-  title           String
-  slug            String         @unique
-  excerpt         String
-  content         String
-  featuredImage   String?
-  featuredImageAlt String?
-  authorId        String
-  authorName      String         @default("Admin")
-  categoryId      String?
-  status          BlogStatus     @default(DRAFT)
-  isPublished     Boolean        @default(false)
-  publishedAt     DateTime?
-  metaTitle       String?
-  metaDescription String?
-  metaKeywords    String?
-  views           Int            @default(0)
-  readTime        Int?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  category        BlogCategory?  @relation(fields: [categoryId], references: [id])
-  comments        BlogComment[]
-  reactions       BlogReaction[]
-  tags            BlogPostTag[]
-
-  @@index([slug])
-  @@index([status, publishedAt])
-  @@index([categoryId, status])
-  @@index([authorId])
-}
-
-model BlogCategory {
-  id          String     @id @default(cuid())
-  name        String     @unique
-  slug        String     @unique
-  description String?
-  color       String     @default("#10b981")
-  order       Int        @default(0)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  posts       BlogPost[]
-
-  @@index([slug])
-  @@index([order])
-}
-
-model BlogTag {
-  id        String        @id @default(cuid())
-  name      String        @unique
-  slug      String        @unique
-  createdAt DateTime      @default(now())
-  posts     BlogPostTag[]
-
-  @@index([slug])
-}
-
-model BlogPostTag {
-  id     String   @id @default(cuid())
-  postId String
-  tagId  String
-  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag    BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, tagId])
-  @@index([postId])
-  @@index([tagId])
-}
-
-model BlogComment {
-  id        String   @id @default(cuid())
-  postId    String
-  authorId  String
-  content   String
-  isApproved Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@index([postId, isApproved, createdAt])
-  @@index([authorId])
-}
-
-model BlogReaction {
-  id        String   @id @default(cuid())
-  postId    String
-  userId    String
-  emoji     String
-  createdAt DateTime @default(now())
-  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, userId, emoji])
-  @@index([postId])
-  @@index([userId])
+  GROUP_NEW_POST
+  GROUP_NEW_COMMENT
+  GROUP_NEW_MESSAGE
+  GROUP_POST_LIKE
+  GROUP_EVENT_CREATED
+  GROUP_EVENT_REMINDER
+  GROUP_MEMBER_JOINED
+  GROUP_ROLE_CHANGED
+  GROUP_WEEKLY_GOAL
+  GROUP_LEADERBOARD_RANK
+  GROUP_JOIN_REQUEST
+  GROUP_JOIN_APPROVED
+  GROUP_JOIN_REJECTED
 }
 
 enum BlogStatus {
@@ -1334,84 +1882,12 @@ enum BlogStatus {
   SCHEDULED
 }
 
-model CheatMeal {
-  id        String       @id @default(cuid())
-  userId    String
-  type      CheatType
-  note      String?
-  date      DateTime     @default(now())
-  createdAt DateTime     @default(now())
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, date])
-  @@index([type])
-}
-
-model CheatChallenge {
-  id          String   @id @default(cuid())
-  userId      String
-  weekStart   DateTime
-  weekEnd     DateTime
-  limit       Int      @default(2)
-  penalty     String?
-  completed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, weekStart])
-  @@index([userId, weekStart])
-}
-
 enum CheatType {
   SWEET
   FAST_FOOD
   SODA
   ALCOHOL
   OTHER
-}
-
-model ProfileCustomization {
-  id                  String   @id @default(cuid())
-  userId              String   @unique
-  activeFrame         String?
-  activeBackground    String?
-  activeTheme         String?
-  activeBadges        String[]
-  unlockedFrames      String[]
-  unlockedBackgrounds String[]
-  unlockedThemes      String[]
-  unlockedBadges      String[]
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-model CustomizationItem {
-  id              String             @id @default(cuid())
-  type            CustomizationType
-  code            String             @unique
-  name            String
-  description     String?
-  imageUrl        String?
-  previewUrl      String?
-  cssClass        String?
-  colors          Json?
-  unlockCondition String
-  badgeType       BadgeType?
-  badgeCount      Int?
-  level           Int?
-  xpRequired      Int?
-  isDefault       Boolean            @default(false)
-  isSpecial       Boolean            @default(false)
-  order           Int                @default(0)
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-
-  @@index([type, order])
-  @@index([badgeType])
-  @@index([isDefault])
 }
 
 enum CustomizationType {
@@ -1428,155 +1904,10 @@ enum ConfessionStatus {
   REJECTED
 }
 
-model Confession {
-  id              String              @id @default(cuid())
-  userId          String
-  text            String
-  aiReply         String?
-  isAnonymous     Boolean             @default(true)
-  status          ConfessionStatus    @default(PENDING)
-  rejectionReason String?
-  approvedBy      String?
-  approvedAt      DateTime?
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  likes           ConfessionLike[]
-  comments        ConfessionComment[]
-  reactions       ConfessionReaction[]
-
-  @@index([createdAt])
-  @@index([userId])
-  @@index([status, createdAt])
-}
-
-model ConfessionLike {
-  id           String     @id @default(cuid())
-  confessionId String
-  userId       String
-  createdAt    DateTime   @default(now())
-  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
-
-  @@unique([confessionId, userId])
-  @@index([confessionId])
-  @@index([userId])
-}
-
-model ConfessionComment {
-  id           String     @id @default(cuid())
-  confessionId String
-  userId       String
-  content      String
-  isAnonymous  Boolean    @default(true)
-  status       CommentStatus @default(PENDING)
-  createdAt    DateTime   @default(now())
-  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
-
-  @@index([confessionId, createdAt])
-  @@index([userId])
-  @@index([status])
-}
-
 enum CommentStatus {
   PENDING
   APPROVED
   REJECTED
-}
-
-model ConfessionReaction {
-  id           String     @id @default(cuid())
-  confessionId String
-  userId       String
-  emoji        String
-  createdAt    DateTime   @default(now())
-  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
-
-  @@unique([confessionId, userId, emoji])
-  @@index([confessionId])
-  @@index([userId])
-}
-
-// Tanıtım Sistemi Modelleri
-model PromoSection {
-  id          String            @id @default(cuid())
-  type        PromoSectionType
-  title       String
-  subtitle    String?
-  content     String?
-  imageUrl    String?
-  videoUrl    String?
-  buttonText  String?
-  buttonUrl   String?
-  order       Int               @default(0)
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-
-  @@index([type, order])
-  @@index([isActive])
-}
-
-model PromoFeature {
-  id          String   @id @default(cuid())
-  icon        String
-  title       String
-  description String
-  color       String   @default("#10b981")
-  link        String?
-  order       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([order])
-  @@index([isActive])
-}
-
-model MicroCopy {
-  id        String   @id @default(cuid())
-  key       String   @unique
-  location  String
-  text      String
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([location])
-  @@index([isActive])
-}
-
-model UserStory {
-  id          String   @id @default(cuid())
-  name        String
-  beforeImage String?
-  afterImage  String?
-  beforeWeight Int?
-  afterWeight  Int?
-  duration    String?
-  story       String
-  quote       String?
-  isActive    Boolean  @default(true)
-  isFeatured  Boolean  @default(false)
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([isActive, order])
-  @@index([isFeatured])
-}
-
-model Testimonial {
-  id        String   @id @default(cuid())
-  name      String
-  avatar    String?
-  role      String?
-  text      String
-  rating    Int      @default(5)
-  isActive  Boolean  @default(true)
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([isActive, order])
 }
 
 enum PromoSectionType {
@@ -1588,86 +1919,3 @@ enum PromoSectionType {
   CTA
   STATS
 }
-
-model Group {
-  id          String        @id @default(cuid())
-  name        String
-  slug        String        @unique
-  description String
-  goalType    String
-  imageUrl    String?
-  isPrivate   Boolean       @default(false)
-  maxMembers  Int?
-  status      String        @default("PENDING")
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  members     GroupMember[]
-  challenges  Challenge[]
-  posts       GroupPost[]
-
-  @@index([status])
-  @@index([goalType])
-}
-
-model GroupMember {
-  id       String   @id @default(cuid())
-  groupId  String
-  userId   String
-  role     String   @default("MEMBER")
-  joinedAt DateTime @default(now())
-  group    Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user     User     @relation("GroupMembers", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId])
-  @@index([userId])
-}
-
-model GroupPost {
-  id        String   @id @default(cuid())
-  groupId   String
-  userId    String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@index([groupId])
-}
-
-model Challenge {
-  id           String              @id @default(cuid())
-  title        String
-  description  String
-  type         String
-  target       Float?
-  unit         String?
-  startDate    DateTime
-  endDate      DateTime
-  isActive     Boolean             @default(true)
-  groupId      String?
-  createdBy    String
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
-  group        Group?              @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  creator      User                @relation(fields: [createdBy], references: [id])
-  participants ChallengeParticipant[]
-
-  @@index([groupId])
-  @@index([isActive])
-  @@index([startDate])
-}
-
-model ChallengeParticipant {
-  id          String    @id @default(cuid())
-  challengeId String
-  userId      String
-  joinedAt    DateTime  @default(now())
-  progress    Float?
-  completed   Boolean   @default(false)
-  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([challengeId, userId])
-  @@index([userId])
-}
-

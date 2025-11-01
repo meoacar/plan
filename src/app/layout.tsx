@@ -14,6 +14,8 @@ import { WebVitalsReporter } from "@/components/web-vitals-reporter";
 import { NotificationPermission } from "@/components/notifications/notification-permission";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { RegisterServiceWorker } from "./register-sw";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
+import { auth } from "@/lib/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -125,6 +127,22 @@ export default async function RootLayout({
   const settings = await getSiteSettings();
   const seoSettings = await getSeoSettings();
   const { pages: footerPages, footerLinks } = await getFooterData();
+  const session = await auth();
+  
+  // Okunmamış bildirim sayısını al
+  let unreadCount = 0;
+  if (session?.user?.id) {
+    try {
+      unreadCount = await prisma.notification.count({
+        where: {
+          userId: session.user.id,
+          read: false,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching unread notifications:", error);
+    }
+  }
 
   return (
     <html lang="tr">
@@ -188,11 +206,15 @@ export default async function RootLayout({
           <NotificationPermission />
           <PWAInstallPrompt />
           <Navbar />
-          <main className="min-h-screen bg-[#f8f8f8]">
+          <main className="min-h-screen bg-[#f8f8f8] pb-0 md:pb-0">
             <div className="max-w-7xl mx-auto px-4">
               {children}
             </div>
           </main>
+          <MobileBottomNav 
+            isAuthenticated={!!session?.user} 
+            unreadCount={unreadCount}
+          />
           <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-t border-gray-700 py-12">
             <div className="container mx-auto px-4">
               <div className="max-w-6xl mx-auto">

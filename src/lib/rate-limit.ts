@@ -113,6 +113,30 @@ export const RATE_LIMITS = {
 
   // Plan creation - 5 plans per hour
   PLAN: { limit: 5, window: 60 * 60 },
+
+  // Group post creation - 10 posts per 15 minutes
+  GROUP_POST: { limit: 10, window: 15 * 60 },
+
+  // Group message sending - 60 messages per minute
+  GROUP_MESSAGE: { limit: 60, window: 60 },
+
+  // Group comment creation - 30 comments per 5 minutes
+  GROUP_COMMENT: { limit: 30, window: 5 * 60 },
+
+  // Group post like - 100 likes per minute
+  GROUP_LIKE: { limit: 100, window: 60 },
+
+  // Group event creation - 5 events per hour
+  GROUP_EVENT: { limit: 5, window: 60 * 60 },
+
+  // Group resource upload - 10 resources per hour
+  GROUP_RESOURCE: { limit: 10, window: 60 * 60 },
+
+  // Group member actions - 20 actions per minute
+  GROUP_MEMBER_ACTION: { limit: 20, window: 60 },
+
+  // Group join request - 10 requests per hour
+  GROUP_JOIN: { limit: 10, window: 60 * 60 },
 } as const;
 
 /**
@@ -197,6 +221,63 @@ export const planRateLimit = new Ratelimit({
   prefix: "ratelimit:plan",
 });
 
+// Group-specific rate limiters
+export const groupPostRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "15 m"),
+  analytics: true,
+  prefix: "ratelimit:group:post",
+});
+
+export const groupMessageRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:group:message",
+});
+
+export const groupCommentRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, "5 m"),
+  analytics: true,
+  prefix: "ratelimit:group:comment",
+});
+
+export const groupLikeRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(100, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:group:like",
+});
+
+export const groupEventRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 h"),
+  analytics: true,
+  prefix: "ratelimit:group:event",
+});
+
+export const groupResourceRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 h"),
+  analytics: true,
+  prefix: "ratelimit:group:resource",
+});
+
+export const groupMemberActionRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:group:member",
+});
+
+export const groupJoinRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 h"),
+  analytics: true,
+  prefix: "ratelimit:group:join",
+});
+
 // Usage example:
 export async function checkRateLimitRedis(
   identifier: string,
@@ -212,3 +293,83 @@ export async function checkRateLimitRedis(
   };
 }
 */
+
+/**
+ * Rate limit helper for API routes
+ * 
+ * @param request - Request object
+ * @param userId - Optional user ID
+ * @param config - Rate limit configuration
+ * @returns Rate limit result or throws error
+ */
+export async function applyRateLimit(
+  request: Request,
+  config: RateLimitConfig,
+  userId?: string
+): Promise<void> {
+  const identifier = getIdentifier(request, userId);
+  const result = rateLimit(identifier, config);
+
+  if (!result.success) {
+    const resetDate = new Date(result.reset);
+    throw new Error(
+      `Rate limit exceeded. Try again at ${resetDate.toISOString()}`
+    );
+  }
+}
+
+/**
+ * Rate limit middleware wrapper
+ * 
+ * @param handler - API route handler
+ * @param config - Rate limit configuration
+ * @returns Wrapped handler with rate limiting
+ */
+export function withRateLimit<T>(
+  handler: (request: Request, context?: any) => Promise<T>,
+  config: RateLimitConfig
+) {
+  return async (request: Request, context?: any): Promise<T> => {
+    await applyRateLimit(request, config);
+    return handler(request, context);
+  };
+}
+
+/**
+ * Get rate limit headers for response
+ * 
+ * @param result - Rate limit result
+ * @returns Headers object
+ */
+export function getRateLimitHeaders(result: RateLimitResult): Record<string, string> {
+  return {
+    'X-RateLimit-Limit': result.limit.toString(),
+    'X-RateLimit-Remaining': result.remaining.toString(),
+    'X-RateLimit-Reset': new Date(result.reset).toISOString(),
+  };
+}
+
+/**
+ * Create rate limit error response
+ * 
+ * @param result - Rate limit result
+ * @returns Response object
+ */
+export function createRateLimitResponse(result: RateLimitResult): Response {
+  return new Response(
+    JSON.stringify({
+      error: {
+        message: 'Çok fazla istek gönderdiniz. Lütfen daha sonra tekrar deneyin.',
+        code: 'RATE_LIMIT_EXCEEDED',
+        reset: new Date(result.reset).toISOString(),
+      },
+    }),
+    {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        ...getRateLimitHeaders(result),
+      },
+    }
+  );
+}

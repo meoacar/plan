@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { notifyGroupAdmins, notifyGroupMembers, getGroupName, getUserName, groupNotificationTemplates } from '@/lib/group-notifications';
 
 export async function POST(
   request: NextRequest,
@@ -62,6 +63,21 @@ export async function POST(
         },
       });
 
+      // Grup yöneticilerine bildirim gönder
+      const groupName = await getGroupName(group.id);
+      const requesterName = await getUserName(session.user.id);
+      const notification = groupNotificationTemplates.joinRequest(groupName, requesterName);
+      
+      notifyGroupAdmins({
+        groupId: group.id,
+        type: 'GROUP_JOIN_REQUEST',
+        title: notification.title,
+        message: notification.message,
+        actionUrl: `/groups/${group.id}/members`,
+        actorId: session.user.id,
+        relatedId: joinRequest.id,
+      }).catch(err => console.error('Failed to send join request notifications:', err));
+
       return NextResponse.json({
         success: true,
         requiresApproval: true,
@@ -77,6 +93,22 @@ export async function POST(
         role: 'MEMBER',
       },
     });
+
+    // Diğer üyelere yeni üye bildirimi gönder
+    const groupName = await getGroupName(group.id);
+    const memberName = await getUserName(session.user.id);
+    const memberJoinedNotification = groupNotificationTemplates.memberJoined(groupName, memberName);
+    
+    notifyGroupMembers({
+      groupId: group.id,
+      type: 'GROUP_MEMBER_JOINED',
+      title: memberJoinedNotification.title,
+      message: memberJoinedNotification.message,
+      actionUrl: `/groups/${group.id}/members`,
+      actorId: session.user.id,
+      relatedId: group.id,
+      excludeUserId: session.user.id,
+    }).catch(err => console.error('Failed to send member joined notifications:', err));
 
     return NextResponse.json({
       success: true,

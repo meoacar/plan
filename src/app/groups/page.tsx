@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import GroupList from "@/components/groups/group-list";
+import RecommendedGroups from "@/components/groups/recommended-groups";
+import CategoryTabs from "@/components/groups/category-tabs";
 import { Users, Plus, TrendingUp, Award, Heart } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
@@ -62,14 +64,14 @@ export default async function GroupsPage() {
               <Users className="w-5 h-5" />
               <span className="font-semibold">Topluluk Gücü</span>
             </div>
-            
+
             <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight">
               Hedeflerine Birlikte Ulaş
             </h1>
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
               Benzer hedeflere sahip insanlarla tanış, motivasyonunu yüksek tut ve başarı hikayeni paylaş 🚀
             </p>
-            
+
             <Link
               href="/groups/create"
               className="inline-flex items-center gap-2 bg-white text-purple-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all hover:scale-105 shadow-2xl"
@@ -94,6 +96,28 @@ export default async function GroupsPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 md:py-12">
+        {/* Recommended Groups Section */}
+        <Suspense fallback={null}>
+          <RecommendedGroups />
+        </Suspense>
+
+        {/* Category Tabs Section */}
+        <Suspense fallback={
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="h-10 bg-gray-200 rounded w-24"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        }>
+          <CategoryTabs />
+        </Suspense>
+
+        {/* All Groups Section */}
         <Suspense fallback={
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>

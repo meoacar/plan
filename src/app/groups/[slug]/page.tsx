@@ -3,10 +3,15 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import GroupDetail from "@/components/groups/group-detail";
+import GroupFeed from "@/components/groups/group-feed";
+import { MobileGroupTabs } from "@/components/groups/mobile-group-tabs";
 
 interface PageProps {
   params: {
     slug: string;
+  };
+  searchParams: {
+    tab?: string;
   };
 }
 
@@ -86,7 +91,7 @@ export async function generateMetadata({ params }: PageProps) {
   };
 }
 
-export default async function GroupPage({ params }: PageProps) {
+export default async function GroupPage({ params, searchParams }: PageProps) {
   const session = await auth();
   const group = await getGroup(params.slug, session?.user?.id);
 
@@ -94,11 +99,31 @@ export default async function GroupPage({ params }: PageProps) {
     notFound();
   }
 
+  // Varsayılan tab: akış
+  const activeTab = searchParams.tab || 'feed';
+  const isAdmin = group.memberRole === 'ADMIN';
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div>
       <Suspense fallback={<div className="text-center py-8">Yükleniyor...</div>}>
-        <GroupDetail group={group} />
+        <GroupDetail group={group} activeTab={activeTab} />
       </Suspense>
+
+      {/* Mobil Tab Navigasyonu */}
+      <MobileGroupTabs groupSlug={params.slug} isAdmin={isAdmin} />
+
+      {/* Tab İçeriği */}
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        {activeTab === 'feed' && (
+          <Suspense fallback={<div className="text-center py-8">Yükleniyor...</div>}>
+            <GroupFeed
+              groupSlug={params.slug}
+              groupId={group.id}
+              isMember={group.isMember}
+            />
+          </Suspense>
+        )}
+      </div>
     </div>
   );
 }

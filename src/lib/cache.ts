@@ -186,3 +186,6 @@ export const CacheTTL = {
   VERY_LONG: 3600, // 1 hour
   DAY: 86400, // 24 hours
 };
+
+// Export CACHE_TIMES for backward compatibility
+export const CACHE_TIMES = CacheTTL;

@@ -101,7 +101,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { name, description, goalType, isPrivate, maxMembers } = body;
+    const { name, description, goalType, isPrivate, maxMembers, imageUrl } = body;
 
     // Update group
     const updatedGroup = await prisma.group.update({
@@ -112,6 +112,7 @@ export async function PATCH(
         goalType,
         isPrivate,
         maxMembers: maxMembers || null,
+        imageUrl: imageUrl || null,
       },
     });
 

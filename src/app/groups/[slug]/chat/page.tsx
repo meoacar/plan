@@ -112,15 +112,13 @@ export default async function GroupChatPage({ params }: PageProps) {
         </div>
 
         {/* Chat Container */}
-        <div className="overflow-hidden rounded-lg border bg-white shadow-lg">
-          <div className="h-[calc(100vh-300px)] min-h-[500px]">
-            <GroupChat
-              groupId={data.group.id}
-              groupSlug={params.slug}
-              currentUserId={session.user.id}
-              initialMessages={data.messages}
-            />
-          </div>
+        <div className="rounded-lg border bg-white shadow-lg" style={{ height: 'calc(100vh - 300px)', minHeight: '500px' }}>
+          <GroupChat
+            groupId={data.group.id}
+            groupSlug={params.slug}
+            currentUserId={session.user.id}
+            initialMessages={data.messages}
+          />
         </div>
 
         {/* Info */}

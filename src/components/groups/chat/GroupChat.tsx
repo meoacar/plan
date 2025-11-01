@@ -118,7 +118,7 @@ export function GroupChat({ groupId, groupSlug, currentUserId, initialMessages }
   }, [handleSendMessage]);
 
   return (
-    <div className="flex h-[calc(100vh-200px)] sm:h-[calc(100vh-180px)] flex-col bg-gray-50 rounded-xl sm:rounded-2xl overflow-hidden">
+    <div className="flex h-full flex-col bg-gray-50 rounded-xl overflow-hidden">
       {/* Online Members */}
       <div className="flex-shrink-0">
         <OnlineMembers members={onlineMembers} />

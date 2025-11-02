@@ -157,6 +157,31 @@ function shouldSendGroupNotification(
   return true;
 }
 
+/**
+ * Tek bir kullanıcıya bildirim gönderir
+ */
+export async function notifyUser(params: {
+  userId: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  actionUrl: string;
+  actorId?: string;
+  relatedId?: string;
+  metadata?: Record<string, any>;
+}): Promise<void> {
+  const user = await prisma.user.findUnique({
+    where: { id: params.userId },
+    select: {
+      notificationPreference: true,
+    },
+  });
+
+  if (user && shouldSendGroupNotification(params.type, user.notificationPreference)) {
+    await createNotification(params);
+  }
+}
+
 // Bildirim şablonları
 export const groupNotificationTemplates = {
   newPost: (groupName: string, authorName: string) => ({
@@ -215,6 +240,11 @@ export const groupNotificationTemplates = {
   }),
 
   joinApproved: (groupName: string) => ({
+    title: 'Katılma İsteği Onaylandı',
+    message: `${groupName} grubuna katılma isteğiniz onaylandı`,
+  }),
+
+  joinRequestApproved: (groupName: string) => ({
     title: 'Katılma İsteği Onaylandı',
     message: `${groupName} grubuna katılma isteğiniz onaylandı`,
   }),

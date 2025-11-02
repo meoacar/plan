@@ -82,6 +82,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/login",
   },
+  // Aynı email ile farklı provider'ları bağlamaya izin ver
+  allowDangerousEmailAccountLinking: true,
   providers: buildProviders(),
   callbacks: {
     async jwt({ token, user }) {

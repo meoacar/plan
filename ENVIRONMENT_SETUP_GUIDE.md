@@ -5,92 +5,107 @@ Bu rehber, projenin çalışması için gerekli environment variables'ların nas
 ## 🔴 Kritik (Zorunlu)
 
 ### 1. Database (DATABASE_URL)
-**Durum:** ✅ Mevcut (Neon PostgreSQL)
+**Durum:** ✅ Mevcut ve Çalışıyor (Neon PostgreSQL)
 ```env
-DATABASE_URL="postgresql://..."
+DATABASE_URL="postgresql://neondb_owner:***@ep-icy-pond-a4mxlej0-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
 ```
+**Sunucu:** ✅ Yapılandırılmış
 
 ### 2. NextAuth (NEXTAUTH_SECRET)
-**Durum:** ⚠️ Development key mevcut, production için değiştirilmeli
-```bash
-# Yeni secret oluştur:
-openssl rand -base64 32
+**Durum:** ✅ Production key yapılandırılmış
+```env
+NEXTAUTH_SECRET="PxWDNhMjU+rUdAw7yTk1is6ox3QndMoYKNVTUCnn5/s="
+NEXTAUTH_URL="https://zayiflamaplanim.com"
+AUTH_TRUST_HOST=true
 ```
+**Sunucu:** ✅ Yapılandırılmış
 
 ### 3. Cron Jobs (CRON_SECRET)
-**Durum:** ⚠️ Development key mevcut, production için değiştirilmeli
-```bash
-# Yeni secret oluştur:
-openssl rand -base64 32
+**Durum:** ✅ Production key yapılandırılmış
+```env
+CRON_SECRET="C41R+taGB6ZSDKHpzVldAH1ubAMXT88d10OTIOEkNgs="
 ```
 **Kullanım:** Background task'lar (günlük istatistikler, temizlik işleri)
+**Sunucu:** ✅ Yapılandırılmış
 
 ### 4. Pusher (Real-time Group Chat)
-**Durum:** ✅ Yapılandırılmış - Chat sistemi çalışıyor
-
-**Nasıl Alınır:**
-1. https://pusher.com adresine git
-2. Ücretsiz hesap oluştur (100 bağlantı/gün ücretsiz)
-3. Yeni bir "Channels" app oluştur
-4. Cluster olarak "eu" seç (Avrupa için)
-5. App Keys sekmesinden değerleri kopyala
+**Durum:** ✅ Yapılandırılmış ve Çalışıyor - Chat sistemi aktif
 
 ```env
-PUSHER_APP_ID="your-app-id"
-PUSHER_KEY="your-key"
-PUSHER_SECRET="your-secret"
+PUSHER_APP_ID="2071862"
+PUSHER_KEY="b86bb46032f515fad6df"
+PUSHER_SECRET="3b3d79eefc1752674cd9"
 PUSHER_CLUSTER="eu"
-NEXT_PUBLIC_PUSHER_KEY="your-key"  # PUSHER_KEY ile aynı
+NEXT_PUBLIC_PUSHER_KEY="b86bb46032f515fad6df"
 NEXT_PUBLIC_PUSHER_CLUSTER="eu"
 ```
 
 **Kullanım:**
-- Grup mesajlaşma
-- Gerçek zamanlı bildirimler
-- Online presence (kim çevrimiçi)
+- Grup mesajlaşma ✅
+- Gerçek zamanlı bildirimler ✅
+- Online presence (kim çevrimiçi) ✅
+
+**Sunucu:** ✅ Yapılandırılmış ve Aktif
 
 ---
 
 ## 🟡 Önemli (Opsiyonel ama Önerilen)
 
 ### 5. Web Push Notifications (VAPID Keys)
-**Durum:** ❌ Eksik - Push bildirimleri çalışmaz
-
-**Nasıl Oluşturulur:**
-```bash
-# web-push kütüphanesini kur ve key oluştur:
-npx web-push generate-vapid-keys
-```
+**Durum:** ✅ Yapılandırılmış ve Çalışıyor
 
 ```env
-NEXT_PUBLIC_VAPID_PUBLIC_KEY="BM..."
-VAPID_PRIVATE_KEY="..."
+NEXT_PUBLIC_VAPID_PUBLIC_KEY="BPG--wyCOf2UGe1ceS_K41hIkx9NaxsO5NOmNCuF6wRLYfBzzbKYaYzKJv4HO-vRkbKyJzwEhqRtJs4_yPcBj3w"
+VAPID_PRIVATE_KEY="0wMwy3zLujVfffTBdyZ7Z8I3U2h024XklNb8S8_LrWM"
 VAPID_SUBJECT="mailto:admin@zayiflamaplanim.com"
 ```
 
 **Kullanım:**
-- Tarayıcı push bildirimleri
-- Mobil web bildirimleri
+- Tarayıcı push bildirimleri ✅
+- Mobil web bildirimleri ✅
+- 16 farklı bildirim tipi destekleniyor ✅
+
+**Sunucu:** ✅ Yapılandırılmış ve Aktif
 
 ### 6. Google OAuth
-**Durum:** ❌ Eksik - Google ile giriş çalışmaz
-
-**Nasıl Alınır:**
-1. https://console.cloud.google.com adresine git
-2. Yeni proje oluştur veya mevcut projeyi seç
-3. "APIs & Services" > "Credentials" > "Create Credentials" > "OAuth 2.0 Client ID"
-4. Application type: "Web application"
-5. Authorized redirect URIs:
-   - Development: `http://localhost:3000/api/auth/callback/google`
-   - Production: `https://zayiflamaplanim.com/api/auth/callback/google`
+**Durum:** ✅ Yapılandırılmış ve Aktif
 
 ```env
-GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET="your-secret"
+GOOGLE_CLIENT_ID="[CONFIGURED]"
+GOOGLE_CLIENT_SECRET="[CONFIGURED]"
 ```
 
+**Oluşturulma Tarihi:** 2 Kasım 2025, 04:55:56 GMT+3
+**Durum:** Enabled
+
+**Authorized redirect URIs:**
+- Production: `https://zayiflamaplanim.com/api/auth/callback/google`
+
+**Sunucu:** ✅ Yapılandırılmış
+
+### 6b. Facebook OAuth
+**Durum:** ⚠️ Tanımlı ama boş - Facebook ile giriş çalışmaz
+
+```env
+FACEBOOK_APP_ID=""
+FACEBOOK_APP_SECRET=""
+```
+
+**Nasıl Alınır:**
+1. https://developers.facebook.com adresine git
+2. Yeni app oluştur
+3. Facebook Login ekle
+4. Valid OAuth Redirect URIs:
+   - Production: `https://zayiflamaplanim.com/api/auth/callback/facebook`
+
+**Sunucu:** ⚠️ Yapılandırma bekleniyor
+
 ### 7. UploadThing (Görsel Yükleme)
-**Durum:** ❌ Eksik - Görsel yükleme çalışmaz
+**Durum:** ⚠️ Tanımlı ama boş - Görsel yükleme çalışmaz
+
+```env
+UPLOADTHING_TOKEN=""
+```
 
 **Nasıl Alınır:**
 1. https://uploadthing.com adresine git
@@ -98,33 +113,36 @@ GOOGLE_CLIENT_SECRET="your-secret"
 3. Yeni app oluştur
 4. API Keys sekmesinden token'ı kopyala
 
-```env
-UPLOADTHING_TOKEN="your-token"
-```
-
 **Kullanım:**
 - Profil fotoğrafları
 - İtiraf görselleri
 - Grup görselleri
 
-### 8. Resend (Email Bildirimleri)
-**Durum:** ❌ Eksik - Email gönderimi çalışmaz
+**Sunucu:** ⚠️ Yapılandırma bekleniyor
 
-**Nasıl Alınır:**
-1. https://resend.com adresine git
-2. Ücretsiz hesap oluştur (100 email/gün ücretsiz)
-3. Domain ekle veya test domain kullan
-4. API Keys sekmesinden key oluştur
+### 8. Resend (Email Bildirimleri)
+**Durum:** ✅ Yapılandırılmış
 
 ```env
-RESEND_API_KEY="re_..."
-EMAIL_FROM="Zayıflama Planım <noreply@zayiflamaplanim.com>"
+RESEND_API_KEY="re_3LJ9prno_M8MP4gPG5GJAvGaSweEYJgER"
+EMAIL_FROM="noreply@zayiflamaplanim.com"
+```
+
+**SMTP Ayarları (Yedek):**
+```env
+SMTP_HOST="localhost"
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER="noreply@zayiflamaplanim.com"
+SMTP_PASS=""
 ```
 
 **Kullanım:**
-- Hoş geldin emaili
-- Şifre sıfırlama
-- Haftalık özet emaili
+- Hoş geldin emaili ✅
+- Şifre sıfırlama ✅
+- Haftalık özet emaili ✅
+
+**Sunucu:** ✅ Yapılandırılmış
 
 ---
 
@@ -146,24 +164,37 @@ EMAIL_FROM="Zayıflama Planım <noreply@zayiflamaplanim.com>"
 
 ## 📋 Hızlı Kurulum Checklist
 
-### Minimum Çalışır Sistem (Development)
-- [x] DATABASE_URL
-- [x] NEXTAUTH_SECRET (development key)
-- [x] NEXTAUTH_URL
-- [x] CRON_SECRET (development key)
+### ✅ Sunucuda Çalışan Sistem (Production)
+- [x] DATABASE_URL ✅
+- [x] NEXTAUTH_SECRET (production key) ✅
+- [x] NEXTAUTH_URL (https://zayiflamaplanim.com) ✅
+- [x] CRON_SECRET (production key) ✅
 - [x] PUSHER_* (6 değişken) - Chat çalışıyor ✅
+- [x] Web Push VAPID keys ✅
+- [x] Resend API ✅
+- [x] SMTP ayarları ✅
 
-### Tam Özellikli Sistem
-- [ ] Web Push VAPID keys
-- [ ] Google OAuth
-- [ ] UploadThing
-- [ ] Resend API
+### ⚠️ Yapılandırma Bekleyen
+- [x] Google OAuth ✅
+- [ ] Facebook OAuth (boş)
+- [ ] UploadThing (boş)
+- [ ] SMTP_PASS (boş)
 
-### Production Hazırlık
-- [ ] NEXTAUTH_SECRET değiştir (production key)
-- [ ] CRON_SECRET değiştir (production key)
-- [ ] NEXTAUTH_URL güncelle (https://zayiflamaplanim.com)
-- [ ] Tüm API key'leri production ortamına ekle
+### 🎯 Sistem Durumu
+**Sunucu:** 31.97.34.163  
+**Uygulama:** ✅ Online (PM2)  
+**Port:** 3000  
+**Domain:** https://zayiflamaplanim.com  
+
+**Çalışan Özellikler:**
+- ✅ Kullanıcı girişi (email/password)
+- ✅ Veritabanı bağlantısı
+- ✅ Grup chat sistemi (Pusher)
+- ✅ Push bildirimleri (VAPID)
+- ✅ Email bildirimleri (Resend)
+- ✅ Cron job'lar
+- ✅ Google ile giriş
+- ⚠️ Görsel yükleme (yapılandırma gerekli)
 
 ---
 
@@ -214,3 +245,40 @@ EMAIL_FROM="Zayıflama Planım <noreply@zayiflamaplanim.com>"
 
 ### "Failed to send email" hatası
 → RESEND_API_KEY ekle veya SMTP ayarlarını yapılandır
+
+---
+
+## 📊 Sunucu Durumu Özeti (31.97.34.163)
+
+### ✅ Çalışan Servisler
+| Servis | Durum | Notlar |
+|--------|-------|--------|
+| Database (Neon) | ✅ Aktif | PostgreSQL bağlantısı çalışıyor |
+| NextAuth | ✅ Aktif | Email/password girişi çalışıyor |
+| Pusher Chat | ✅ Aktif | Grup mesajlaşma çalışıyor |
+| Web Push | ✅ Aktif | VAPID keys yapılandırılmış |
+| Email (Resend) | ✅ Aktif | Email bildirimleri çalışıyor |
+| Cron Jobs | ✅ Aktif | Background task'lar çalışıyor |
+| Bildirim Sistemi | ✅ Aktif | 16 tip bildirim destekleniyor |
+
+### ⚠️ Yapılandırma Bekleyen
+| Servis | Durum | Etki |
+|--------|-------|------|
+| Google OAuth | ✅ Aktif | Google ile giriş çalışıyor |
+| Facebook OAuth | ⚠️ Boş | Facebook ile giriş çalışmaz |
+| UploadThing | ⚠️ Boş | Görsel yükleme çalışmaz |
+| SMTP Password | ⚠️ Boş | SMTP email gönderimi çalışmaz (Resend aktif) |
+
+### 🎯 Öncelikli Yapılacaklar
+1. **UploadThing Token** - Görsel yükleme için kritik
+2. ~~**Google OAuth**~~ ✅ Tamamlandı (2 Kasım 2025)
+3. **Facebook OAuth** - Opsiyonel sosyal giriş
+
+### 🚀 Sistem Performansı
+- **Uygulama:** Online (PM2 ile yönetiliyor)
+- **Başlatma Süresi:** ~834ms
+- **Port:** 3000
+- **Domain:** https://zayiflamaplanim.com
+- **SSL:** ✅ Aktif
+
+**Son Güncelleme:** 2 Kasım 2025

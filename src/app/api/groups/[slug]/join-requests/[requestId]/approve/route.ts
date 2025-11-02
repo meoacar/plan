@@ -43,7 +43,6 @@ export async function POST(
     // Katılma isteğini bul
     const joinRequest = await prisma.groupJoinRequest.findUnique({
       where: { id: params.requestId },
-      include: { user: true },
     });
 
     if (!joinRequest) {

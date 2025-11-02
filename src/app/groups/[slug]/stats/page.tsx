@@ -83,12 +83,12 @@ export default async function StatsPage({
       <div className="mb-8">
         <Link
           href={`/groups/${params.slug}`}
-          className="mb-4 inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+          className="mb-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="w-5 h-5" />
           Gruba Dön
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-gray-900 mt-4">
           {group.name} - İstatistikler
         </h1>
         <p className="mt-2 text-gray-600">

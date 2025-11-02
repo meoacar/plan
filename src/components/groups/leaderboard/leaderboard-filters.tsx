@@ -44,14 +44,14 @@ export function LeaderboardFilters({
           <button
             key={period.value}
             onClick={() => onPeriodChange(period.value)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-all ${
               currentPeriod === period.value
-                ? 'bg-primary-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
             }`}
           >
             {period.icon}
-            {period.label}
+            <span className="text-sm">{period.label}</span>
           </button>
         ))}
       </div>

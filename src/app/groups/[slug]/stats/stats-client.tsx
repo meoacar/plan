@@ -26,7 +26,9 @@ export function StatsClient({ groupId, initialDays }: StatsClientProps) {
 
     setIsRefreshing(true);
     try {
-      const response = await fetch(`/api/groups/${groupId}/stats/calculate`, {
+      // groupId yerine slug kullanarak API'yi çağır
+      const slug = window.location.pathname.split('/')[2]; // /groups/[slug]/stats
+      const response = await fetch(`/api/groups/${slug}/stats/calculate`, {
         method: 'POST',
       });
 

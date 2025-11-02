@@ -111,7 +111,7 @@ export default async function GroupChatPage({ params }: PageProps) {
             <div className="flex items-center justify-between mb-4">
               <a
                 href={`/groups/${params.slug}`}
-                className="group flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-700 hover:text-purple-600 hover:border-purple-300 transition-all duration-300 shadow-sm hover:shadow-md"
+                className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +125,7 @@ export default async function GroupChatPage({ params }: PageProps) {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="font-semibold">Gruba Dön</span>
+                <span>Gruba Dön</span>
               </a>
 
               {/* Live Indicator */}

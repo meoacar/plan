@@ -60,8 +60,38 @@ export async function POST(
 
     // Özel grup ise katılma isteği oluştur
     if (group.isPrivate) {
-      const joinRequest = await prisma.groupJoinRequest.create({
-        data: {
+      // Mevcut bekleyen istek var mı kontrol et
+      const existingRequest = await prisma.groupJoinRequest.findUnique({
+        where: {
+          groupId_userId: {
+            groupId: group.id,
+            userId: session.user.id,
+          },
+        },
+      });
+
+      // Eğer bekleyen bir istek varsa
+      if (existingRequest && existingRequest.status === 'PENDING') {
+        return NextResponse.json({
+          success: true,
+          requiresApproval: true,
+          joinRequest: existingRequest,
+        });
+      }
+
+      // Eski isteği sil ve yeni istek oluştur (veya güncelle)
+      const joinRequest = await prisma.groupJoinRequest.upsert({
+        where: {
+          groupId_userId: {
+            groupId: group.id,
+            userId: session.user.id,
+          },
+        },
+        update: {
+          message,
+          status: 'PENDING',
+        },
+        create: {
           groupId: group.id,
           userId: session.user.id,
           message,

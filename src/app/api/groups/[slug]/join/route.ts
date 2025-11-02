@@ -109,7 +109,7 @@ export async function POST(
         type: 'GROUP_JOIN_REQUEST',
         title: notification.title,
         message: notification.message,
-        actionUrl: `/groups/${group.id}/members`,
+        actionUrl: `/groups/${params.slug}/members`,
         actorId: session.user.id,
         relatedId: joinRequest.id,
       }).catch(err => console.error('Failed to send join request notifications:', err));
@@ -140,7 +140,7 @@ export async function POST(
       type: 'GROUP_MEMBER_JOINED',
       title: memberJoinedNotification.title,
       message: memberJoinedNotification.message,
-      actionUrl: `/groups/${group.id}/members`,
+      actionUrl: `/groups/${params.slug}/members`,
       actorId: session.user.id,
       relatedId: group.id,
       excludeUserId: session.user.id,

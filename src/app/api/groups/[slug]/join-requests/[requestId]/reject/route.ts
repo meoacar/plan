@@ -68,7 +68,7 @@ export async function POST(
 
     // Kullanıcıya bildirim gönder
     const groupName = await getGroupName(group.id);
-    const notification = groupNotificationTemplates.joinRequestRejected(groupName);
+    const notification = groupNotificationTemplates.joinRejected(groupName);
     
     notifyUser({
       userId: joinRequest.userId,

@@ -30,6 +30,7 @@ async function getGroup(slug: string, userId?: string) {
       slug: true,
       status: true,
       isPrivate: true,
+      createdBy: true,
     },
   });
 
@@ -37,11 +38,8 @@ async function getGroup(slug: string, userId?: string) {
     return null;
   }
 
-  // Grup onaylı değilse ve kullanıcı admin değilse gösterme
-  const user = userId
-    ? await prisma.user.findUnique({ where: { id: userId } })
-    : null;
-  if (group.status !== 'APPROVED' && user?.role !== 'ADMIN') {
+  // Grup onaylı değilse ve kullanıcı grup sahibi değilse gösterme
+  if (group.status !== 'APPROVED' && group.createdBy !== userId) {
     return null;
   }
 

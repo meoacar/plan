@@ -154,7 +154,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://lh3.googleusercontent.com" crossOrigin="anonymous" />
         
         {/* Favicon & App Icons */}
-        <link rel="icon" href={`/favicon.ico?v=${Date.now()}`} sizes="any" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         

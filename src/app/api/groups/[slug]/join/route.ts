@@ -13,8 +13,14 @@ export async function POST(
       return NextResponse.json({ error: 'Giriş yapmalısınız' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { message } = body;
+    let message;
+    try {
+      const body = await request.json();
+      message = body.message;
+    } catch {
+      // Body yoksa veya parse edilemiyorsa, message undefined olur
+      message = undefined;
+    }
 
     const group = await prisma.group.findUnique({
       where: { slug: params.slug },

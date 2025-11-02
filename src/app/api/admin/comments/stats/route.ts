@@ -97,11 +97,11 @@ export async function GET() {
     // Günlük yorum trendi (son 30 gün)
     const dailyTrend = await prisma.$queryRaw<Array<{ date: Date; count: bigint }>>`
       SELECT 
-        DATE(created_at) as date,
+        DATE("createdAt") as date,
         COUNT(*)::bigint as count
       FROM "Comment"
-      WHERE created_at >= ${thirtyDaysAgo}
-      GROUP BY DATE(created_at)
+      WHERE "createdAt" >= ${thirtyDaysAgo}
+      GROUP BY DATE("createdAt")
       ORDER BY date DESC
     `
 

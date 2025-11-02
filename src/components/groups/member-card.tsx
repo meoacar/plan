@@ -22,14 +22,14 @@ interface MemberCardProps {
       streak: number;
     };
   };
-  groupId: string;
+  groupSlug: string;
   currentUserId: string;
   currentUserRole: 'ADMIN' | 'MODERATOR' | 'MEMBER';
 }
 
 export function MemberCard({
   member,
-  groupId,
+  groupSlug,
   currentUserId,
   currentUserRole,
 }: MemberCardProps) {
@@ -151,7 +151,7 @@ export function MemberCard({
           <MemberActions
             memberId={member.user.id}
             memberRole={member.role}
-            groupId={groupId}
+            groupSlug={groupSlug}
             currentUserRole={currentUserRole}
             onRemove={() => setIsRemoved(true)}
           />

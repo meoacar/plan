@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/toast';
 interface MemberActionsProps {
   memberId: string;
   memberRole: 'ADMIN' | 'MODERATOR' | 'MEMBER';
-  groupId: string;
+  groupSlug: string;
   currentUserRole: 'ADMIN' | 'MODERATOR' | 'MEMBER';
   onRemove?: () => void;
 }
@@ -15,7 +15,7 @@ interface MemberActionsProps {
 export function MemberActions({
   memberId,
   memberRole,
-  groupId,
+  groupSlug,
   currentUserRole,
   onRemove,
 }: MemberActionsProps) {
@@ -52,7 +52,7 @@ export function MemberActions({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `/api/groups/${groupId}/members/${memberId}/role`,
+        `/api/groups/${groupSlug}/members/${memberId}/role`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -94,7 +94,7 @@ export function MemberActions({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `/api/groups/${groupId}/members/${memberId}`,
+        `/api/groups/${groupSlug}/members/${memberId}`,
         {
           method: 'DELETE',
         }

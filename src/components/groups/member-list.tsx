@@ -3,12 +3,14 @@ import { MemberCard } from './member-card';
 
 interface MemberListProps {
   groupId: string;
+  groupSlug: string;
   currentUserId: string;
   currentUserRole: 'ADMIN' | 'MODERATOR' | 'MEMBER';
 }
 
 export async function MemberList({
   groupId,
+  groupSlug,
   currentUserId,
   currentUserRole,
 }: MemberListProps) {
@@ -42,7 +44,7 @@ export async function MemberList({
               <MemberCard
                 key={member.id}
                 member={member}
-                groupId={groupId}
+                groupSlug={groupSlug}
                 currentUserId={currentUserId}
                 currentUserRole={currentUserRole}
               />
@@ -63,7 +65,7 @@ export async function MemberList({
               <MemberCard
                 key={member.id}
                 member={member}
-                groupId={groupId}
+                groupSlug={groupSlug}
                 currentUserId={currentUserId}
                 currentUserRole={currentUserRole}
               />
@@ -83,7 +85,7 @@ export async function MemberList({
               <MemberCard
                 key={member.id}
                 member={member}
-                groupId={groupId}
+                groupSlug={groupSlug}
                 currentUserId={currentUserId}
                 currentUserRole={currentUserRole}
               />

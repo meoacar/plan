@@ -185,6 +185,7 @@ export default async function MembersPage({ params, searchParams }: PageProps) {
           >
             <MemberList
               groupId={group.id}
+              groupSlug={group.slug}
               currentUserId={session.user.id}
               currentUserRole={group.memberRole!}
             />

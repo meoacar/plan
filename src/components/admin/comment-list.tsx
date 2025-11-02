@@ -6,10 +6,16 @@ import Link from "next/link"
 import { Button } from "../ui/button"
 import { Card, CardContent } from "../ui/card"
 import { Input } from "../ui/input"
+import { CommentDetailModal } from "@/components/admin/comment-detail-modal"
+import { CommentStatsWidget } from "@/components/admin/comment-stats-widget"
 
 interface Comment {
   id: string
   body: string
+  status: string
+  isSpam: boolean
+  moderatedAt: Date | null
+  moderationNote: string | null
   createdAt: Date
   user: {
     id: string
@@ -22,6 +28,9 @@ interface Comment {
     title: string
     slug: string
   }
+  moderator: {
+    name: string
+  } | null
 }
 
 interface CommentListProps {
@@ -29,13 +38,21 @@ interface CommentListProps {
   total: number
   currentPage: number
   totalPages: number
+  stats: {
+    total: number
+    approved: number
+    pending: number
+    rejected: number
+    spam: number
+  }
 }
 
 export function CommentList({ 
   initialComments, 
   total, 
   currentPage, 
-  totalPages 
+  totalPages,
+  stats 
 }: CommentListProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -47,12 +64,18 @@ export function CommentList({
   const [endDate, setEndDate] = useState(searchParams.get("endDate") || "")
   const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "createdAt")
   const [sortOrder, setSortOrder] = useState(searchParams.get("sortOrder") || "desc")
+  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "all")
+  const [spamFilter, setSpamFilter] = useState(searchParams.get("spam") === "true")
+  const [selectedComment, setSelectedComment] = useState<Comment | null>(null)
+  const [showStats, setShowStats] = useState(false)
 
   const handleSearch = () => {
     const params = new URLSearchParams()
     if (search) params.set("search", search)
     if (startDate) params.set("startDate", startDate)
     if (endDate) params.set("endDate", endDate)
+    if (statusFilter !== "all") params.set("status", statusFilter)
+    if (spamFilter) params.set("spam", "true")
     params.set("sortBy", sortBy)
     params.set("sortOrder", sortOrder)
     params.set("page", "1")
@@ -104,6 +127,30 @@ export function CommentList({
     }
   }
 
+  const handleModerate = async (id: string, action: "approve" | "reject" | "spam", note?: string) => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/admin/comments/${id}/moderate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, note }),
+      })
+
+      if (res.ok) {
+        const { comment } = await res.json()
+        setComments(prev => prev.map(c => c.id === id ? comment : c))
+        setSelectedComment(null)
+      } else {
+        alert("Moderasyon işlemi başarısız")
+      }
+    } catch (error) {
+      console.error("Moderation error:", error)
+      alert("Bir hata oluştu")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return
     if (!confirm(`${selectedIds.length} yorumu silmek istediğinizden emin misiniz?`)) return
@@ -130,8 +177,79 @@ export function CommentList({
     }
   }
 
+  const handleExport = () => {
+    const params = new URLSearchParams()
+    if (statusFilter !== "all") params.set("status", statusFilter)
+    if (startDate) params.set("startDate", startDate)
+    if (endDate) params.set("endDate", endDate)
+    window.open(`/api/admin/comments/export?${params.toString()}`, "_blank")
+  }
+
+  const getStatusBadge = (status: string, isSpam: boolean) => {
+    if (isSpam) {
+      return <span className="px-2 py-1 text-xs font-bold bg-red-100 text-red-800 rounded">🚫 SPAM</span>
+    }
+    switch (status) {
+      case "APPROVED":
+        return <span className="px-2 py-1 text-xs font-bold bg-green-100 text-green-800 rounded">✅ Onaylı</span>
+      case "PENDING":
+        return <span className="px-2 py-1 text-xs font-bold bg-yellow-100 text-yellow-800 rounded">⏳ Beklemede</span>
+      case "REJECTED":
+        return <span className="px-2 py-1 text-xs font-bold bg-red-100 text-red-800 rounded">❌ Reddedildi</span>
+      default:
+        return null
+    }
+  }
+
   return (
     <div>
+      {/* İstatistikler Widget */}
+      <div className="mb-6">
+        <Button
+          variant="outline"
+          onClick={() => setShowStats(!showStats)}
+          className="mb-4 font-bold"
+        >
+          {showStats ? "📊 İstatistikleri Gizle" : "📊 İstatistikleri Göster"}
+        </Button>
+        
+        {showStats && <CommentStatsWidget />}
+      </div>
+
+      {/* Hızlı İstatistikler */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <Card className="bg-blue-50 border-2 border-blue-200">
+          <CardContent className="pt-6 text-center">
+            <div className="text-3xl font-bold text-blue-600">{stats.total}</div>
+            <div className="text-sm text-gray-600">Toplam</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-green-50 border-2 border-green-200">
+          <CardContent className="pt-6 text-center">
+            <div className="text-3xl font-bold text-green-600">{stats.approved}</div>
+            <div className="text-sm text-gray-600">Onaylı</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-yellow-50 border-2 border-yellow-200">
+          <CardContent className="pt-6 text-center">
+            <div className="text-3xl font-bold text-yellow-600">{stats.pending}</div>
+            <div className="text-sm text-gray-600">Beklemede</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-red-50 border-2 border-red-200">
+          <CardContent className="pt-6 text-center">
+            <div className="text-3xl font-bold text-red-600">{stats.rejected}</div>
+            <div className="text-sm text-gray-600">Reddedildi</div>
+          </CardContent>
+        </Card>
+        <Card className="bg-purple-50 border-2 border-purple-200">
+          <CardContent className="pt-6 text-center">
+            <div className="text-3xl font-bold text-purple-600">{stats.spam}</div>
+            <div className="text-sm text-gray-600">Spam</div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Arama ve Filtreleme */}
       <Card className="mb-6">
         <CardContent className="pt-6">
@@ -148,6 +266,39 @@ export function CommentList({
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
+            </div>
+
+            {/* Durum ve Spam Filtreleri */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  📋 Durum Filtresi
+                </label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md"
+                >
+                  <option value="all">Tümü</option>
+                  <option value="APPROVED">Onaylı</option>
+                  <option value="PENDING">Beklemede</option>
+                  <option value="REJECTED">Reddedildi</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  🚫 Spam Filtresi
+                </label>
+                <label className="flex items-center gap-2 px-3 py-2 border rounded-md cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={spamFilter}
+                    onChange={(e) => setSpamFilter(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <span>Sadece spam yorumları göster</span>
+                </label>
+              </div>
             </div>
 
             {/* Tarih aralığı */}
@@ -205,9 +356,14 @@ export function CommentList({
               </div>
             </div>
 
-            <Button onClick={handleSearch} className="w-full font-bold">
-              🔍 Filtrele
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleSearch} className="flex-1 font-bold">
+                🔍 Filtrele
+              </Button>
+              <Button onClick={handleExport} variant="outline" className="font-bold">
+                📥 Dışa Aktar (CSV)
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -262,13 +418,20 @@ export function CommentList({
                       className="w-4 h-4 mt-1"
                     />
                     <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        {getStatusBadge(comment.status, comment.isSpam)}
+                      </div>
                       <p className="text-base text-gray-800 mb-3">
                         {comment.body}
                       </p>
                       <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                        <span className="font-medium">
+                        <Link
+                          href={`/profile/${comment.user.id}`}
+                          className="text-blue-600 hover:underline font-medium"
+                          target="_blank"
+                        >
                           👤 {comment.user.name || comment.user.email}
-                        </span>
+                        </Link>
                         <Link
                           href={`/plan/${comment.plan.slug}`}
                           className="text-[#2d7a4a] hover:underline font-medium"
@@ -285,17 +448,65 @@ export function CommentList({
                             minute: "2-digit"
                           })}
                         </span>
+                        {comment.moderatedAt && (
+                          <span className="text-purple-600">
+                            ⚖️ Moderatör: {comment.moderator?.name}
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDelete(comment.id)}
-                      disabled={loading}
-                      className="font-bold flex-shrink-0"
-                    >
-                      🗑️ Sil
-                    </Button>
+                    <div className="flex flex-col gap-2 flex-shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedComment(comment)}
+                        className="font-bold"
+                      >
+                        👁️ Detay
+                      </Button>
+                      {comment.status !== "APPROVED" && (
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => handleModerate(comment.id, "approve")}
+                          disabled={loading}
+                          className="font-bold bg-green-600 hover:bg-green-700"
+                        >
+                          ✅ Onayla
+                        </Button>
+                      )}
+                      {comment.status !== "REJECTED" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleModerate(comment.id, "reject")}
+                          disabled={loading}
+                          className="font-bold text-orange-600 border-orange-600"
+                        >
+                          ❌ Reddet
+                        </Button>
+                      )}
+                      {!comment.isSpam && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleModerate(comment.id, "spam")}
+                          disabled={loading}
+                          className="font-bold text-red-600 border-red-600"
+                        >
+                          🚫 Spam
+                        </Button>
+                      )}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(comment.id)}
+                        disabled={loading}
+                        className="font-bold"
+                      >
+                        🗑️ Sil
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -344,6 +555,17 @@ export function CommentList({
             </div>
           )}
         </>
+      )}
+
+      {/* Detay Modal */}
+      {selectedComment && (
+        <CommentDetailModal
+          comment={selectedComment}
+          onClose={() => setSelectedComment(null)}
+          onModerate={handleModerate}
+          onDelete={handleDelete}
+          loading={loading}
+        />
       )}
     </div>
   )

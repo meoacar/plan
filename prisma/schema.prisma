@@ -10,7 +10,6 @@ datasource db {
 model User {
   id                       String                      @id @default(cuid())
   email                    String                      @unique
-  emailVerified            DateTime?
   passwordHash             String?
   name                     String?
   image                    String?
@@ -38,6 +37,7 @@ model User {
   requireFollowApproval    Boolean                     @default(false)
   showEmail                Boolean                     @default(false)
   showWeight               Boolean                     @default(true)
+  emailVerified            DateTime?
   accounts                 Account[]
   partnerReceived          AccountabilityPartnership[] @relation("PartnerReceiver")
   partnerRequests          AccountabilityPartnership[] @relation("PartnerRequester")
@@ -53,6 +53,7 @@ model User {
   collections              Collection[]
   comments                 Comment[]
   commentReactions         CommentReaction[]
+  moderatedComments        Comment[]                   @relation("CommentModerator")
   crisisButtons            CrisisButton[]
   emailCampaigns           EmailCampaign[]
   favorites                Favorite[]
@@ -129,17 +130,26 @@ model Plan {
 }
 
 model Comment {
-  id        String            @id @default(cuid())
-  planId    String
-  userId    String
-  body      String
-  createdAt DateTime          @default(now())
-  plan      Plan              @relation(fields: [planId], references: [id], onDelete: Cascade)
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reactions CommentReaction[]
-  
+  id             String            @id @default(cuid())
+  planId         String
+  userId         String
+  body           String
+  status         CommentStatus     @default(APPROVED)
+  isSpam         Boolean           @default(false)
+  moderatedBy    String?
+  moderatedAt    DateTime?
+  moderationNote String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @default(now()) @updatedAt
+  plan           Plan              @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moderator      User?             @relation("CommentModerator", fields: [moderatedBy], references: [id])
+  reactions      CommentReaction[]
+
   @@index([planId, createdAt])
   @@index([userId])
+  @@index([status])
+  @@index([moderatedBy])
 }
 
 model CommentReaction {
@@ -207,7 +217,7 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
 }
 
@@ -297,7 +307,7 @@ model BannedWord {
   createdAt DateTime @default(now())
   createdBy String
   creator   User     @relation(fields: [createdBy], references: [id])
-  
+
   @@index([createdBy])
 }
 
@@ -342,7 +352,7 @@ model Backup {
   createdBy String?
   createdAt DateTime @default(now())
   creator   User?    @relation(fields: [createdBy], references: [id])
-  
+
   @@index([createdAt])
   @@index([createdBy])
 }
@@ -356,7 +366,7 @@ model Badge {
   xpReward    Int         @default(0)
   createdAt   DateTime    @default(now())
   users       UserBadge[]
-  
+
   @@index([type])
 }
 
@@ -381,7 +391,7 @@ model Goal {
   xpReward    Int        @default(0)
   createdAt   DateTime   @default(now())
   users       UserGoal[]
-  
+
   @@index([type])
 }
 
@@ -1311,9 +1321,9 @@ model Group {
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
   approvedAt      DateTime?
-  level           GroupLevel?
-  gender          GroupGender?
   ageGroup        GroupAgeGroup?
+  gender          GroupGender?
+  level           GroupLevel?
   challenges      Challenge[]
   events          GroupEvent[]
   joinRequests    GroupJoinRequest[]
@@ -1625,6 +1635,18 @@ model ChallengeParticipant {
   @@index([challengeId, completed])
 }
 
+model NewsletterSubscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  isActive       Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([email])
+  @@index([isActive])
+}
+
 enum PlanStatus {
   PENDING
   APPROVED
@@ -1919,16 +1941,4 @@ enum PromoSectionType {
   TESTIMONIALS
   CTA
   STATS
-}
-
-model NewsletterSubscriber {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  name        String?
-  isActive    Boolean  @default(true)
-  subscribedAt DateTime @default(now())
-  unsubscribedAt DateTime?
-  
-  @@index([email])
-  @@index([isActive])
 }

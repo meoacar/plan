@@ -11,6 +11,8 @@ interface PageProps {
     endDate?: string
     sortBy?: string
     sortOrder?: string
+    status?: string
+    spam?: string
   }>
 }
 
@@ -44,7 +46,20 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
       gte?: Date
       lte?: Date
     }
+    status?: any
+    isSpam?: boolean
   } = {}
+
+  // Durum filtresi
+  const statusFilter = params.status
+  if (statusFilter && statusFilter !== "all") {
+    where.status = statusFilter
+  }
+
+  // Spam filtresi
+  if (params.spam === "true") {
+    where.isSpam = true
+  }
 
   // Arama: yorum içeriği, yazar adı veya plan başlığı
   if (search) {
@@ -102,11 +117,25 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
           slug: true,
         },
       },
+      moderator: {
+        select: {
+          name: true,
+        },
+      },
     },
     orderBy,
     skip: (page - 1) * pageSize,
     take: pageSize,
   })
+
+  // İstatistikler
+  const stats = {
+    total: await prisma.comment.count(),
+    approved: await prisma.comment.count({ where: { status: "APPROVED" } }),
+    pending: await prisma.comment.count({ where: { status: "PENDING" } }),
+    rejected: await prisma.comment.count({ where: { status: "REJECTED" } }),
+    spam: await prisma.comment.count({ where: { isSpam: true } }),
+  }
 
   const totalPages = Math.ceil(total / pageSize)
 
@@ -124,6 +153,7 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
         total={total}
         currentPage={page}
         totalPages={totalPages}
+        stats={stats}
       />
     </div>
   )

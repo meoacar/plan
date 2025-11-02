@@ -39,6 +39,36 @@ export default function AdminEmailsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [isProcessingQueue, setIsProcessingQueue] = useState(false)
+
+  // Process email queue manually
+  const handleProcessQueue = async () => {
+    try {
+      setIsProcessingQueue(true)
+      setError(null)
+      
+      const res = await fetch('/api/cron/email-queue')
+      const data = await res.json()
+      
+      if (!res.ok) throw new Error(data.error || 'Failed to process queue')
+      
+      setSuccessMessage(`Kuyruk işlendi: ${data.processed || 0} email gönderildi`)
+      
+      // Refresh campaigns list
+      const campaignsRes = await fetch(`/api/admin/emails?page=${page}`)
+      if (campaignsRes.ok) {
+        const campaignsData = await campaignsRes.json()
+        setCampaigns(campaignsData.campaigns)
+      }
+      
+      setTimeout(() => setSuccessMessage(null), 5000)
+    } catch (err) {
+      console.error('Error processing queue:', err)
+      setError(err instanceof Error ? err.message : 'Kuyruk işlenirken hata oluştu')
+    } finally {
+      setIsProcessingQueue(false)
+    }
+  }
 
   // Fetch templates
   useEffect(() => {
@@ -179,14 +209,33 @@ export default function AdminEmailsPage() {
         )}
       </div>
 
+      {/* Queue Processing */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-yellow-900 mb-2">⚡ Email Kuyruğu</h3>
+            <p className="text-sm text-yellow-800">
+              Kuyrukta bekleyen email'leri manuel olarak gönderin
+            </p>
+          </div>
+          <button
+            onClick={handleProcessQueue}
+            disabled={isProcessingQueue}
+            className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          >
+            {isProcessingQueue ? 'İşleniyor...' : 'Kuyruğu İşle'}
+          </button>
+        </div>
+      </div>
+
       {/* Info Box */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h3 className="font-semibold text-blue-900 mb-2">ℹ️ Bilgi</h3>
         <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Email'ler kuyruğa alınır ve arka planda gönderilir</li>
+          <li>• Email'ler kuyruğa alınır ve "Kuyruğu İşle" butonuna basarak gönderilir</li>
+          <li>• Otomatik gönderim için sunucuda cron job kurulması gerekir</li>
           <li>• Gönderim durumunu kampanya listesinden takip edebilirsiniz</li>
           <li>• Rate limiting nedeniyle büyük kampanyalar birkaç dakika sürebilir</li>
-          <li>• Email servisi yapılandırılmamışsa, email'ler gönderilmez</li>
         </ul>
       </div>
     </div>

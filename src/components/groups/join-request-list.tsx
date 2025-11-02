@@ -3,11 +3,13 @@ import { JoinRequestCard } from './join-request-card';
 
 interface JoinRequestListProps {
   groupId: string;
+  groupSlug: string;
   currentUserRole: 'ADMIN' | 'MODERATOR' | 'MEMBER';
 }
 
 export async function JoinRequestList({
   groupId,
+  groupSlug,
   currentUserRole,
 }: JoinRequestListProps) {
   // Sadece admin ve moderatör görebilir
@@ -77,7 +79,7 @@ export async function JoinRequestList({
           <JoinRequestCard
             key={request.id}
             request={request}
-            groupId={groupId}
+            groupSlug={groupSlug}
           />
         ))}
       </div>

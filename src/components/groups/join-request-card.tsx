@@ -23,10 +23,10 @@ interface JoinRequestCardProps {
       streak: number;
     } | null;
   };
-  groupId: string;
+  groupSlug: string;
 }
 
-export function JoinRequestCard({ request, groupId }: JoinRequestCardProps) {
+export function JoinRequestCard({ request, groupSlug }: JoinRequestCardProps) {
   const router = useRouter();
   const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +51,7 @@ export function JoinRequestCard({ request, groupId }: JoinRequestCardProps) {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `/api/groups/${groupId}/join-requests/${request.id}/approve`,
+        `/api/groups/${groupSlug}/join-requests/${request.id}/approve`,
         {
           method: 'POST',
         }
@@ -88,7 +88,7 @@ export function JoinRequestCard({ request, groupId }: JoinRequestCardProps) {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `/api/groups/${groupId}/join-requests/${request.id}/reject`,
+        `/api/groups/${groupSlug}/join-requests/${request.id}/reject`,
         {
           method: 'POST',
         }

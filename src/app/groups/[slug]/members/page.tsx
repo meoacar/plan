@@ -204,6 +204,7 @@ export default async function MembersPage({ params, searchParams }: PageProps) {
             >
               <JoinRequestList
                 groupId={group.id}
+                groupSlug={group.slug}
                 currentUserRole={group.memberRole}
               />
             </Suspense>

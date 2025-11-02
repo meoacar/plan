@@ -12,11 +12,18 @@ export async function GET(request: NextRequest) {
     const level = searchParams.get('level');
     const gender = searchParams.get('gender');
     const ageGroup = searchParams.get('ageGroup');
+    const createdBy = searchParams.get('createdBy');
     const skip = (page - 1) * limit;
 
-    const where: any = {
-      status: 'APPROVED',
-    };
+    const where: any = {};
+
+    // Eğer createdBy parametresi varsa, kullanıcının kendi gruplarını getir (tüm statuslar)
+    if (createdBy) {
+      where.createdBy = createdBy;
+    } else {
+      // Aksi halde sadece onaylanmış grupları göster
+      where.status = 'APPROVED';
+    }
 
     if (goalType) {
       where.goalType = goalType;

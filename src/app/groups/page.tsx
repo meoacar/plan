@@ -3,8 +3,10 @@ import Link from "next/link";
 import GroupList from "@/components/groups/group-list";
 import RecommendedGroups from "@/components/groups/recommended-groups";
 import CategoryTabs from "@/components/groups/category-tabs";
+import MyGroups from "@/components/groups/my-groups";
 import { Users, Plus, TrendingUp, Award, Heart } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 export const metadata = {
   title: "Gruplar - Zayıflama Planım",
@@ -45,6 +47,7 @@ function formatNumber(num: number): string {
 }
 
 export default async function GroupsPage() {
+  const session = await auth();
   const stats = await getGroupStats();
 
   const statsData = [
@@ -96,6 +99,13 @@ export default async function GroupsPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 md:py-12">
+        {/* My Groups Section - Only show if user is logged in */}
+        {session?.user?.id && (
+          <Suspense fallback={null}>
+            <MyGroups userId={session.user.id} />
+          </Suspense>
+        )}
+
         {/* Recommended Groups Section */}
         <Suspense fallback={null}>
           <RecommendedGroups />

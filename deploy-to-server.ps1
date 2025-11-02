@@ -5,6 +5,6 @@ $APP_DIR = "/var/www/zayiflamaplanim"
 Write-Host "🚀 Sunucuya deploy başlıyor..." -ForegroundColor Green
 
 # SSH ile sunucuya bağlan ve komutları çalıştır
-ssh $SERVER "cd $APP_DIR && echo '📥 Git pull yapılıyor...' && git pull origin master && echo '📦 Dependencies güncelleniyor...' && npm install && echo '🗄️ Prisma migration çalıştırılıyor...' && npx prisma migrate deploy && echo '🧹 Cache temizleniyor (.next klasörü)...' && rm -rf .next && rm -rf node_modules/.cache && echo '🔨 Temiz build yapılıyor...' && npm run build && echo '🔄 PM2 restart yapılıyor...' && pm2 restart zayiflamaplanim && echo '✅ Deploy tamamlandı!' && pm2 status"
+ssh $SERVER "cd $APP_DIR && echo '📥 Git pull yapılıyor...' && git pull origin master && echo '📦 Dependencies güncelleniyor...' && npm install && echo '🗄️ Prisma migration çalıştırılıyor...' && npx prisma migrate deploy && echo '🔄 Prisma Client generate ediliyor...' && npx prisma generate && echo '🧹 Cache temizleniyor (.next klasörü)...' && rm -rf .next && rm -rf node_modules/.cache && echo '🔨 Temiz build yapılıyor...' && npm run build && echo '🔄 PM2 restart yapılıyor...' && pm2 restart zayiflamaplanim && echo '✅ Deploy tamamlandı!' && pm2 status"
 
 Write-Host "`n✅ Deploy işlemi tamamlandı!" -ForegroundColor Green

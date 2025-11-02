@@ -1,11 +1,53 @@
-import { Metadata } from 'next';
+'use client'
 
-export const metadata: Metadata = {
-  title: 'E-Bülten Kayıt | Zayıflama Planım',
-  description: 'E-bültenimize abone olun, sağlıklı yaşam ve zayıflama ipuçlarını kaçırmayın.',
-};
+import { useState } from 'react'
+import { Metadata } from 'next'
 
 export default function NewsletterFormPage() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!consent) {
+      setMessage({ type: 'error', text: 'Lütfen e-bülten almayı kabul edin' })
+      return
+    }
+
+    setIsSubmitting(true)
+    setMessage(null)
+
+    try {
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Bir hata oluştu')
+      }
+
+      setMessage({ type: 'success', text: data.message })
+      setName('')
+      setEmail('')
+      setConsent(false)
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Bir hata oluştu',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 py-12 px-4">
       <div className="max-w-2xl mx-auto">
@@ -19,7 +61,19 @@ export default function NewsletterFormPage() {
             </p>
           </div>
 
-          <form className="space-y-6">
+          {message && (
+            <div
+              className={`mb-6 p-4 rounded-lg ${
+                message.type === 'success'
+                  ? 'bg-green-50 border border-green-200 text-green-800'
+                  : 'bg-red-50 border border-red-200 text-red-800'
+              }`}
+            >
+              {message.text}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                 Adınız Soyadınız
@@ -28,6 +82,8 @@ export default function NewsletterFormPage() {
                 type="text"
                 id="name"
                 name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                 placeholder="Adınız Soyadınız"
@@ -42,6 +98,8 @@ export default function NewsletterFormPage() {
                 type="email"
                 id="email"
                 name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                 placeholder="ornek@email.com"
@@ -53,6 +111,8 @@ export default function NewsletterFormPage() {
                 type="checkbox"
                 id="consent"
                 name="consent"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
                 required
                 className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
               />
@@ -63,9 +123,10 @@ export default function NewsletterFormPage() {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Abone Ol
+              {isSubmitting ? 'Gönderiliyor...' : 'Abone Ol'}
             </button>
           </form>
 

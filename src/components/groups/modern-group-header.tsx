@@ -25,6 +25,7 @@ import {
   Trophy,
   Calendar,
   Clock,
+  UserCheck,
 } from 'lucide-react';
 
 interface GroupHeaderProps {
@@ -316,6 +317,13 @@ export function ModernGroupHeader({ group }: GroupHeaderProps) {
                 >
                   <Trophy className="w-4 h-4 inline mr-1.5" />
                   Liderlik
+                </Link>
+                <Link
+                  href={`/groups/${group.slug}/members`}
+                  className="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 whitespace-nowrap transition-colors"
+                >
+                  <UserCheck className="w-4 h-4 inline mr-1.5" />
+                  Üyeler
                 </Link>
                 <Link
                   href={`/groups/${group.slug}/events`}

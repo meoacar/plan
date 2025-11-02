@@ -118,7 +118,7 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
               </button>
 
               {featuresMenuOpen && (
-                <div className="fixed top-20 left-1/2 -translate-x-1/2 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 py-3 z-[9999] max-h-[80vh] overflow-y-auto">
+                <div className="absolute top-full mt-2 right-0 min-w-[400px] bg-white rounded-xl shadow-2xl border border-gray-100 py-3 z-[9999] max-h-[80vh] overflow-y-auto">
                   {/* Dynamic Navbar Pages */}
                   {navbarPages.filter(p => p.showInNavbar).length > 0 && (
                     <>

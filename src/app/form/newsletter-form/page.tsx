@@ -12,7 +12,7 @@ export default function NewsletterFormPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!consent) {
       setMessage({ type: 'error', text: 'Lütfen e-bülten almayı kabul edin' })
       return
@@ -63,11 +63,10 @@ export default function NewsletterFormPage() {
 
           {message && (
             <div
-              className={`mb-6 p-4 rounded-lg ${
-                message.type === 'success'
-                  ? 'bg-green-50 border border-green-200 text-green-800'
-                  : 'bg-red-50 border border-red-200 text-red-800'
-              }`}
+              className={`mb-6 p-4 rounded-lg ${message.type === 'success'
+                ? 'bg-green-50 border border-green-200 text-green-800'
+                : 'bg-red-50 border border-red-200 text-red-800'
+                }`}
             >
               {message.text}
             </div>

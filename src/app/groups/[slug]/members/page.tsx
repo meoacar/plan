@@ -125,11 +125,14 @@ export default async function MembersPage({ params, searchParams }: PageProps) {
             <div>
               <Link
                 href={`/groups/${params.slug}`}
-                className="text-sm text-gray-600 hover:text-gray-900 mb-2 inline-block"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105 mb-4"
               >
-                ← {group.name}
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Gruba Dön
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 mt-4">
                 Üye Yönetimi
               </h1>
               <p className="text-gray-600 mt-1">

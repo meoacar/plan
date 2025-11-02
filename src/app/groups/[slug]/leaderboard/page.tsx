@@ -107,10 +107,10 @@ export default async function LeaderboardPage({
         <div className="container mx-auto px-4 py-8">
           <Link
             href={`/groups/${params.slug}`}
-            className="inline-flex items-center gap-2 text-white/90 hover:text-white mb-4 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-lg mb-4"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">{group.name}</span>
+            <ArrowLeft className="w-5 h-5" />
+            <span>Gruba Dön</span>
           </Link>
 
           <div className="flex items-center gap-4">

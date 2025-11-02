@@ -24,6 +24,7 @@ import {
   MessageCircle,
   Trophy,
   Calendar,
+  Clock,
 } from 'lucide-react';
 
 interface GroupHeaderProps {
@@ -38,6 +39,7 @@ interface GroupHeaderProps {
     maxMembers?: number | null;
     isMember: boolean;
     memberRole: string | null;
+    hasPendingRequest?: boolean;
     _count: {
       members: number;
       challenges: number;
@@ -76,6 +78,7 @@ export function ModernGroupHeader({ group }: GroupHeaderProps) {
   const [loading, setLoading] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [isMember, setIsMember] = useState(group.isMember);
+  const [hasPendingRequest, setHasPendingRequest] = useState(group.hasPendingRequest || false);
 
   const config = goalTypeConfig[group.goalType as keyof typeof goalTypeConfig] || goalTypeConfig['weight-loss'];
   const GoalIcon = config.icon;
@@ -94,7 +97,8 @@ export function ModernGroupHeader({ group }: GroupHeaderProps) {
 
       const data = await res.json();
       if (data.requiresApproval) {
-        alert('Katılma isteğiniz gönderildi.');
+        setHasPendingRequest(true);
+        alert('Katılma isteğiniz gönderildi. Grup yöneticisi onayladığında bildirim alacaksınız.');
       } else {
         setIsMember(true);
         window.location.reload();
@@ -248,6 +252,11 @@ export function ModernGroupHeader({ group }: GroupHeaderProps) {
                     </Link>
                   )}
                 </>
+              ) : hasPendingRequest ? (
+                <div className="inline-flex items-center gap-2 px-6 py-2 bg-yellow-100 text-yellow-800 rounded-lg font-medium border-2 border-yellow-300">
+                  <Clock className="w-4 h-4 animate-pulse" />
+                  Onay Bekleniyor
+                </div>
               ) : (
                 <button
                   onClick={handleJoinGroup}

@@ -59,16 +59,31 @@ async function getGroup(slug: string, userId?: string) {
   // Kullanıcının üyelik durumunu kontrol et
   let isMember = false;
   let memberRole = null;
+  let hasPendingRequest = false;
+  
   if (userId) {
     const membership = group.members.find((m) => m.userId === userId);
     isMember = !!membership;
     memberRole = membership?.role || null;
+
+    // Bekleyen katılma isteği var mı kontrol et
+    if (!isMember && group.isPrivate) {
+      const pendingRequest = await prisma.groupJoinRequest.findFirst({
+        where: {
+          groupId: group.id,
+          userId: userId,
+          status: 'PENDING',
+        },
+      });
+      hasPendingRequest = !!pendingRequest;
+    }
   }
 
   return {
     ...group,
     isMember,
     memberRole,
+    hasPendingRequest,
   };
 }
 

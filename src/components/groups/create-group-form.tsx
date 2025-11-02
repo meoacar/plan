@@ -97,10 +97,11 @@ export default function CreateGroupForm() {
 
       if (res.ok) {
         const data = await res.json();
-        alert('Grup oluşturuldu! Admin onayı bekleniyor.');
-        router.push(`/groups/${data.slug}`);
+        // Bekleyen onay sayfasına yönlendir
+        router.push(`/groups/pending/${data.id}`);
       } else {
-        alert('Grup oluşturulamadı');
+        const errorData = await res.json();
+        alert(errorData.error || 'Grup oluşturulamadı');
       }
     } catch (error) {
       alert('Bir hata oluştu');
@@ -227,17 +228,50 @@ export default function CreateGroupForm() {
         </label>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading || uploading}
-        className="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg font-medium hover:from-primary-600 hover:to-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
-      >
-        {loading ? 'Oluşturuluyor...' : 'Grup Oluştur'}
-      </button>
+      {/* Modern Submit Button */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
+        <button
+          type="submit"
+          disabled={loading || uploading}
+          className="relative w-full py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white rounded-2xl font-bold text-lg hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 group"
+        >
+          {loading ? (
+            <>
+              <div className="animate-spin rounded-full h-6 w-6 border-3 border-white border-t-transparent"></div>
+              <span>Oluşturuluyor...</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-6 h-6 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Grup Oluştur</span>
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </>
+          )}
+        </button>
+      </div>
 
-      <p className="text-sm text-gray-500 text-center">
-        Oluşturduğunuz grup admin onayından sonra yayınlanacaktır.
-      </p>
+      {/* Info Box */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h4 className="font-semibold text-gray-900 mb-1">Onay Süreci</h4>
+            <p className="text-sm text-gray-600">
+              Oluşturduğunuz grup, kalite kontrolü için admin onayına gönderilecektir. 
+              Onay süreci genellikle 24 saat içinde tamamlanır. Onaylandığında size bildirim gelecektir.
+            </p>
+          </div>
+        </div>
+      </div>
     </form>
   );
 }

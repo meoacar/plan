@@ -239,6 +239,14 @@ export default async function RootLayout({
                       {settings?.footerLinksTitle || "Hızlı Bağlantılar"}
                     </h4>
                     <div className="flex flex-col gap-2">
+                      {/* Newsletter Link */}
+                      <a
+                        href="/form/newsletter-form"
+                        className="text-gray-400 hover:text-[#4caf50] transition-colors text-sm font-medium"
+                      >
+                        📧 E-Bülten Kayıt
+                      </a>
+
                       {/* Custom Footer Links */}
                       {footerLinks.map((link) => (
                         <a

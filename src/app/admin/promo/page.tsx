@@ -360,7 +360,7 @@ function StoriesTab() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Süre</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hikaye</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">İşlemler</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-48">İşlemler</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -385,25 +385,32 @@ function StoriesTab() {
                     {story.isActive ? "Aktif" : "Pasif"}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex items-center gap-2">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center gap-3">
                     <button
+                      type="button"
                       onClick={() => toggleFeatured(story.id, story.isFeatured)}
-                      className={`p-1 rounded hover:bg-gray-100 ${story.isFeatured ? "text-yellow-500" : "text-gray-400"}`}
+                      className={`inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
+                        story.isFeatured 
+                          ? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200" 
+                          : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                      }`}
                       title={story.isFeatured ? "Öne Çıkarmayı Kaldır" : "Öne Çıkar"}
                     >
-                      <Star className={`w-5 h-5 ${story.isFeatured ? "fill-yellow-500" : ""}`} />
+                      <Star className={`w-5 h-5 ${story.isFeatured ? "fill-current" : ""}`} />
                     </button>
                     <button
+                      type="button"
                       onClick={() => toggleActive(story.id, story.isActive)}
-                      className="p-1 rounded hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
                       title={story.isActive ? "Pasif Yap" : "Aktif Yap"}
                     >
                       {story.isActive ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                     <button
+                      type="button"
                       onClick={() => deleteStory(story.id)}
-                      className="p-1 rounded hover:bg-red-50 text-red-600 hover:text-red-900"
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
                       title="Sil"
                     >
                       <Trash2 className="w-5 h-5" />

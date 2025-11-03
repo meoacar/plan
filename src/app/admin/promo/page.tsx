@@ -359,6 +359,7 @@ function StoriesTab() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kilo</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Süre</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hikaye</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">İşlemler</th>
             </tr>
           </thead>
@@ -379,32 +380,34 @@ function StoriesTab() {
                 <td className="px-6 py-4">
                   <div className="text-sm text-gray-500 max-w-md truncate">{story.story}</div>
                 </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${story.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
+                    {story.isActive ? "Aktif" : "Pasif"}
+                  </span>
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => toggleFeatured(story.id, story.isFeatured)}
-                      className="text-gray-600 hover:text-yellow-500"
+                      className={`p-1 rounded hover:bg-gray-100 ${story.isFeatured ? "text-yellow-500" : "text-gray-400"}`}
                       title={story.isFeatured ? "Öne Çıkarmayı Kaldır" : "Öne Çıkar"}
                     >
-                      <Star className={`w-4 h-4 ${story.isFeatured ? "text-yellow-500 fill-yellow-500" : ""}`} />
+                      <Star className={`w-5 h-5 ${story.isFeatured ? "fill-yellow-500" : ""}`} />
                     </button>
                     <button
                       onClick={() => toggleActive(story.id, story.isActive)}
-                      className="text-gray-600 hover:text-gray-900"
+                      className="p-1 rounded hover:bg-gray-100 text-gray-600 hover:text-gray-900"
                       title={story.isActive ? "Pasif Yap" : "Aktif Yap"}
                     >
-                      {story.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {story.isActive ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                     <button
                       onClick={() => deleteStory(story.id)}
-                      className="text-red-600 hover:text-red-900"
+                      className="p-1 rounded hover:bg-red-50 text-red-600 hover:text-red-900"
                       title="Sil"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-5 h-5" />
                     </button>
-                    <span className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${story.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
-                      {story.isActive ? "Aktif" : "Pasif"}
-                    </span>
                   </div>
                 </td>
               </tr>

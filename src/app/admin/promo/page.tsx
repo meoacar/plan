@@ -9,7 +9,8 @@ import {
   Eye,
   EyeOff,
   Loader2,
-  Trash2
+  Trash2,
+  Edit
 } from "lucide-react";
 
 interface Feature {
@@ -195,6 +196,7 @@ function FeaturesTab() {
                   <button
                     onClick={() => toggleActive(feature.id, feature.isActive)}
                     className="text-gray-600 hover:text-gray-900 mr-3"
+                    title={feature.isActive ? "Pasif Yap" : "Aktif Yap"}
                   >
                     {feature.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -360,7 +362,7 @@ function StoriesTab() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Süre</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hikaye</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-48">İşlemler</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">İşlemler</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -386,26 +388,27 @@ function StoriesTab() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => toggleFeatured(story.id, story.isFeatured)}
-                      className={story.isFeatured ? "text-yellow-500" : "text-gray-400"}
-                    >
-                      <Star className="w-5 h-5" fill={story.isFeatured ? "currentColor" : "none"} />
-                    </button>
-                    <button
-                      onClick={() => toggleActive(story.id, story.isActive)}
-                      className="text-blue-600"
-                    >
-                      {story.isActive ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                    <button
-                      onClick={() => deleteStory(story.id)}
-                      className="text-red-600"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => toggleFeatured(story.id, story.isFeatured)}
+                    className={`text-gray-600 hover:text-gray-900 mr-3 ${story.isFeatured ? "text-yellow-500" : ""}`}
+                    title={story.isFeatured ? "Öne Çıkarmayı Kaldır" : "Öne Çıkar"}
+                  >
+                    <Star className="w-4 h-4" fill={story.isFeatured ? "currentColor" : "none"} />
+                  </button>
+                  <button
+                    onClick={() => toggleActive(story.id, story.isActive)}
+                    className="text-gray-600 hover:text-gray-900 mr-3"
+                    title={story.isActive ? "Pasif Yap" : "Aktif Yap"}
+                  >
+                    {story.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                  <button
+                    onClick={() => deleteStory(story.id)}
+                    className="text-red-600 hover:text-red-900"
+                    title="Sil"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -523,10 +526,7 @@ function SectionsTab() {
                     className="text-blue-600 hover:text-blue-900 mr-3 inline-block"
                     title="Düzenle"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                      <path d="m15 5 4 4"/>
-                    </svg>
+                    <Edit className="w-4 h-4" />
                   </a>
                   <button
                     onClick={() => toggleActive(section.id, section.isActive)}

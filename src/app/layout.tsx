@@ -57,6 +57,13 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords: ["zayıflama", "diyet", "egzersiz", "kilo verme", "sağlıklı yaşam"],
     metadataBase: new URL(baseUrl),
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/icon.ico', sizes: 'any' },
+      ],
+      apple: '/apple-touch-icon.png',
+    },
     viewport: {
       width: 'device-width',
       initialScale: 1,

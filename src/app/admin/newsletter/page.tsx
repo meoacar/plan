@@ -26,6 +26,7 @@ export default function AdminNewsletterPage() {
     const [search, setSearch] = useState('')
     const [status, setStatus] = useState('all')
     const [isLoading, setIsLoading] = useState(true)
+    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
     useEffect(() => {
         fetchSubscribers()
@@ -70,31 +71,71 @@ export default function AdminNewsletterPage() {
 
             if (!res.ok) throw new Error('Failed to delete')
 
+            setMessage({ type: 'success', text: 'Abone başarıyla silindi' })
             fetchSubscribers()
+            setTimeout(() => setMessage(null), 3000)
         } catch (error) {
             console.error('Error deleting subscriber:', error)
-            alert('Silme işlemi başarısız oldu')
+            setMessage({ type: 'error', text: 'Silme işlemi başarısız oldu' })
+            setTimeout(() => setMessage(null), 3000)
+        }
+    }
+
+    const handleBulkExport = async () => {
+        try {
+            const res = await fetch('/api/admin/newsletter?limit=10000')
+            const data = await res.json()
+            
+            const csv = [
+                ['Email', 'İsim', 'Durum', 'Kayıt Tarihi', 'Çıkış Tarihi'],
+                ...data.subscribers.map((s: Subscriber) => [
+                    s.email,
+                    s.name || '',
+                    s.isActive ? 'Aktif' : 'Pasif',
+                    new Date(s.subscribedAt).toLocaleDateString('tr-TR'),
+                    s.unsubscribedAt ? new Date(s.unsubscribedAt).toLocaleDateString('tr-TR') : '',
+                ]),
+            ]
+                .map(row => row.join(','))
+                .join('\n')
+
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+            const link = document.createElement('a')
+            link.href = URL.createObjectURL(blob)
+            link.download = `newsletter-tum-aboneler-${new Date().toISOString().split('T')[0]}.csv`
+            link.click()
+            
+            setMessage({ type: 'success', text: 'Tüm aboneler başarıyla dışa aktarıldı' })
+            setTimeout(() => setMessage(null), 3000)
+        } catch (error) {
+            console.error('Error exporting:', error)
+            setMessage({ type: 'error', text: 'Dışa aktarma başarısız oldu' })
+            setTimeout(() => setMessage(null), 3000)
         }
     }
 
     const exportToCSV = () => {
         const csv = [
-            ['Email', 'İsim', 'Durum', 'Kayıt Tarihi'],
+            ['Email', 'İsim', 'Durum', 'Kayıt Tarihi', 'Çıkış Tarihi'],
             ...subscribers.map(s => [
                 s.email,
                 s.name || '',
                 s.isActive ? 'Aktif' : 'Pasif',
                 new Date(s.subscribedAt).toLocaleDateString('tr-TR'),
+                s.unsubscribedAt ? new Date(s.unsubscribedAt).toLocaleDateString('tr-TR') : '',
             ]),
         ]
             .map(row => row.join(','))
             .join('\n')
 
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
         const link = document.createElement('a')
         link.href = URL.createObjectURL(blob)
-        link.download = `newsletter-aboneler-${new Date().toISOString().split('T')[0]}.csv`
+        link.download = `newsletter-sayfa-${page}-${new Date().toISOString().split('T')[0]}.csv`
         link.click()
+        
+        setMessage({ type: 'success', text: 'Mevcut sayfa başarıyla dışa aktarıldı' })
+        setTimeout(() => setMessage(null), 3000)
     }
 
     return (
@@ -104,6 +145,19 @@ export default function AdminNewsletterPage() {
                 <h1 className="text-3xl font-bold text-gray-900">Newsletter Aboneleri</h1>
                 <p className="text-gray-600 mt-2">E-bülten abonelerini yönetin</p>
             </div>
+
+            {/* Message */}
+            {message && (
+                <div
+                    className={`p-4 rounded-lg border ${
+                        message.type === 'success'
+                            ? 'bg-green-50 border-green-200 text-green-800'
+                            : 'bg-red-50 border-red-200 text-red-800'
+                    }`}
+                >
+                    {message.text}
+                </div>
+            )}
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -173,13 +227,24 @@ export default function AdminNewsletterPage() {
                         <option value="inactive">Pasif</option>
                     </select>
 
-                    <button
-                        onClick={exportToCSV}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                    >
-                        <Download className="w-5 h-5" />
-                        CSV İndir
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={exportToCSV}
+                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                            title="Mevcut sayfayı indir"
+                        >
+                            <Download className="w-5 h-5" />
+                            Bu Sayfa
+                        </button>
+                        <button
+                            onClick={handleBulkExport}
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                            title="Tüm aboneleri indir"
+                        >
+                            <Download className="w-5 h-5" />
+                            Tümünü İndir
+                        </button>
+                    </div>
                 </div>
             </div>
 

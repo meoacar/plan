@@ -302,6 +302,14 @@ async function seedGamification() {
       icon: "🦋",
       xpReward: 75,
     },
+    // Newsletter Rozeti
+    {
+      type: "NEWSLETTER_SUBSCRIBER",
+      name: "Bülten Abonesi",
+      description: "E-bültene abone oldun!",
+      icon: "📬",
+      xpReward: 50,
+    },
   ];
 
   for (const badge of badges) {

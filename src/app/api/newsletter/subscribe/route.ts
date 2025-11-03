@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { auth } from '@/lib/auth'
-import { awardBadge } from '@/lib/gamification'
+import { checkAndAwardBadge } from '@/lib/gamification'
 
 const subscribeSchema = z.object({
   email: z.string().email('Geçerli bir email adresi giriniz'),
@@ -39,13 +39,19 @@ export async function POST(req: NextRequest) {
       })
 
       // Award badge and XP if user is logged in
+      let badgeAwarded = false
       if (session?.user?.id) {
-        await awardBadge(session.user.id, 'NEWSLETTER_SUBSCRIBER')
+        try {
+          const badge = await checkAndAwardBadge(session.user.id, 'NEWSLETTER_SUBSCRIBER')
+          badgeAwarded = !!badge
+        } catch (error) {
+          console.error('Error awarding newsletter badge:', error)
+        }
       }
 
       return NextResponse.json({
         message: 'Aboneliğiniz yeniden aktif edildi!',
-        badgeAwarded: !!session?.user?.id,
+        badgeAwarded,
       })
     }
 
@@ -61,8 +67,8 @@ export async function POST(req: NextRequest) {
     let badgeAwarded = false
     if (session?.user?.id) {
       try {
-        await awardBadge(session.user.id, 'NEWSLETTER_SUBSCRIBER')
-        badgeAwarded = true
+        const badge = await checkAndAwardBadge(session.user.id, 'NEWSLETTER_SUBSCRIBER')
+        badgeAwarded = !!badge
       } catch (error) {
         console.error('Error awarding newsletter badge:', error)
       }

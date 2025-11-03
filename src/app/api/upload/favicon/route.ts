@@ -65,22 +65,23 @@ export async function POST(req: NextRequest) {
     // Dosya uzantısını al
     const extension = file.name.split(".").pop() || "ico"
     
-    // Favicon'u kaydet - hem favicon.ico hem de timestamp'li versiyon
+    // Timestamp ekle (cache bypass için)
+    const timestamp = Date.now()
+    
+    // Favicon'u kaydet - hem favicon.ico hem de icon.ico
     const faviconPath = join(publicDir, "favicon.ico")
-    const timestampedPath = join(publicDir, `favicon-${Date.now()}.${extension}`)
+    const iconPath = join(publicDir, "icon.ico")
     
-    // Ana favicon'u kaydet
+    // Her iki dosyayı da kaydet
     await writeFile(faviconPath, buffer)
-    
-    // Timestamp'li versiyonu da kaydet (cache bypass için)
-    await writeFile(timestampedPath, buffer)
+    await writeFile(iconPath, buffer)
 
     console.log("Favicon başarıyla kaydedildi:", faviconPath)
 
     return NextResponse.json({ 
       url: "/favicon.ico",
-      timestampedUrl: `/favicon-${Date.now()}.${extension}`,
-      message: "Favicon başarıyla güncellendi. Değişikliklerin görünmesi için tarayıcı önbelleğini temizlemeniz gerekebilir (Ctrl+F5)."
+      timestamp: timestamp,
+      message: "Favicon başarıyla güncellendi. Değişikliklerin görünmesi için:\n1. Tarayıcı önbelleğini temizleyin (Ctrl+Shift+Delete)\n2. Sayfayı yenileyin (Ctrl+F5)\n3. Gerekirse tarayıcıyı kapatıp açın"
     })
   } catch (error) {
     console.error("Favicon yükleme hatası:", error)

@@ -5,183 +5,282 @@ import { SearchFilter } from "@/components/search-filter"
 import {
   Sparkles, TrendingDown, Users, Award, Zap,
   Heart, Star, Trophy, Flame, ArrowRight,
-  CheckCircle2, Target, MessageCircle
+  CheckCircle2, Target, MessageCircle, Dumbbell,
+  Apple, Calendar, TrendingUp, Shield, Clock
 } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 overflow-x-hidden">
+    <div className="min-h-screen bg-white overflow-x-hidden">
 
-      {/* Hero Section - Yeni Modern Tasarım */}
-      <section className="relative overflow-hidden min-h-[90vh] flex items-center">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 via-fuchsia-500/5 to-orange-500/5"></div>
+      {/* Hero Section - Ultra Modern */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-white to-pink-50">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(168,85,247,0.08),transparent_50%)]"></div>
+          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_60%,rgba(236,72,153,0.08),transparent_50%)]"></div>
+        </div>
 
-        {/* Floating Shapes */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-300/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-violet-200/10 to-fuchsia-200/10 rounded-full blur-3xl"></div>
-
-        <div className="px-4 py-16 relative z-10 mx-auto max-w-6xl">
-            {/* Animated Badge */}
-            <div className="flex justify-center mb-8 animate-fade-in">
-              <div className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 text-white rounded-full shadow-2xl hover:shadow-violet-500/50 transition-all duration-300 hover:scale-105">
-                <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 rounded-full blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                <Flame className="w-5 h-5 relative z-10 animate-bounce" />
-                <span className="font-bold relative z-10">🔥 Türkiye'nin En Büyük Motivasyon Topluluğu</span>
+        <div className="relative z-10 px-4 py-20 md:py-32 mx-auto max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="space-y-8">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full border border-purple-200">
+                <Flame className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-semibold text-purple-900">Türkiye&apos;nin #1 Dönüşüm Platformu</span>
               </div>
-            </div>
 
-            {/* Main Heading - Yeni Stil */}
-            <div className="text-center mb-8 space-y-4">
-              <h1 className="text-5xl sm:text-6xl md:text-8xl font-black leading-tight">
-                <span className="block text-gray-900 mb-2">Hayalindeki</span>
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-600 to-orange-500 animate-gradient">
-                  Vücuda Ulaş
+              {/* Main Heading */}
+              <h1 className="text-5xl md:text-7xl font-black leading-tight">
+                <span className="block text-gray-900">Dönüşümün</span>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500">
+                  Başlangıcı
                 </span>
               </h1>
-              <div className="flex items-center justify-center gap-3 flex-wrap">
-                <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-lg">
-                  <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                  <span className="font-bold text-gray-900">4.9/5</span>
+
+              {/* Description */}
+              <p className="text-xl text-gray-600 leading-relaxed max-w-xl">
+                Binlerce kişinin gerçek başarı hikayelerinden ilham al. 
+                <span className="font-semibold text-purple-600"> Kendi yolculuğunu başlat</span> ve 
+                topluluğumuzun bir parçası ol.
+              </p>
+
+              {/* Stats Row */}
+              <div className="flex flex-wrap gap-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                    <Users className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">1000+</div>
+                    <div className="text-sm text-gray-600">Aktif Üye</div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-lg">
-                  <Users className="w-5 h-5 text-violet-600" />
-                  <span className="font-bold text-gray-900">1000+ Üye</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center">
+                    <Trophy className="w-6 h-6 text-pink-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">500+</div>
+                    <div className="text-sm text-gray-600">Başarı Hikayesi</div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-lg">
-                  <Trophy className="w-5 h-5 text-amber-500" />
-                  <span className="font-bold text-gray-900">500+ Başarı</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                    <Star className="w-6 h-6 text-orange-500 fill-orange-500" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">4.9/5</div>
+                    <div className="text-sm text-gray-600">Memnuniyet</div>
+                  </div>
                 </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/submit">
+                  <Button className="group h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <Zap className="w-5 h-5 mr-2" />
+                    Hikayeni Paylaş
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link href="/kesfet">
+                  <Button variant="outline" className="h-14 px-8 border-2 border-purple-300 hover:border-purple-600 hover:bg-purple-50 rounded-xl font-semibold text-lg text-purple-700 transition-all duration-300">
+                    <Heart className="w-5 h-5 mr-2" />
+                    Hikayeleri Keşfet
+                  </Button>
+                </Link>
               </div>
             </div>
 
-            {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-gray-600 text-center max-w-3xl mx-auto mb-12 px-4 leading-relaxed">
-              Gerçek insanların <span className="font-bold text-violet-600">gerçek dönüşüm hikayeleri</span> ile tanış.
-              Sen de bu topluluğun bir parçası ol! 💪
-            </p>
-
-            {/* CTA Buttons - Yeni Tasarım */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 px-4">
-              <Link href="/submit" className="w-full sm:w-auto">
-                <Button className="group relative w-full sm:w-auto h-16 px-10 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-700 hover:via-fuchsia-700 hover:to-pink-700 text-white rounded-2xl font-bold text-lg shadow-2xl hover:shadow-violet-500/50 transition-all duration-300 hover:scale-105 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                  <Zap className="w-6 h-6 mr-2 relative z-10" />
-                  <span className="relative z-10">Hikayeni Paylaş</span>
-                  <ArrowRight className="w-5 h-5 ml-2 relative z-10 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link href="/kesfet" className="w-full sm:w-auto">
-                <Button variant="outline" className="w-full sm:w-auto h-16 px-10 border-2 border-violet-300 hover:border-violet-600 hover:bg-violet-50 rounded-2xl font-bold text-lg text-violet-700 hover:text-violet-900 transition-all duration-300 hover:scale-105 shadow-lg">
-                  <Heart className="w-6 h-6 mr-2" />
-                  Hikayeleri Keşfet
-                </Button>
-              </Link>
-            </div>
-
-            {/* Feature Cards - Yeni Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto px-4">
-              <div className="group relative bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-violet-100">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-violet-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                    <Users className="w-8 h-8 text-white" />
+            {/* Right Content - Feature Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
+                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-purple-100">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-4">
+                    <Dumbbell className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-2">1000+</h3>
-                  <p className="text-gray-600 font-medium">Aktif Topluluk Üyesi</p>
+                  <h3 className="font-bold text-gray-900 mb-2">Kişisel Planlar</h3>
+                  <p className="text-sm text-gray-600">Sana özel egzersiz ve beslenme programları</p>
+                </div>
+                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-pink-100">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center mb-4">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2">Topluluk Desteği</h3>
+                  <p className="text-sm text-gray-600">Binlerce kişiyle motivasyon paylaş</p>
                 </div>
               </div>
-
-              <div className="group relative bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-emerald-100">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                    <TrendingDown className="w-8 h-8 text-white" />
+              <div className="space-y-4 mt-8">
+                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-orange-100">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mb-4">
+                    <TrendingUp className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-2">500+</h3>
-                  <p className="text-gray-600 font-medium">İlham Veren Hikaye</p>
+                  <h3 className="font-bold text-gray-900 mb-2">İlerleme Takibi</h3>
+                  <p className="text-sm text-gray-600">Gelişimini detaylı şekilde izle</p>
                 </div>
-              </div>
-
-              <div className="group relative bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-amber-100">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                    <Award className="w-8 h-8 text-white" />
+                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-emerald-100">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-4">
+                    <Apple className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-2">10K+</h3>
-                  <p className="text-gray-600 font-medium">Toplam Kilo Kaybı (kg)</p>
-                </div>
-              </div>
-
-              <div className="group relative bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-pink-100">
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
-                    <MessageCircle className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-2">24/7</h3>
-                  <p className="text-gray-600 font-medium">Destek & Motivasyon</p>
+                  <h3 className="font-bold text-gray-900 mb-2">Beslenme Rehberi</h3>
+                  <p className="text-sm text-gray-600">Sağlıklı yemek tarifleri ve ipuçları</p>
                 </div>
               </div>
             </div>
+          </div>
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
-      <section className="py-20 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-violet-50/50 to-transparent"></div>
-        <div className="px-4 relative z-10 mx-auto max-w-6xl">
+      {/* Features Section */}
+      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+        <div className="px-4 mx-auto max-w-7xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-4">
-              Neden <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600">Biz?</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 rounded-full mb-4">
+              <Sparkles className="w-4 h-4 text-purple-600" />
+              <span className="text-sm font-semibold text-purple-900">Özellikler</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+              Neden <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Bizi Seçmelisin?</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Sadece bir platform değil, bir yaşam tarzı değişimi topluluğu
+              Sadece bir platform değil, tam bir yaşam tarzı değişimi ekosistemi
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-violet-50 to-white border border-violet-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-              <div className="w-20 h-20 bg-gradient-to-br from-violet-500 to-violet-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <CheckCircle2 className="w-10 h-10 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100 to-transparent rounded-2xl opacity-50"></div>
+              <div className="relative">
+                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <CheckCircle2 className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Gerçek Sonuçlar</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Sahte değil, gerçek insanların gerçek dönüşüm hikayeleri. Her hikaye bir ilham kaynağı.
+                </p>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Gerçek Sonuçlar</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Sahte değil, gerçek insanların gerçek dönüşüm hikayeleri. Her hikaye bir ilham kaynağı.
-              </p>
             </div>
 
-            <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-fuchsia-50 to-white border border-fuchsia-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-              <div className="w-20 h-20 bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <Target className="w-10 h-10 text-white" />
+            {/* Feature 2 */}
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pink-100 to-transparent rounded-2xl opacity-50"></div>
+              <div className="relative">
+                <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Target className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Kişisel Hedefler</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Herkesin yolculuğu farklı. Kendi hedeflerini belirle ve adım adım ilerle.
+                </p>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Kişisel Hedefler</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Herkesin yolculuğu farklı. Kendi hedeflerini belirle ve adım adım ilerle.
-              </p>
             </div>
 
-            <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-              <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <Heart className="w-10 h-10 text-white" />
+            {/* Feature 3 */}
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-100 to-transparent rounded-2xl opacity-50"></div>
+              <div className="relative">
+                <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Heart className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Destekleyici Topluluk</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Yalnız değilsin! Binlerce kişi seninle aynı yolda. Birlikte daha güçlüyüz.
+                </p>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Destekleyici Topluluk</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Yalnız değilsin! Binlerce kişi seninle aynı yolda. Birlikte daha güçlüyüz.
-              </p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-100 to-transparent rounded-2xl opacity-50"></div>
+              <div className="relative">
+                <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Calendar className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Düzenli Takip</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Günlük, haftalık ve aylık ilerleme raporlarıyla hedeflerine ulaş.
+                </p>
+              </div>
+            </div>
+
+            {/* Feature 5 */}
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-transparent rounded-2xl opacity-50"></div>
+              <div className="relative">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Shield className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Güvenli Platform</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Verileriniz güvende. Gizlilik ve güvenlik önceliğimiz.
+                </p>
+              </div>
+            </div>
+
+            {/* Feature 6 */}
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-100 to-transparent rounded-2xl opacity-50"></div>
+              <div className="relative">
+                <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Clock className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">7/24 Erişim</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  İstediğin zaman, istediğin yerden platformumuza erişebilirsin.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof Section */}
+      <section className="py-20 bg-gradient-to-br from-purple-600 to-pink-600 text-white">
+        <div className="px-4 mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-black mb-4">
+              Topluluğumuz Büyüyor! 🚀
+            </h2>
+            <p className="text-xl text-purple-100 max-w-2xl mx-auto">
+              Her gün yüzlerce kişi hedeflerine ulaşıyor
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="text-5xl font-black mb-2">1000+</div>
+              <div className="text-purple-100">Aktif Üye</div>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl font-black mb-2">500+</div>
+              <div className="text-purple-100">Başarı Hikayesi</div>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl font-black mb-2">10K+</div>
+              <div className="text-purple-100">Kilo Kaybı (kg)</div>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl font-black mb-2">4.9</div>
+              <div className="text-purple-100">Ortalama Puan</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Plans Section */}
-      <section id="plans" className="relative bg-gradient-to-b from-slate-50 to-white py-20">
-        <div className="px-4 mx-auto max-w-6xl">
+      <section id="plans" className="py-20 bg-white">
+        <div className="px-4 mx-auto max-w-7xl">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600">Başarı Hikayeleri</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mb-4">
+              <Trophy className="w-4 h-4 text-purple-600" />
+              <span className="text-sm font-semibold text-purple-900">İlham Veren Hikayeler</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Başarı Hikayeleri</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Seni motive edecek, ilham verecek gerçek dönüşüm hikayelerini keşfet
@@ -189,6 +288,38 @@ export default function Home() {
           </div>
           <SearchFilter />
           <PlanList />
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="px-4 mx-auto max-w-4xl relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6">
+            <Sparkles className="w-4 h-4" />
+            <span className="text-sm font-semibold">Hemen Başla</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black mb-6">
+            Senin Hikayeni Duymak İstiyoruz! 💪
+          </h2>
+          <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+            Dönüşüm yolculuğunu başlat, topluluğumuzla paylaş ve binlerce kişiye ilham ver.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/submit">
+              <Button className="h-14 px-8 bg-white text-purple-900 hover:bg-gray-100 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <Zap className="w-5 h-5 mr-2" />
+                Ücretsiz Başla
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+            <Link href="/kesfet">
+              <Button variant="outline" className="h-14 px-8 border-2 border-white/30 hover:border-white hover:bg-white/10 rounded-xl font-semibold text-lg text-white backdrop-blur-sm transition-all duration-300">
+                <Heart className="w-5 h-5 mr-2" />
+                Daha Fazla Keşfet
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
     </div>

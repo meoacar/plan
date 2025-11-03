@@ -8,7 +8,8 @@ import {
   Star,
   Eye,
   EyeOff,
-  Loader2
+  Loader2,
+  Trash2
 } from "lucide-react";
 
 interface Feature {
@@ -296,6 +297,47 @@ function StoriesTab() {
     }
   };
 
+  const toggleActive = async (id: string, isActive: boolean) => {
+    try {
+      await fetch(`/api/admin/promo/stories/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: !isActive }),
+      });
+      fetchStories();
+    } catch (error) {
+      console.error("Error toggling story:", error);
+    }
+  };
+
+  const toggleFeatured = async (id: string, isFeatured: boolean) => {
+    try {
+      await fetch(`/api/admin/promo/stories/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isFeatured: !isFeatured }),
+      });
+      fetchStories();
+    } catch (error) {
+      console.error("Error toggling featured:", error);
+    }
+  };
+
+  const deleteStory = async (id: string) => {
+    if (!confirm("Bu hikayeyi silmek istediğinizden emin misiniz?")) {
+      return;
+    }
+
+    try {
+      await fetch(`/api/admin/promo/stories/${id}`, {
+        method: "DELETE",
+      });
+      fetchStories();
+    } catch (error) {
+      console.error("Error deleting story:", error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -317,8 +359,7 @@ function StoriesTab() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kilo</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Süre</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hikaye</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Öne Çıkan</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">İşlemler</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -338,13 +379,33 @@ function StoriesTab() {
                 <td className="px-6 py-4">
                   <div className="text-sm text-gray-500 max-w-md truncate">{story.story}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {story.isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${story.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
-                    {story.isActive ? "Aktif" : "Pasif"}
-                  </span>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => toggleFeatured(story.id, story.isFeatured)}
+                      className="text-gray-600 hover:text-yellow-500"
+                      title={story.isFeatured ? "Öne Çıkarmayı Kaldır" : "Öne Çıkar"}
+                    >
+                      <Star className={`w-4 h-4 ${story.isFeatured ? "text-yellow-500 fill-yellow-500" : ""}`} />
+                    </button>
+                    <button
+                      onClick={() => toggleActive(story.id, story.isActive)}
+                      className="text-gray-600 hover:text-gray-900"
+                      title={story.isActive ? "Pasif Yap" : "Aktif Yap"}
+                    >
+                      {story.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                    <button
+                      onClick={() => deleteStory(story.id)}
+                      className="text-red-600 hover:text-red-900"
+                      title="Sil"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    <span className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${story.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
+                      {story.isActive ? "Aktif" : "Pasif"}
+                    </span>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -385,6 +446,21 @@ function SectionsTab() {
       fetchSections();
     } catch (error) {
       console.error("Error toggling section:", error);
+    }
+  };
+
+  const deleteSection = async (id: string) => {
+    if (!confirm("Bu bölümü silmek istediğinizden emin misiniz?")) {
+      return;
+    }
+
+    try {
+      await fetch(`/api/admin/promo/sections/${id}`, {
+        method: "DELETE",
+      });
+      fetchSections();
+    } catch (error) {
+      console.error("Error deleting section:", error);
     }
   };
 
@@ -458,6 +534,13 @@ function SectionsTab() {
                     title={section.isActive ? "Pasif Yap" : "Aktif Yap"}
                   >
                     {section.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                  <button
+                    onClick={() => deleteSection(section.id)}
+                    className="text-red-600 hover:text-red-900"
+                    title="Sil"
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </td>
               </tr>

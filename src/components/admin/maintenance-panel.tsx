@@ -245,7 +245,11 @@ export function MaintenancePanel({
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Çalışma Süresi:</span>
               <span className="font-medium text-gray-900">
-                {Math.floor(healthStatus.uptime / 3600)} saat
+                {healthStatus.uptime >= 3600
+                  ? `${Math.floor(healthStatus.uptime / 3600)} saat ${Math.floor((healthStatus.uptime % 3600) / 60)} dakika`
+                  : healthStatus.uptime >= 60
+                  ? `${Math.floor(healthStatus.uptime / 60)} dakika`
+                  : `${Math.floor(healthStatus.uptime)} saniye`}
               </span>
             </div>
           </div>

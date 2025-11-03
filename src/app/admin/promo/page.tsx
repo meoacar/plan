@@ -385,33 +385,23 @@ function StoriesTab() {
                     {story.isActive ? "Aktif" : "Pasif"}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-3">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div className="flex gap-2">
                     <button
-                      type="button"
                       onClick={() => toggleFeatured(story.id, story.isFeatured)}
-                      className={`inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
-                        story.isFeatured 
-                          ? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200" 
-                          : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                      }`}
-                      title={story.isFeatured ? "Öne Çıkarmayı Kaldır" : "Öne Çıkar"}
+                      className={story.isFeatured ? "text-yellow-500" : "text-gray-400"}
                     >
-                      <Star className={`w-5 h-5 ${story.isFeatured ? "fill-current" : ""}`} />
+                      <Star className="w-5 h-5" fill={story.isFeatured ? "currentColor" : "none"} />
                     </button>
                     <button
-                      type="button"
                       onClick={() => toggleActive(story.id, story.isActive)}
-                      className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                      title={story.isActive ? "Pasif Yap" : "Aktif Yap"}
+                      className="text-blue-600"
                     >
                       {story.isActive ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                     <button
-                      type="button"
                       onClick={() => deleteStory(story.id)}
-                      className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
-                      title="Sil"
+                      className="text-red-600"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>

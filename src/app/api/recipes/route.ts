@@ -167,6 +167,15 @@ export async function POST(req: NextRequest) {
     // Gamification: Tarif oluşturma XP'si
     await addXP(session.user.id, XP_REWARDS.RECIPE_CREATED, "Tarif oluşturma");
 
+    // Quest Integration: Tarif oluşturma görevi güncelle
+    try {
+      const { onRecipeCreated } = await import('@/lib/quest-integration');
+      await onRecipeCreated(session.user.id);
+    } catch (questError) {
+      console.error('Quest integration error:', questError);
+      // Quest hatası tarif oluşturmayı etkilemez
+    }
+
     return NextResponse.json(recipe, { status: 201 });
   } catch (error) {
     console.error("Tarif oluşturma hatası:", error);

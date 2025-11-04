@@ -18,6 +18,8 @@ const adminNavItems: NavItem[] = [
   { href: "/admin/blog", label: "Blog", icon: "✍️" },
   { href: "/admin/groups", label: "Gruplar", icon: "👥" },
   { href: "/admin/challenges", label: "Challenge'lar", icon: "🏆" },
+  { href: "/admin/quests", label: "Görevler", icon: "🎯" },
+  { href: "/admin/rewards", label: "Ödüller", icon: "🎁" },
   { href: "/admin/confessions", label: "İtiraflar", icon: "🍰" },
   { href: "/admin/confession-comments", label: "İtiraf Yorumları", icon: "💭" },
   { href: "/admin/promo", label: "Tanıtım", icon: "🎬" },

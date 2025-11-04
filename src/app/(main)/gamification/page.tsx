@@ -1,15 +1,11 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { xpForNextLevel } from "@/lib/gamification";
-import { StreakCounter } from "@/components/gamification/StreakCounter";
-import { LevelProgress } from "@/components/gamification/LevelProgress";
-import { BadgeCard } from "@/components/gamification/BadgeCard";
-import { LeaderboardTable } from "@/components/gamification/LeaderboardTable";
+import { GamificationClient } from "./gamification-client";
 
 export const metadata = {
   title: "Gamification - Zayıflama Planım",
-  description: "Rozetler, seviyeler ve liderlik tablosu",
+  description: "Görevler, mağaza, oyunlar ve daha fazlası",
 };
 
 export default async function GamificationPage() {
@@ -18,20 +14,16 @@ export default async function GamificationPage() {
     redirect("/auth/signin");
   }
 
+  // Kullanıcı bilgilerini al
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
+      id: true,
+      name: true,
+      image: true,
       xp: true,
       level: true,
       streak: true,
-      badges: {
-        include: {
-          badge: true,
-        },
-        orderBy: {
-          earnedAt: "desc",
-        },
-      },
     },
   });
 
@@ -39,72 +31,166 @@ export default async function GamificationPage() {
     redirect("/auth/signin");
   }
 
-  const allBadges = await prisma.badge.findMany({
-    orderBy: {
-      xpReward: "asc",
-    },
-  });
+  // Coin bakiyesini al (eğer alan varsa)
+  let coins = 0;
+  try {
+    const userWithCoins = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { coins: true },
+    });
+    coins = (userWithCoins as any)?.coins || 0;
+  } catch (error) {
+    // Coins alanı henüz yoksa 0 olarak devam et
+    console.log('Coins field not yet available');
+  }
 
-  const earnedBadgeIds = new Set(user.badges.map((ub) => ub.badge.id));
+  // Görevleri al (eğer tablo varsa)
+  let dailyQuests: any[] = [];
+  let weeklyQuests: any[] = [];
+  let specialQuests: any[] = [];
 
-  const nextLevelXP = xpForNextLevel(user.level);
-  const currentLevelXP = user.level > 1 ? xpForNextLevel(user.level - 1) : 0;
-  const progressXP = user.xp - currentLevelXP;
-  const requiredXP = nextLevelXP - currentLevelXP;
-  const progress = (progressXP / requiredXP) * 100;
+  try {
+    const userQuests = await (prisma as any).userQuest.findMany({
+      where: {
+        userId: session.user.id,
+        OR: [
+          { expiresAt: { gte: new Date() } },
+          { expiresAt: null },
+        ],
+      },
+      include: {
+        quest: true,
+      },
+      orderBy: [
+        { completed: 'asc' },
+        { quest: { priority: 'desc' } },
+      ],
+    });
+
+    dailyQuests = userQuests.filter((uq: any) => uq.quest.type === 'DAILY');
+    weeklyQuests = userQuests.filter((uq: any) => uq.quest.type === 'WEEKLY');
+    specialQuests = userQuests.filter((uq: any) => uq.quest.type === 'SPECIAL');
+  } catch (error) {
+    console.log('Quest tables not yet available');
+  }
+
+  // Oyunları al (eğer tablo varsa)
+  let games: any[] = [];
+  try {
+    games = await (prisma as any).miniGame.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+    });
+  } catch (error) {
+    console.log('MiniGame table not yet available');
+  }
+
+  // Bugünkü oyun sayılarını al
+  const dailyPlays: Record<string, number> = {};
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const gameSessions = await (prisma as any).gameSession.findMany({
+      where: {
+        userId: session.user.id,
+        startedAt: { gte: today },
+        completed: true,
+      },
+      select: {
+        gameId: true,
+      },
+    });
+
+    gameSessions.forEach((session: any) => {
+      dailyPlays[session.gameId] = (dailyPlays[session.gameId] || 0) + 1;
+    });
+  } catch (error) {
+    console.log('GameSession table not yet available');
+  }
+
+  // En yüksek skorları al
+  const highScoreMap: Record<string, number> = {};
+  try {
+    const highScores = await (prisma as any).gameSession.findMany({
+      where: {
+        userId: session.user.id,
+        completed: true,
+      },
+      select: {
+        gameId: true,
+        score: true,
+      },
+      orderBy: {
+        score: 'desc',
+      },
+      distinct: ['gameId'],
+    });
+
+    highScores.forEach((hs: any) => {
+      highScoreMap[hs.gameId] = hs.score;
+    });
+  } catch (error) {
+    console.log('GameSession table not yet available');
+  }
+
+  // Streak bilgilerini al
+  let streakBonuses: any[] = [];
+  let availableMilestones: any[] = [];
+  let nextMilestone: any = null;
+
+  try {
+    streakBonuses = await (prisma as any).streakBonus.findMany({
+      orderBy: { streakDays: 'asc' },
+    });
+
+    // Kullanıcının alınabilir bonuslarını kontrol et
+    const claimedBonuses = await (prisma as any).coinTransaction.findMany({
+      where: {
+        userId: session.user.id,
+        type: 'BONUS',
+        description: { contains: 'Streak' },
+      },
+      select: {
+        metadata: true,
+      },
+    });
+
+    const claimedStreakDays = new Set(
+      claimedBonuses
+        .map((ct: any) => ct.metadata?.streakDays)
+        .filter(Boolean)
+    );
+
+    availableMilestones = streakBonuses.filter(
+      (sb: any) => user.streak >= sb.streakDays && !claimedStreakDays.has(sb.streakDays)
+    );
+
+    nextMilestone = streakBonuses.find((sb: any) => sb.streakDays > user.streak);
+  } catch (error) {
+    console.log('StreakBonus table not yet available');
+  }
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">🎮 Gamification</h1>
-        <p className="mt-2 text-gray-600">
-          Rozetler kazan, seviye atla ve liderlik tablosunda yüksel!
-        </p>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6">
-          <LevelProgress
-            level={user.level}
-            xp={user.xp}
-            progress={Math.min(100, Math.max(0, progress))}
-          />
-          <StreakCounter streak={user.streak} />
-        </div>
-
-        <div className="lg:col-span-2">
-          <LeaderboardTable />
-        </div>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="mb-4 text-2xl font-bold text-gray-900">
-          🏅 Rozetlerim ({user.badges.length}/{allBadges.length})
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {user.badges.map((userBadge) => (
-            <BadgeCard
-              key={userBadge.id}
-              badge={userBadge.badge}
-              earned={true}
-              earnedAt={userBadge.earnedAt}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="mb-4 text-2xl font-bold text-gray-900">
-          🎯 Tüm Rozetler
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {allBadges
-            .filter((badge) => !earnedBadgeIds.has(badge.id))
-            .map((badge) => (
-              <BadgeCard key={badge.id} badge={badge} earned={false} />
-            ))}
-        </div>
-      </div>
-    </div>
+    <GamificationClient
+      user={{
+        ...user,
+        coins,
+      }}
+      quests={{
+        daily: dailyQuests,
+        weekly: weeklyQuests,
+        special: specialQuests,
+      }}
+      games={games}
+      dailyPlays={dailyPlays}
+      highScores={highScoreMap}
+      streak={{
+        current: user.streak,
+        nextMilestone: nextMilestone?.streakDays || 0,
+        nextReward: nextMilestone || null,
+        availableMilestones,
+      }}
+    />
   );
 }

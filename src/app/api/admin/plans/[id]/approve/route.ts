@@ -47,6 +47,15 @@ export async function POST(
       request: req,
     })
 
+    // Quest Integration: Plan onaylama görevi güncelle
+    try {
+      const { onPlanApproved } = await import('@/lib/quest-integration');
+      await onPlanApproved(plan.userId);
+    } catch (questError) {
+      console.error('Quest integration error:', questError);
+      // Quest hatası plan onaylamayı etkilemez
+    }
+
     return NextResponse.json({ plan })
   } catch (error) {
     console.error("Plan approval error:", error)

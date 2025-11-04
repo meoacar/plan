@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { updateUserStreak } from "@/lib/streak-tracker";
+import { createNotification } from "@/lib/notification-service";
 
 const checkInSchema = z.object({
   weight: z.number().min(20).max(400).optional(),
@@ -63,6 +65,30 @@ export async function POST(req: NextRequest) {
         ...validated,
       },
     });
+
+    // Streak güncelle
+    try {
+      const streakUpdate = await updateUserStreak(session.user.id);
+      
+      // Milestone'a ulaşıldıysa bildirim gönder
+      if (streakUpdate.milestoneReached && streakUpdate.milestone) {
+        await createNotification({
+          userId: session.user.id,
+          type: 'BADGE_EARNED',
+          title: '🔥 Streak Milestone!',
+          message: `${streakUpdate.milestone.days} gün ardışık giriş yaptınız! Bonusunuzu almayı unutmayın.`,
+          actionUrl: '/gamification',
+          metadata: {
+            streakDays: streakUpdate.milestone.days,
+            coinReward: streakUpdate.milestone.coinReward,
+            xpReward: streakUpdate.milestone.xpReward,
+          },
+        });
+      }
+    } catch (streakError) {
+      console.error('Streak update error:', streakError);
+      // Streak hatası check-in'i etkilemesin
+    }
 
     return NextResponse.json(checkIn, { status: 201 });
   } catch (error) {

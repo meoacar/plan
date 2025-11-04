@@ -58,6 +58,15 @@ export async function POST(
       // Gamification: Beğeni veren kullanıcıya XP
       await addXP(session.user.id, XP_REWARDS.LIKE_GIVEN, "Plan beğenildi");
 
+      // Quest Integration: Beğeni görevi güncelle
+      try {
+        const { onLikeGiven } = await import('@/lib/quest-integration');
+        await onLikeGiven(session.user.id, plan.userId);
+      } catch (questError) {
+        console.error('Quest integration error:', questError);
+        // Quest hatası beğeni eklemeyi etkilemez
+      }
+
       // Gamification: Plan sahibine XP ve rozet kontrolü
       if (plan.userId !== session.user.id) {
         await addXP(plan.userId, XP_REWARDS.LIKE_RECEIVED, "Plan beğeni aldı");

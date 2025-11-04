@@ -7,193 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                       String                      @id @default(cuid())
-  email                    String                      @unique
-  passwordHash             String?
-  name                     String?
-  image                    String?
-  bio                      String?
-  startWeight              Int?
-  goalWeight               Int?
-  role                     Role                        @default(USER)
-  createdAt                DateTime                    @default(now())
-  updatedAt                DateTime                    @updatedAt
-  instagram                String?
-  tiktok                   String?
-  twitter                  String?
-  website                  String?
-  youtube                  String?
-  lastActiveDate           DateTime?
-  level                    Int                         @default(1)
-  streak                   Int                         @default(0)
-  xp                       Int                         @default(0)
-  city                     String?
-  username                 String?                     @unique
-  resetToken               String?
-  resetTokenExpiry         DateTime?
-  allowMessages            Boolean                     @default(true)
-  isPrivate                Boolean                     @default(false)
-  requireFollowApproval    Boolean                     @default(false)
-  showEmail                Boolean                     @default(false)
-  showWeight               Boolean                     @default(true)
-  emailVerified            DateTime?
-  accounts                 Account[]
-  partnerReceived          AccountabilityPartnership[] @relation("PartnerReceiver")
-  partnerRequests          AccountabilityPartnership[] @relation("PartnerRequester")
-  activityLogs             ActivityLog[]
-  backups                  Backup[]
-  bannedWords              BannedWord[]
-  calorieGoal              CalorieGoal?
-  createdChallenges        Challenge[]
-  challengeParticipations  ChallengeParticipant[]
-  cheatChallenges          CheatChallenge[]
-  cheatMeals               CheatMeal[]
-  checkIns                 CheckIn[]
-  collections              Collection[]
-  comments                 Comment[]
-  commentReactions         CommentReaction[]
-  moderatedComments        Comment[]                   @relation("CommentModerator")
-  crisisButtons            CrisisButton[]
-  emailCampaigns           EmailCampaign[]
-  favorites                Favorite[]
-  following                Follow[]                    @relation("UserFollowing")
-  followers                Follow[]                    @relation("UserFollowers")
-  groupEvents              GroupEvent[]                @relation("GroupEvents")
-  groupEventParticipations GroupEventParticipant[]     @relation("GroupEventParticipants")
-  groupGoalProgress        GroupGoalProgress[]         @relation("GroupGoalProgress")
-  groupLeaderboard         GroupLeaderboard[]          @relation("GroupLeaderboard")
-  groupMemberships         GroupMember[]               @relation("GroupMembers")
-  groupMessages            GroupMessage[]              @relation("GroupMessages")
-  groupPosts               GroupPost[]                 @relation("GroupPosts")
-  groupPostComments        GroupPostComment[]          @relation("GroupPostComments")
-  groupPostLikes           GroupPostLike[]             @relation("GroupPostLikes")
-  groupResources           GroupResource[]             @relation("GroupResources")
-  groupWeeklyGoals         GroupWeeklyGoal[]           @relation("GroupWeeklyGoals")
-  likes                    Like[]
-  meals                    Meal[]
-  measurements             Measurement[]
-  moodLogs                 MoodLog[]
-  notifications            Notification[]
-  notificationPreference   NotificationPreference?
-  plans                    Plan[]
-  polls                    Poll[]
-  pollVotes                PollVote[]
-  profileCustomization     ProfileCustomization?
-  progressPhotos           ProgressPhoto[]
-  pushSubscriptions        PushSubscription[]
-  recipeComments           RecipeComment[]
-  sessions                 Session[]
-  siteSettings             SiteSettings[]
-  badges                   UserBadge[]
-  goals                    UserGoal[]
-  wallPostsWritten         WallPost[]                  @relation("WallPostAuthor")
-  wallPosts                WallPost[]                  @relation("WallPostOwner")
-  weightLogs               WeightLog[]
-
-  @@index([xp, level])
-}
-
-model Plan {
-  id              String           @id @default(cuid())
-  userId          String
-  title           String
-  slug            String           @unique
-  startWeight     Int
-  goalWeight      Int
-  durationText    String
-  routine         String
-  diet            String
-  exercise        String
-  motivation      String
-  imageUrl        String?
-  status          PlanStatus       @default(PENDING)
-  views           Int              @default(0)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  categoryId      String?
-  rejectionReason String?
-  videoUrl        String?
-  collectionPlans CollectionPlan[]
-  comments        Comment[]
-  favorites       Favorite[]
-  likes           Like[]
-  category        Category?        @relation(fields: [categoryId], references: [id])
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tags            PlanTag[]
-
-  @@index([status, createdAt])
-  @@index([status, views])
-  @@index([slug])
-  @@index([goalWeight, startWeight])
-  @@index([categoryId])
-}
-
-model Comment {
-  id             String            @id @default(cuid())
-  planId         String
-  userId         String
-  body           String
-  status         CommentStatus     @default(APPROVED)
-  isSpam         Boolean           @default(false)
-  moderatedBy    String?
-  moderatedAt    DateTime?
-  moderationNote String?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @default(now()) @updatedAt
-  plan           Plan              @relation(fields: [planId], references: [id], onDelete: Cascade)
-  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  moderator      User?             @relation("CommentModerator", fields: [moderatedBy], references: [id])
-  reactions      CommentReaction[]
-
-  @@index([planId, createdAt])
-  @@index([userId])
-  @@index([status])
-  @@index([moderatedBy])
-}
-
-model CommentReaction {
-  id        String   @id @default(cuid())
-  commentId String
-  userId    String
-  emoji     String
-  createdAt DateTime @default(now())
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([commentId, userId, emoji])
-  @@index([commentId])
-  @@index([userId])
-}
-
-model Like {
-  id        String   @id @default(cuid())
-  planId    String
-  userId    String
-  createdAt DateTime @default(now())
-  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([planId, userId])
-  @@index([userId])
-  @@index([planId])
-}
-
-model Favorite {
-  id        String   @id @default(cuid())
-  planId    String
-  userId    String
-  note      String?
-  createdAt DateTime @default(now())
-  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([planId, userId])
-  @@index([userId, createdAt])
-}
-
 model Account {
-  id                String  @id @default(cuid())
+  id                String  @id
   userId            String
   type              String
   provider          String
@@ -205,114 +20,34 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model AccountabilityPartnership {
+  id                                               String               @id
+  requesterId                                      String
+  partnerId                                        String
+  status                                           PartnershipStatus    @default(PENDING)
+  message                                          String?
+  createdAt                                        DateTime             @default(now())
+  acceptedAt                                       DateTime?
+  endedAt                                          DateTime?
+  User_AccountabilityPartnership_partnerIdToUser   User                 @relation("AccountabilityPartnership_partnerIdToUser", fields: [partnerId], references: [id], onDelete: Cascade)
+  User_AccountabilityPartnership_requesterIdToUser User                 @relation("AccountabilityPartnership_requesterIdToUser", fields: [requesterId], references: [id], onDelete: Cascade)
+  PartnershipCheckIn                               PartnershipCheckIn[]
+  PartnershipGoal                                  PartnershipGoal[]
+  PartnershipMessage                               PartnershipMessage[]
 
-  @@index([userId])
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model SiteSettings {
-  id                      String       @id @default(cuid())
-  siteTitle               String       @default("Zayıflama Planım")
-  siteDescription         String
-  logoUrl                 String?
-  twitterUrl              String?
-  instagramUrl            String?
-  facebookUrl             String?
-  footerText              String?
-  maintenanceMode         Boolean      @default(false)
-  updatedAt               DateTime     @updatedAt
-  updatedBy               String
-  footerAboutText         String?      @default("Gerçek insanların gerçek başarı hikayeleri. Sağlıklı yaşam için ilham alın.")
-  footerAboutTitle        String?      @default("Hakkımızda")
-  footerLinksTitle        String?      @default("Hızlı Bağlantılar")
-  footerSocialTitle       String?      @default("Bizi Takip Edin")
-  facebookAppId           String?
-  facebookAppSecret       String?
-  facebookOAuthEnabled    Boolean      @default(false)
-  googleClientId          String?
-  googleClientSecret      String?
-  googleOAuthEnabled      Boolean      @default(false)
-  googleAnalyticsId       String?
-  googleSearchConsoleCode String?
-  footerLinks             FooterLink[]
-  updatedByUser           User         @relation(fields: [updatedBy], references: [id])
-}
-
-model FooterLink {
-  id           String       @id @default(cuid())
-  settingsId   String
-  title        String
-  url          String
-  order        Int          @default(0)
-  openInNewTab Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  settings     SiteSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
-
-  @@index([settingsId, order])
-}
-
-model Category {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  slug        String   @unique
-  description String?
-  color       String   @default("#4caf50")
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  plans       Plan[]
-}
-
-model Tag {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
-  createdAt DateTime  @default(now())
-  plans     PlanTag[]
-}
-
-model PlanTag {
-  id     String @id @default(cuid())
-  planId String
-  tagId  String
-  plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
-  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@unique([planId, tagId])
-}
-
-model BannedWord {
-  id        String   @id @default(cuid())
-  word      String   @unique
-  createdAt DateTime @default(now())
-  createdBy String
-  creator   User     @relation(fields: [createdBy], references: [id])
-
-  @@index([createdBy])
+  @@unique([requesterId, partnerId])
+  @@index([partnerId, status])
+  @@index([requesterId, status])
 }
 
 model ActivityLog {
-  id          String       @id @default(cuid())
+  id          String       @id
   userId      String
   type        ActivityType
   targetId    String?
@@ -322,14 +57,472 @@ model ActivityLog {
   ipAddress   String?
   userAgent   String?
   createdAt   DateTime     @default(now())
-  user        User         @relation(fields: [userId], references: [id])
+  User        User         @relation(fields: [userId], references: [id])
+
+  @@index([type, createdAt])
+  @@index([userId, createdAt])
+}
+
+model Backup {
+  id        String   @id
+  filename  String
+  size      Int
+  type      String   @default("manual")
+  createdBy String?
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [createdBy], references: [id])
+
+  @@index([createdAt])
+  @@index([createdBy])
+}
+
+model Badge {
+  id          String      @id
+  type        BadgeType   @unique
+  name        String
+  description String
+  icon        String
+  xpReward    Int         @default(0)
+  createdAt   DateTime    @default(now())
+  UserBadge   UserBadge[]
+
+  @@index([type])
+}
+
+model BannedWord {
+  id        String   @id
+  word      String   @unique
+  createdAt DateTime @default(now())
+  createdBy String
+  User      User     @relation(fields: [createdBy], references: [id])
+
+  @@index([createdBy])
+}
+
+model BlogCategory {
+  id          String     @id
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  color       String     @default("#10b981")
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime
+  BlogPost    BlogPost[]
+
+  @@index([order])
+  @@index([slug])
+}
+
+model BlogComment {
+  id         String   @id
+  postId     String
+  authorId   String
+  content    String
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  BlogPost   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([authorId])
+  @@index([postId, isApproved, createdAt])
+}
+
+model BlogPost {
+  id               String         @id
+  title            String
+  slug             String         @unique
+  excerpt          String
+  content          String
+  featuredImage    String?
+  authorId         String
+  categoryId       String?
+  status           BlogStatus     @default(DRAFT)
+  isPublished      Boolean        @default(false)
+  publishedAt      DateTime?
+  metaTitle        String?
+  metaDescription  String?
+  metaKeywords     String?
+  views            Int            @default(0)
+  readTime         Int?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime
+  authorName       String         @default("Admin")
+  featuredImageAlt String?
+  BlogComment      BlogComment[]
+  BlogCategory     BlogCategory?  @relation(fields: [categoryId], references: [id])
+  BlogPostTag      BlogPostTag[]
+  BlogReaction     BlogReaction[]
+
+  @@index([authorId])
+  @@index([categoryId, status])
+  @@index([slug])
+  @@index([status, publishedAt])
+}
+
+model BlogPostTag {
+  id       String   @id
+  postId   String
+  tagId    String
+  BlogPost BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  BlogTag  BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId])
+  @@index([postId])
+  @@index([tagId])
+}
+
+model BlogReaction {
+  id        String   @id
+  postId    String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+  BlogPost  BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId, emoji])
+  @@index([postId])
+  @@index([userId])
+}
+
+model BlogTag {
+  id          String        @id
+  name        String        @unique
+  slug        String        @unique
+  createdAt   DateTime      @default(now())
+  BlogPostTag BlogPostTag[]
+
+  @@index([slug])
+}
+
+model CalorieGoal {
+  id            String   @id
+  userId        String   @unique
+  dailyCalories Int
+  dailyProtein  Int?
+  dailyCarbs    Int?
+  dailyFat      Int?
+  activityLevel String   @default("sedentary")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  User          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id          String   @id
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  color       String   @default("#4caf50")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  Plan        Plan[]
+}
+
+model Challenge {
+  id                   String                 @id
+  groupId              String?
+  title                String
+  description          String
+  type                 ChallengeType
+  target               Float
+  unit                 String
+  startDate            DateTime
+  endDate              DateTime
+  isActive             Boolean                @default(true)
+  createdBy            String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  User                 User                   @relation(fields: [createdBy], references: [id])
+  Group                Group?                 @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  ChallengeLeaderboard ChallengeLeaderboard[]
+  ChallengeParticipant ChallengeParticipant[]
+
+  @@index([createdBy])
+  @@index([groupId, isActive])
+  @@index([isActive, startDate])
+  @@index([startDate, endDate])
+  @@index([type, isActive])
+}
+
+model ChallengeLeaderboard {
+  id          String    @id
+  challengeId String
+  userId      String
+  score       Float
+  rank        Int
+  updatedAt   DateTime
+  Challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([challengeId, rank])
+  @@index([userId])
+}
+
+model ChallengeParticipant {
+  id          String    @id
+  challengeId String
+  userId      String
+  progress    Float     @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  joinedAt    DateTime  @default(now())
+  Challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([challengeId, completed])
+  @@index([userId])
+}
+
+model CheatChallenge {
+  id        String   @id
+  userId    String
+  weekStart DateTime
+  weekEnd   DateTime
+  limit     Int      @default(2)
+  penalty   String?
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart])
+}
+
+model CheatMeal {
+  id        String    @id
+  userId    String
+  type      CheatType
+  note      String?
+  date      DateTime  @default(now())
+  createdAt DateTime  @default(now())
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([type])
+  @@index([userId, date])
+}
+
+model CheckIn {
+  id                 String               @id
+  userId             String
+  weight             Float?
+  energy             Int?
+  motivation         Int?
+  sleep              Int?
+  water              Int?
+  exercise           Boolean              @default(false)
+  dietPlan           Boolean              @default(false)
+  note               String?
+  createdAt          DateTime             @default(now())
+  User               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  PartnershipCheckIn PartnershipCheckIn[]
 
   @@index([userId, createdAt])
-  @@index([type, createdAt])
+}
+
+model CoinTransaction {
+  id        String              @id
+  userId    String
+  amount    Int
+  type      CoinTransactionType
+  reason    String
+  metadata  Json?
+  createdAt DateTime            @default(now())
+  User      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([type])
+  @@index([userId, createdAt])
+}
+
+model Collection {
+  id             String           @id
+  userId         String
+  name           String
+  description    String?
+  isPublic       Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  User           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  CollectionPlan CollectionPlan[]
+
+  @@index([userId, createdAt])
+}
+
+model CollectionPlan {
+  id           String     @id
+  collectionId String
+  planId       String
+  order        Int        @default(0)
+  note         String?
+  createdAt    DateTime   @default(now())
+  Collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  Plan         Plan       @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, planId])
+  @@index([collectionId, order])
+}
+
+model Comment {
+  id                             String            @id
+  planId                         String
+  userId                         String
+  body                           String
+  createdAt                      DateTime          @default(now())
+  isSpam                         Boolean           @default(false)
+  moderatedAt                    DateTime?
+  moderatedBy                    String?
+  moderationNote                 String?
+  status                         CommentStatus     @default(APPROVED)
+  updatedAt                      DateTime          @default(now())
+  User_Comment_moderatedByToUser User?             @relation("Comment_moderatedByToUser", fields: [moderatedBy], references: [id])
+  Plan                           Plan              @relation(fields: [planId], references: [id], onDelete: Cascade)
+  User_Comment_userIdToUser      User              @relation("Comment_userIdToUser", fields: [userId], references: [id], onDelete: Cascade)
+  CommentReaction                CommentReaction[]
+
+  @@index([moderatedBy])
+  @@index([planId, createdAt])
+  @@index([status])
+  @@index([userId])
+}
+
+model CommentReaction {
+  id        String   @id
+  commentId String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+  Comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId, emoji])
+  @@index([commentId])
+  @@index([userId])
+}
+
+model Confession {
+  id                 String               @id
+  userId             String
+  text               String
+  aiReply            String?
+  isAnonymous        Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  approvedAt         DateTime?
+  approvedBy         String?
+  rejectionReason    String?
+  status             ConfessionStatus     @default(PENDING)
+  ConfessionComment  ConfessionComment[]
+  ConfessionLike     ConfessionLike[]
+  ConfessionReaction ConfessionReaction[]
+
+  @@index([approvedBy])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([userId])
+}
+
+model ConfessionComment {
+  id           String        @id
+  confessionId String
+  userId       String
+  content      String
+  isAnonymous  Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  status       CommentStatus @default(PENDING)
+  Confession   Confession    @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@index([confessionId, createdAt])
+  @@index([status])
+  @@index([userId])
+}
+
+model ConfessionLike {
+  id           String     @id
+  confessionId String
+  userId       String
+  createdAt    DateTime   @default(now())
+  Confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@unique([confessionId, userId])
+  @@index([confessionId])
+  @@index([userId])
+}
+
+model ConfessionReaction {
+  id           String     @id
+  confessionId String
+  userId       String
+  emoji        String
+  createdAt    DateTime   @default(now())
+  Confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+
+  @@unique([confessionId, userId, emoji])
+  @@index([confessionId])
+  @@index([userId])
+}
+
+model CrisisButton {
+  id         String    @id
+  userId     String
+  trigger    String
+  resolved   Boolean   @default(false)
+  resolvedAt DateTime?
+  note       String?
+  createdAt  DateTime  @default(now())
+  User       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([trigger])
+  @@index([userId, createdAt])
+}
+
+model CustomizationItem {
+  id              String            @id
+  type            CustomizationType
+  code            String            @unique
+  name            String
+  description     String?
+  imageUrl        String?
+  previewUrl      String?
+  cssClass        String?
+  colors          Json?
+  unlockCondition String
+  badgeType       BadgeType?
+  badgeCount      Int?
+  level           Int?
+  xpRequired      Int?
+  isDefault       Boolean           @default(false)
+  isSpecial       Boolean           @default(false)
+  order           Int               @default(0)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+
+  @@index([badgeType])
+  @@index([isDefault])
+  @@index([type, order])
+}
+
+model DailyQuest {
+  id             String           @id
+  type           DailyQuestType
+  title          String
+  description    String
+  difficulty     QuestDifficulty  @default(EASY)
+  xpReward       Int              @default(0)
+  coinReward     Int              @default(0)
+  target         Int              @default(1)
+  icon           String
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  UserDailyQuest UserDailyQuest[]
+
+  @@index([isActive])
+  @@index([type])
 }
 
 model EmailCampaign {
-  id          String      @id @default(cuid())
+  id          String      @id
   subject     String
   content     String
   recipients  String
@@ -339,341 +532,44 @@ model EmailCampaign {
   createdBy   String
   createdAt   DateTime    @default(now())
   sentAt      DateTime?
-  creator     User        @relation(fields: [createdBy], references: [id])
+  User        User        @relation(fields: [createdBy], references: [id])
 
   @@index([status, createdAt])
 }
 
-model Backup {
-  id        String   @id @default(cuid())
-  filename  String
-  size      Int
-  type      String   @default("manual")
-  createdBy String?
-  createdAt DateTime @default(now())
-  creator   User?    @relation(fields: [createdBy], references: [id])
-
-  @@index([createdAt])
-  @@index([createdBy])
-}
-
-model Badge {
-  id          String      @id @default(cuid())
-  type        BadgeType   @unique
-  name        String
-  description String
-  icon        String
-  xpReward    Int         @default(0)
-  createdAt   DateTime    @default(now())
-  users       UserBadge[]
-
-  @@index([type])
-}
-
-model UserBadge {
-  id       String   @id @default(cuid())
-  userId   String
-  badgeId  String
-  earnedAt DateTime @default(now())
-  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, badgeId])
-  @@index([userId, earnedAt])
-}
-
-model Goal {
-  id          String     @id @default(cuid())
-  type        GoalType   @unique
-  name        String
-  description String
-  target      Int
-  xpReward    Int        @default(0)
-  createdAt   DateTime   @default(now())
-  users       UserGoal[]
-
-  @@index([type])
-}
-
-model UserGoal {
-  id          String    @id @default(cuid())
-  userId      String
-  goalId      String
-  progress    Int       @default(0)
-  completed   Boolean   @default(false)
-  completedAt DateTime?
-  startDate   DateTime  @default(now())
-  endDate     DateTime
-  goal        Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, goalId, startDate])
-  @@index([userId, completed])
-  @@index([goalId])
-  @@index([endDate])
-}
-
-model WeightLog {
-  id        String   @id @default(cuid())
+model Favorite {
+  id        String   @id
+  planId    String
   userId    String
-  weight    Float
   note      String?
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([planId, userId])
   @@index([userId, createdAt])
-}
-
-model CheckIn {
-  id                  String               @id @default(cuid())
-  userId              String
-  weight              Float?
-  energy              Int?
-  motivation          Int?
-  sleep               Int?
-  water               Int?
-  exercise            Boolean              @default(false)
-  dietPlan            Boolean              @default(false)
-  note                String?
-  createdAt           DateTime             @default(now())
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  partnershipCheckIns PartnershipCheckIn[]
-
-  @@index([userId, createdAt])
-}
-
-model ProgressPhoto {
-  id          String   @id @default(cuid())
-  userId      String
-  imageUrl    String
-  weight      Float?
-  description String?
-  isPublic    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-}
-
-model Measurement {
-  id        String   @id @default(cuid())
-  userId    String
-  chest     Float?
-  waist     Float?
-  hips      Float?
-  thigh     Float?
-  arm       Float?
-  neck      Float?
-  note      String?
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-}
-
-model MoodLog {
-  id        String   @id @default(cuid())
-  userId    String
-  mood      Int
-  stress    Int?
-  note      String?
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-}
-
-model Collection {
-  id          String           @id @default(cuid())
-  userId      String
-  name        String
-  description String?
-  isPublic    Boolean          @default(false)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plans       CollectionPlan[]
-
-  @@index([userId, createdAt])
-}
-
-model CollectionPlan {
-  id           String     @id @default(cuid())
-  collectionId String
-  planId       String
-  order        Int        @default(0)
-  note         String?
-  createdAt    DateTime   @default(now())
-  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  plan         Plan       @relation(fields: [planId], references: [id], onDelete: Cascade)
-
-  @@unique([collectionId, planId])
-  @@index([collectionId, order])
 }
 
 model Follow {
-  id          String       @id @default(cuid())
-  followerId  String
-  followingId String
-  createdAt   DateTime     @default(now())
-  acceptedAt  DateTime?
-  rejectedAt  DateTime?
-  status      FollowStatus @default(PENDING)
-  follower    User         @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
-  following   User         @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  id                            String       @id
+  followerId                    String
+  followingId                   String
+  createdAt                     DateTime     @default(now())
+  acceptedAt                    DateTime?
+  rejectedAt                    DateTime?
+  status                        FollowStatus @default(PENDING)
+  User_Follow_followerIdToUser  User         @relation("Follow_followerIdToUser", fields: [followerId], references: [id], onDelete: Cascade)
+  User_Follow_followingIdToUser User         @relation("Follow_followingIdToUser", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
   @@index([followerId])
   @@index([followingId])
-  @@index([status])
   @@index([followingId, status])
-}
-
-model SeoSettings {
-  id        Int      @id @default(1)
-  settings  Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model AccountabilityPartnership {
-  id          String               @id @default(cuid())
-  requesterId String
-  partnerId   String
-  status      PartnershipStatus    @default(PENDING)
-  message     String?
-  createdAt   DateTime             @default(now())
-  acceptedAt  DateTime?
-  endedAt     DateTime?
-  partner     User                 @relation("PartnerReceiver", fields: [partnerId], references: [id], onDelete: Cascade)
-  requester   User                 @relation("PartnerRequester", fields: [requesterId], references: [id], onDelete: Cascade)
-  checkIns    PartnershipCheckIn[]
-  sharedGoals PartnershipGoal[]
-  messages    PartnershipMessage[]
-
-  @@unique([requesterId, partnerId])
-  @@index([requesterId, status])
-  @@index([partnerId, status])
-}
-
-model PartnershipGoal {
-  id            String                    @id @default(cuid())
-  partnershipId String
-  title         String
-  description   String?
-  targetDate    DateTime
-  completed     Boolean                   @default(false)
-  completedAt   DateTime?
-  createdBy     String
-  createdAt     DateTime                  @default(now())
-  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
-
-  @@index([partnershipId, completed])
-}
-
-model PartnershipMessage {
-  id            String                    @id @default(cuid())
-  partnershipId String
-  senderId      String
-  content       String
-  isRead        Boolean                   @default(false)
-  readAt        DateTime?
-  createdAt     DateTime                  @default(now())
-  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
-
-  @@index([partnershipId, createdAt])
-  @@index([senderId])
-}
-
-model PartnershipCheckIn {
-  id            String                    @id @default(cuid())
-  partnershipId String
-  checkInId     String
-  supportNote   String?
-  createdAt     DateTime                  @default(now())
-  checkIn       CheckIn                   @relation(fields: [checkInId], references: [id], onDelete: Cascade)
-  partnership   AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
-
-  @@index([partnershipId, createdAt])
-}
-
-model Poll {
-  id            String       @id @default(cuid())
-  question      String
-  description   String?
-  isActive      Boolean      @default(true)
-  isPublic      Boolean      @default(true)
-  allowMultiple Boolean      @default(false)
-  endsAt        DateTime?
-  createdBy     String
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  creator       User         @relation(fields: [createdBy], references: [id])
-  options       PollOption[]
-  votes         PollVote[]
-
-  @@index([isActive, createdAt])
-  @@index([createdBy])
-}
-
-model PollOption {
-  id        String     @id @default(cuid())
-  pollId    String
-  text      String
-  order     Int        @default(0)
-  createdAt DateTime   @default(now())
-  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  votes     PollVote[]
-
-  @@index([pollId, order])
-}
-
-model PollVote {
-  id        String     @id @default(cuid())
-  pollId    String
-  optionId  String
-  userId    String
-  createdAt DateTime   @default(now())
-  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
-  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  voter     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([pollId, optionId, userId])
-  @@index([pollId])
-  @@index([userId])
-}
-
-model CrisisButton {
-  id         String    @id @default(cuid())
-  userId     String
-  trigger    String
-  resolved   Boolean   @default(false)
-  resolvedAt DateTime?
-  note       String?
-  createdAt  DateTime  @default(now())
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-  @@index([trigger])
-}
-
-model WallPost {
-  id        String   @id @default(cuid())
-  userId    String
-  authorId  String
-  content   String
-  isPublic  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User     @relation("WallPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  user      User     @relation("WallPostOwner", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-  @@index([authorId])
+  @@index([status])
 }
 
 model Food {
-  id          String      @id @default(cuid())
+  id          String      @id
   name        String
   nameEn      String?
   category    String
@@ -685,16 +581,375 @@ model Food {
   servingSize Float       @default(100)
   isCommon    Boolean     @default(false)
   createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  mealEntries MealEntry[]
+  updatedAt   DateTime
+  MealEntry   MealEntry[]
 
   @@index([category])
   @@index([isCommon])
   @@index([name])
 }
 
+model FooterLink {
+  id           String       @id
+  settingsId   String
+  title        String
+  url          String
+  order        Int          @default(0)
+  openInNewTab Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime
+  SiteSettings SiteSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+
+  @@index([settingsId, order])
+}
+
+model FriendSuggestion {
+  id          String   @id
+  userId      String
+  suggestedId String
+  reason      String
+  score       Float
+  dismissed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, suggestedId])
+  @@index([score])
+  @@index([userId, dismissed])
+}
+
+model GameScore {
+  id         String   @id
+  userId     String
+  gameType   GameType
+  score      Int
+  difficulty String   @default("NORMAL")
+  xpEarned   Int      @default(0)
+  coinEarned Int      @default(0)
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([gameType, score])
+  @@index([userId, createdAt])
+  @@index([userId, gameType])
+}
+
+model Goal {
+  id          String     @id
+  type        GoalType   @unique
+  name        String
+  description String
+  target      Int
+  xpReward    Int        @default(0)
+  createdAt   DateTime   @default(now())
+  UserGoal    UserGoal[]
+
+  @@index([type])
+}
+
+model Group {
+  id                String              @id
+  name              String
+  slug              String              @unique
+  description       String
+  imageUrl          String?
+  goalType          String
+  targetWeight      Int?
+  isPrivate         Boolean             @default(false)
+  maxMembers        Int?
+  status            GroupStatus         @default(PENDING)
+  rejectionReason   String?
+  createdBy         String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  approvedAt        DateTime?
+  ageGroup          GroupAgeGroup?
+  gender            GroupGender?
+  level             GroupLevel?
+  Challenge         Challenge[]
+  GroupEvent        GroupEvent[]
+  GroupJoinRequest  GroupJoinRequest[]
+  GroupLeaderboard  GroupLeaderboard[]
+  GroupMember       GroupMember[]
+  GroupMessage      GroupMessage[]
+  GroupPost         GroupPost[]
+  GroupResource     GroupResource[]
+  GroupStats        GroupStats?
+  GroupStatsHistory GroupStatsHistory[]
+  GroupWeeklyGoal   GroupWeeklyGoal[]
+
+  @@index([ageGroup])
+  @@index([createdBy])
+  @@index([gender])
+  @@index([goalType])
+  @@index([isPrivate, status])
+  @@index([level])
+  @@index([slug])
+  @@index([status, createdAt])
+  @@index([status, goalType])
+}
+
+model GroupEvent {
+  id                    String                  @id
+  groupId               String
+  title                 String
+  description           String?
+  eventType             GroupEventType
+  startDate             DateTime
+  endDate               DateTime?
+  location              String?
+  maxParticipants       Int?
+  createdBy             String
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime
+  User                  User                    @relation(fields: [createdBy], references: [id])
+  Group                 Group                   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  GroupEventParticipant GroupEventParticipant[]
+
+  @@index([createdBy])
+  @@index([eventType])
+  @@index([groupId, startDate])
+  @@index([startDate])
+}
+
+model GroupEventParticipant {
+  id         String            @id
+  eventId    String
+  userId     String
+  status     ParticipantStatus @default(GOING)
+  joinedAt   DateTime          @default(now())
+  GroupEvent GroupEvent        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  User       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId, status])
+  @@index([userId])
+}
+
+model GroupGoalProgress {
+  id              String          @id
+  goalId          String
+  userId          String
+  value           Float
+  createdAt       DateTime        @default(now())
+  GroupWeeklyGoal GroupWeeklyGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  User            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([goalId, createdAt])
+  @@index([goalId, userId])
+  @@index([userId])
+}
+
+model GroupJoinRequest {
+  id        String            @id
+  groupId   String
+  userId    String
+  message   String?
+  status    JoinRequestStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime
+  Group     Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([groupId, status])
+  @@index([userId, status])
+}
+
+model GroupLeaderboard {
+  id              String            @id
+  groupId         String
+  userId          String
+  period          LeaderboardPeriod
+  periodStart     DateTime
+  periodEnd       DateTime
+  activityScore   Int               @default(0)
+  weightLossScore Float             @default(0)
+  streakScore     Int               @default(0)
+  totalScore      Float             @default(0)
+  rank            Int?
+  updatedAt       DateTime
+  Group           Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  User            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId, period, periodStart])
+  @@index([groupId, period, rank])
+  @@index([groupId, period, totalScore])
+  @@index([periodStart, periodEnd])
+  @@index([userId])
+}
+
+model GroupMember {
+  id           String          @id
+  groupId      String
+  userId       String
+  role         GroupMemberRole @default(MEMBER)
+  joinedAt     DateTime        @default(now())
+  lastActiveAt DateTime?
+  permissions  Json?
+  Group        Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  User         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([groupId, lastActiveAt])
+  @@index([groupId, role])
+  @@index([userId])
+}
+
+model GroupMessage {
+  id          String           @id
+  groupId     String
+  userId      String
+  content     String
+  messageType GroupMessageType @default(TEXT)
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+  Group       Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  User        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, createdAt])
+  @@index([messageType])
+  @@index([userId])
+}
+
+model GroupPost {
+  id               String             @id
+  groupId          String
+  userId           String
+  content          String
+  imageUrl         String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  metadata         Json?
+  postType         GroupPostType      @default(UPDATE)
+  Group            Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  User             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  GroupPostComment GroupPostComment[]
+  GroupPostLike    GroupPostLike[]
+
+  @@index([groupId, createdAt])
+  @@index([groupId, postType, createdAt])
+  @@index([postType])
+  @@index([userId])
+}
+
+model GroupPostComment {
+  id        String    @id
+  postId    String
+  userId    String
+  content   String
+  createdAt DateTime  @default(now())
+  GroupPost GroupPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+  @@index([userId])
+}
+
+model GroupPostLike {
+  id        String    @id
+  postId    String
+  userId    String
+  createdAt DateTime  @default(now())
+  GroupPost GroupPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([postId])
+}
+
+model GroupResource {
+  id           String            @id
+  groupId      String
+  title        String
+  description  String?
+  resourceType GroupResourceType
+  url          String?
+  fileUrl      String?
+  content      String?
+  category     String
+  tags         String[]
+  views        Int               @default(0)
+  uploadedBy   String
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime
+  Group        Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  User         User              @relation(fields: [uploadedBy], references: [id])
+
+  @@index([groupId, category])
+  @@index([groupId, views])
+  @@index([resourceType])
+  @@index([uploadedBy])
+}
+
+model GroupStats {
+  id              String   @id
+  groupId         String   @unique
+  totalMembers    Int      @default(0)
+  activeMembers   Int      @default(0)
+  totalWeightLoss Float    @default(0)
+  avgWeightLoss   Float    @default(0)
+  totalPosts      Int      @default(0)
+  totalMessages   Int      @default(0)
+  activeRate      Float    @default(0)
+  lastCalculated  DateTime
+  Group           Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+}
+
+model GroupStatsHistory {
+  id              String   @id
+  groupId         String
+  date            DateTime
+  activeMembers   Int
+  totalWeightLoss Float
+  postsCount      Int
+  messagesCount   Int
+  Group           Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, date])
+  @@index([groupId, date])
+}
+
+model GroupWeeklyGoal {
+  id                String              @id
+  groupId           String
+  weekStart         DateTime
+  weekEnd           DateTime
+  title             String
+  description       String?
+  targetType        String
+  targetValue       Float
+  currentValue      Float               @default(0)
+  completed         Boolean             @default(false)
+  createdBy         String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  GroupGoalProgress GroupGoalProgress[]
+  User              User                @relation(fields: [createdBy], references: [id])
+  Group             Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, weekStart])
+  @@index([groupId, completed])
+  @@index([groupId, weekStart])
+  @@index([weekStart, weekEnd])
+}
+
+model Like {
+  id        String   @id
+  planId    String
+  userId    String
+  createdAt DateTime @default(now())
+  Plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, userId])
+  @@index([planId])
+  @@index([userId])
+}
+
 model Meal {
-  id            String      @id @default(cuid())
+  id            String      @id
   userId        String
   date          DateTime
   mealType      String
@@ -704,16 +959,16 @@ model Meal {
   totalFat      Float       @default(0)
   note          String?
   createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  entries       MealEntry[]
+  updatedAt     DateTime
+  User          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  MealEntry     MealEntry[]
 
-  @@index([userId, date])
   @@index([mealType])
+  @@index([userId, date])
 }
 
 model MealEntry {
-  id        String   @id @default(cuid())
+  id        String   @id
   mealId    String
   foodId    String?
   foodName  String
@@ -723,200 +978,68 @@ model MealEntry {
   carbs     Float?
   fat       Float?
   createdAt DateTime @default(now())
-  food      Food?    @relation(fields: [foodId], references: [id])
-  meal      Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  Food      Food?    @relation(fields: [foodId], references: [id])
+  Meal      Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
 
-  @@index([mealId])
   @@index([foodId])
+  @@index([mealId])
 }
 
-model CalorieGoal {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  dailyCalories Int
-  dailyProtein  Int?
-  dailyCarbs    Int?
-  dailyFat      Int?
-  activityLevel String   @default("sedentary")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model ShoppingList {
-  id          String             @id @default(cuid())
-  userId      String
-  planId      String?
-  name        String
-  description String?
-  weekNumber  Int?
-  isCompleted Boolean            @default(false)
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  items       ShoppingListItem[]
-
-  @@index([userId, createdAt])
-  @@index([planId])
-  @@index([userId, isCompleted])
-}
-
-model ShoppingListItem {
-  id             String       @id @default(cuid())
-  shoppingListId String
-  category       String
-  name           String
-  quantity       String
-  isChecked      Boolean      @default(false)
-  note           String?
-  estimatedPrice Float?
-  order          Int          @default(0)
-  createdAt      DateTime     @default(now())
-  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
-
-  @@index([shoppingListId, category, order])
-}
-
-model Recipe {
-  id              String           @id @default(cuid())
-  userId          String
-  title           String
-  slug            String           @unique
-  description     String
-  ingredients     String
-  instructions    String
-  prepTime        Int?
-  cookTime        Int?
-  servings        Int?
-  difficulty      String?
-  category        String
-  calories        Float?
-  protein         Float?
-  carbs           Float?
-  fat             Float?
-  status          RecipeStatus     @default(PENDING)
-  rejectionReason String?
-  views           Int              @default(0)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  comments        RecipeComment[]
-  favorites       RecipeFavorite[]
-  images          RecipeImage[]
-  likes           RecipeLike[]
-
-  @@index([userId, status])
-  @@index([status, createdAt])
-  @@index([category])
-  @@index([slug])
-  @@index([status, views])
-}
-
-model RecipeImage {
-  id        String   @id @default(cuid())
-  recipeId  String
-  url       String
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-
-  @@index([recipeId, order])
-}
-
-model RecipeLike {
-  id        String   @id @default(cuid())
-  recipeId  String
+model Measurement {
+  id        String   @id
   userId    String
-  createdAt DateTime @default(now())
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-
-  @@unique([recipeId, userId])
-  @@index([userId])
-  @@index([recipeId])
-}
-
-model RecipeComment {
-  id        String   @id @default(cuid())
-  recipeId  String
-  userId    String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([recipeId, createdAt])
-  @@index([userId])
-}
-
-model RecipeFavorite {
-  id        String   @id @default(cuid())
-  recipeId  String
-  userId    String
+  chest     Float?
+  waist     Float?
+  hips      Float?
+  thigh     Float?
+  arm       Float?
+  neck      Float?
   note      String?
   createdAt DateTime @default(now())
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([recipeId, userId])
   @@index([userId, createdAt])
 }
 
-model Page {
-  id              String    @id @default(cuid())
-  title           String
-  slug            String    @unique
-  content         String
-  excerpt         String?
-  metaTitle       String?
-  metaDescription String?
-  metaKeywords    String?
-  ogImage         String?
-  isPublished     Boolean   @default(false)
-  showInFooter    Boolean   @default(false)
-  showInNavbar    Boolean   @default(false)
-  showInTopNavbar Boolean   @default(false)
-  order           Int       @default(0)
-  views           Int       @default(0)
-  createdBy       String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  publishedAt     DateTime?
+model MicroCopy {
+  id        String   @id
+  key       String   @unique
+  location  String
+  text      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
 
-  @@index([slug])
-  @@index([isPublished, order])
-  @@index([showInFooter, order])
-  @@index([showInNavbar, order])
-  @@index([showInTopNavbar, order])
+  @@index([isActive])
+  @@index([location])
 }
 
-model ChallengeLeaderboard {
-  id          String    @id @default(cuid())
-  challengeId String
-  userId      String
-  score       Float
-  rank        Int
-  updatedAt   DateTime  @updatedAt
-  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+model MoodLog {
+  id        String   @id
+  userId    String
+  mood      Int
+  stress    Int?
+  note      String?
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([challengeId, userId])
-  @@index([challengeId, rank])
-  @@index([userId])
+  @@index([userId, createdAt])
 }
 
-model FriendSuggestion {
-  id          String   @id @default(cuid())
-  userId      String
-  suggestedId String
-  reason      String
-  score       Float
-  dismissed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
+model NewsletterSubscriber {
+  id             String    @id
+  email          String    @unique
+  name           String?
+  isActive       Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
 
-  @@unique([userId, suggestedId])
-  @@index([userId, dismissed])
-  @@index([score])
+  @@index([email])
+  @@index([isActive])
 }
 
 model Notification {
-  id        String           @id @default(cuid())
+  id        String           @id
   userId    String
   type      NotificationType
   title     String
@@ -928,15 +1051,15 @@ model Notification {
   relatedId String?
   metadata  Json?
   createdAt DateTime         @default(now())
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId, isRead, createdAt])
-  @@index([userId, createdAt])
   @@index([type])
+  @@index([userId, createdAt])
+  @@index([userId, isRead, createdAt])
 }
 
 model NotificationPreference {
-  id                  String   @id @default(cuid())
+  id                  String   @id
   userId              String   @unique
   emailNewFollower    Boolean  @default(true)
   emailComment        Boolean  @default(true)
@@ -957,167 +1080,172 @@ model NotificationPreference {
   quietHoursStart     Int?
   quietHoursEnd       Int?
   createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt           DateTime
+  User                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model PushSubscription {
-  id         String   @id @default(cuid())
-  userId     String
-  endpoint   String   @unique
-  p256dh     String
-  auth       String
-  userAgent  String?
-  createdAt  DateTime @default(now())
-  lastUsedAt DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Page {
+  id              String    @id
+  title           String
+  slug            String    @unique
+  content         String
+  excerpt         String?
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  ogImage         String?
+  isPublished     Boolean   @default(false)
+  showInFooter    Boolean   @default(false)
+  showInNavbar    Boolean   @default(false)
+  showInTopNavbar Boolean   @default(false)
+  order           Int       @default(0)
+  views           Int       @default(0)
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime
+  publishedAt     DateTime?
 
-  @@index([userId])
-}
-
-model WebVitals {
-  id             String   @id @default(cuid())
-  metricName     String
-  value          Int
-  rating         String
-  delta          Int
-  metricId       String
-  navigationType String?
-  userAgent      String
-  url            String
-  createdAt      DateTime @default(now())
-
-  @@index([metricName])
-  @@index([createdAt])
-  @@index([rating])
-}
-
-model BlogPost {
-  id               String         @id @default(cuid())
-  title            String
-  slug             String         @unique
-  excerpt          String
-  content          String
-  featuredImage    String?
-  authorId         String
-  categoryId       String?
-  status           BlogStatus     @default(DRAFT)
-  isPublished      Boolean        @default(false)
-  publishedAt      DateTime?
-  metaTitle        String?
-  metaDescription  String?
-  metaKeywords     String?
-  views            Int            @default(0)
-  readTime         Int?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  authorName       String         @default("Admin")
-  featuredImageAlt String?
-  comments         BlogComment[]
-  category         BlogCategory?  @relation(fields: [categoryId], references: [id])
-  tags             BlogPostTag[]
-  reactions        BlogReaction[]
-
-  @@index([slug])
-  @@index([status, publishedAt])
-  @@index([categoryId, status])
-  @@index([authorId])
-}
-
-model BlogCategory {
-  id          String     @id @default(cuid())
-  name        String     @unique
-  slug        String     @unique
-  description String?
-  color       String     @default("#10b981")
-  order       Int        @default(0)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  posts       BlogPost[]
-
-  @@index([slug])
-  @@index([order])
-}
-
-model BlogTag {
-  id        String        @id @default(cuid())
-  name      String        @unique
-  slug      String        @unique
-  createdAt DateTime      @default(now())
-  posts     BlogPostTag[]
-
+  @@index([isPublished, order])
+  @@index([showInFooter, order])
+  @@index([showInNavbar, order])
+  @@index([showInTopNavbar, order])
   @@index([slug])
 }
 
-model BlogPostTag {
-  id     String   @id @default(cuid())
-  postId String
+model PartnershipCheckIn {
+  id                        String                    @id
+  partnershipId             String
+  checkInId                 String
+  supportNote               String?
+  createdAt                 DateTime                  @default(now())
+  CheckIn                   CheckIn                   @relation(fields: [checkInId], references: [id], onDelete: Cascade)
+  AccountabilityPartnership AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+
+  @@index([partnershipId, createdAt])
+}
+
+model PartnershipGoal {
+  id                        String                    @id
+  partnershipId             String
+  title                     String
+  description               String?
+  targetDate                DateTime
+  completed                 Boolean                   @default(false)
+  completedAt               DateTime?
+  createdBy                 String
+  createdAt                 DateTime                  @default(now())
+  AccountabilityPartnership AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+
+  @@index([partnershipId, completed])
+}
+
+model PartnershipMessage {
+  id                        String                    @id
+  partnershipId             String
+  senderId                  String
+  content                   String
+  isRead                    Boolean                   @default(false)
+  readAt                    DateTime?
+  createdAt                 DateTime                  @default(now())
+  AccountabilityPartnership AccountabilityPartnership @relation(fields: [partnershipId], references: [id], onDelete: Cascade)
+
+  @@index([partnershipId, createdAt])
+  @@index([senderId])
+}
+
+model Plan {
+  id              String           @id
+  userId          String
+  title           String
+  slug            String           @unique
+  startWeight     Int
+  goalWeight      Int
+  durationText    String
+  routine         String
+  diet            String
+  exercise        String
+  motivation      String
+  imageUrl        String?
+  status          PlanStatus       @default(PENDING)
+  views           Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime
+  categoryId      String?
+  rejectionReason String?
+  videoUrl        String?
+  CollectionPlan  CollectionPlan[]
+  Comment         Comment[]
+  Favorite        Favorite[]
+  Like            Like[]
+  Category        Category?        @relation(fields: [categoryId], references: [id])
+  User            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  PlanTag         PlanTag[]
+
+  @@index([categoryId])
+  @@index([goalWeight, startWeight])
+  @@index([slug])
+  @@index([status, createdAt])
+  @@index([status, views])
+}
+
+model PlanTag {
+  id     String @id
+  planId String
   tagId  String
-  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag    BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  Plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  Tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
-  @@unique([postId, tagId])
-  @@index([postId])
-  @@index([tagId])
+  @@unique([planId, tagId])
 }
 
-model BlogComment {
-  id         String   @id @default(cuid())
-  postId     String
-  authorId   String
-  content    String
-  isApproved Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  post       BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+model Poll {
+  id            String       @id
+  question      String
+  description   String?
+  isActive      Boolean      @default(true)
+  isPublic      Boolean      @default(true)
+  allowMultiple Boolean      @default(false)
+  endsAt        DateTime?
+  createdBy     String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime
+  User          User         @relation(fields: [createdBy], references: [id])
+  PollOption    PollOption[]
+  PollVote      PollVote[]
 
-  @@index([postId, isApproved, createdAt])
-  @@index([authorId])
+  @@index([createdBy])
+  @@index([isActive, createdAt])
 }
 
-model BlogReaction {
-  id        String   @id @default(cuid())
-  postId    String
-  userId    String
-  emoji     String
-  createdAt DateTime @default(now())
-  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+model PollOption {
+  id        String     @id
+  pollId    String
+  text      String
+  order     Int        @default(0)
+  createdAt DateTime   @default(now())
+  Poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  PollVote  PollVote[]
 
-  @@unique([postId, userId, emoji])
-  @@index([postId])
+  @@index([pollId, order])
+}
+
+model PollVote {
+  id         String     @id
+  pollId     String
+  optionId   String
+  userId     String
+  createdAt  DateTime   @default(now())
+  PollOption PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  Poll       Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  User       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, optionId, userId])
+  @@index([pollId])
   @@index([userId])
-}
-
-model CheatMeal {
-  id        String    @id @default(cuid())
-  userId    String
-  type      CheatType
-  note      String?
-  date      DateTime  @default(now())
-  createdAt DateTime  @default(now())
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, date])
-  @@index([type])
-}
-
-model CheatChallenge {
-  id        String   @id @default(cuid())
-  userId    String
-  weekStart DateTime
-  weekEnd   DateTime
-  limit     Int      @default(2)
-  penalty   String?
-  completed Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, weekStart])
-  @@index([userId, weekStart])
 }
 
 model ProfileCustomization {
-  id                  String   @id @default(cuid())
+  id                  String   @id
   userId              String   @unique
   activeFrame         String?
   activeBackground    String?
@@ -1128,102 +1256,43 @@ model ProfileCustomization {
   unlockedThemes      String[]
   unlockedBadges      String[]
   createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt           DateTime
+  User                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
-model CustomizationItem {
-  id              String            @id @default(cuid())
-  type            CustomizationType
-  code            String            @unique
-  name            String
-  description     String?
-  imageUrl        String?
-  previewUrl      String?
-  cssClass        String?
-  colors          Json?
-  unlockCondition String
-  badgeType       BadgeType?
-  badgeCount      Int?
-  level           Int?
-  xpRequired      Int?
-  isDefault       Boolean           @default(false)
-  isSpecial       Boolean           @default(false)
-  order           Int               @default(0)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+model ProgressPhoto {
+  id          String   @id
+  userId      String
+  imageUrl    String
+  weight      Float?
+  description String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([type, order])
-  @@index([badgeType])
-  @@index([isDefault])
+  @@index([userId, createdAt])
 }
 
-model Confession {
-  id              String               @id @default(cuid())
-  userId          String
-  text            String
-  aiReply         String?
-  isAnonymous     Boolean              @default(true)
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  approvedAt      DateTime?
-  approvedBy      String?
-  rejectionReason String?
-  status          ConfessionStatus     @default(PENDING)
-  comments        ConfessionComment[]
-  likes           ConfessionLike[]
-  reactions       ConfessionReaction[]
+model PromoFeature {
+  id          String   @id
+  icon        String
+  title       String
+  description String
+  color       String   @default("#10b981")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  link        String?
 
-  @@index([createdAt])
-  @@index([userId])
-  @@index([status, createdAt])
-  @@index([approvedBy])
-}
-
-model ConfessionLike {
-  id           String     @id @default(cuid())
-  confessionId String
-  userId       String
-  createdAt    DateTime   @default(now())
-  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
-
-  @@unique([confessionId, userId])
-  @@index([confessionId])
-  @@index([userId])
-}
-
-model ConfessionComment {
-  id           String        @id @default(cuid())
-  confessionId String
-  userId       String
-  content      String
-  isAnonymous  Boolean       @default(true)
-  createdAt    DateTime      @default(now())
-  status       CommentStatus @default(PENDING)
-  confession   Confession    @relation(fields: [confessionId], references: [id], onDelete: Cascade)
-
-  @@index([confessionId, createdAt])
-  @@index([userId])
-  @@index([status])
-}
-
-model ConfessionReaction {
-  id           String     @id @default(cuid())
-  confessionId String
-  userId       String
-  emoji        String
-  createdAt    DateTime   @default(now())
-  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
-
-  @@unique([confessionId, userId, emoji])
-  @@index([confessionId])
-  @@index([userId])
+  @@index([isActive])
+  @@index([order])
 }
 
 model PromoSection {
-  id         String           @id @default(cuid())
+  id         String           @id
   type       PromoSectionType
   title      String
   subtitle   String?
@@ -1235,43 +1304,397 @@ model PromoSection {
   order      Int              @default(0)
   isActive   Boolean          @default(true)
   createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  updatedAt  DateTime
 
+  @@index([isActive])
   @@index([type, order])
-  @@index([isActive])
 }
 
-model PromoFeature {
-  id          String   @id @default(cuid())
-  icon        String
-  title       String
-  description String
-  color       String   @default("#10b981")
-  order       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  link        String?
+model PushSubscription {
+  id         String   @id
+  userId     String
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime @default(now())
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([order])
-  @@index([isActive])
+  @@index([userId])
 }
 
-model MicroCopy {
-  id        String   @id @default(cuid())
-  key       String   @unique
-  location  String
-  text      String
-  isActive  Boolean  @default(true)
+model Recipe {
+  id              String           @id
+  userId          String
+  title           String
+  slug            String           @unique
+  description     String
+  ingredients     String
+  instructions    String
+  prepTime        Int?
+  cookTime        Int?
+  servings        Int?
+  difficulty      String?
+  category        String
+  calories        Float?
+  protein         Float?
+  carbs           Float?
+  fat             Float?
+  status          RecipeStatus     @default(PENDING)
+  rejectionReason String?
+  views           Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime
+  RecipeComment   RecipeComment[]
+  RecipeFavorite  RecipeFavorite[]
+  RecipeImage     RecipeImage[]
+  RecipeLike      RecipeLike[]
+
+  @@index([category])
+  @@index([slug])
+  @@index([status, createdAt])
+  @@index([status, views])
+  @@index([userId, status])
+}
+
+model RecipeComment {
+  id        String   @id
+  recipeId  String
+  userId    String
+  content   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime
+  Recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([location])
+  @@index([recipeId, createdAt])
+  @@index([userId])
+}
+
+model RecipeFavorite {
+  id        String   @id
+  recipeId  String
+  userId    String
+  note      String?
+  createdAt DateTime @default(now())
+  Recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, userId])
+  @@index([userId, createdAt])
+}
+
+model RecipeImage {
+  id        String   @id
+  recipeId  String
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  Recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId, order])
+}
+
+model RecipeLike {
+  id        String   @id
+  recipeId  String
+  userId    String
+  createdAt DateTime @default(now())
+  Recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, userId])
+  @@index([recipeId])
+  @@index([userId])
+}
+
+model SeoSettings {
+  id        Int      @id @default(1)
+  settings  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ShopItem {
+  id            String         @id
+  type          ShopItemType
+  code          String         @unique
+  name          String
+  description   String
+  price         Int
+  imageUrl      String?
+  category      ShopCategory
+  isLimited     Boolean        @default(false)
+  stock         Int?
+  requiredLevel Int?
+  requiredBadge BadgeType?
+  isActive      Boolean        @default(true)
+  order         Int            @default(0)
+  createdAt     DateTime       @default(now())
+  UserPurchase  UserPurchase[]
+
+  @@index([category, order])
   @@index([isActive])
+  @@index([type])
+}
+
+model ShoppingList {
+  id               String             @id
+  userId           String
+  planId           String?
+  name             String
+  description      String?
+  weekNumber       Int?
+  isCompleted      Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  ShoppingListItem ShoppingListItem[]
+
+  @@index([planId])
+  @@index([userId, createdAt])
+  @@index([userId, isCompleted])
+}
+
+model ShoppingListItem {
+  id             String       @id
+  shoppingListId String
+  category       String
+  name           String
+  quantity       String
+  isChecked      Boolean      @default(false)
+  note           String?
+  estimatedPrice Float?
+  order          Int          @default(0)
+  createdAt      DateTime     @default(now())
+  ShoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+
+  @@index([shoppingListId, category, order])
+}
+
+model SiteSettings {
+  id                      String       @id
+  siteTitle               String       @default("Zayıflama Planım")
+  siteDescription         String
+  logoUrl                 String?
+  twitterUrl              String?
+  instagramUrl            String?
+  facebookUrl             String?
+  footerText              String?
+  maintenanceMode         Boolean      @default(false)
+  updatedAt               DateTime
+  updatedBy               String
+  footerAboutText         String?      @default("Gerçek insanların gerçek başarı hikayeleri. Sağlıklı yaşam için ilham alın.")
+  footerAboutTitle        String?      @default("Hakkımızda")
+  footerLinksTitle        String?      @default("Hızlı Bağlantılar")
+  footerSocialTitle       String?      @default("Bizi Takip Edin")
+  facebookAppId           String?
+  facebookAppSecret       String?
+  facebookOAuthEnabled    Boolean      @default(false)
+  googleClientId          String?
+  googleClientSecret      String?
+  googleOAuthEnabled      Boolean      @default(false)
+  googleAnalyticsId       String?
+  googleSearchConsoleCode String?
+  FooterLink              FooterLink[]
+  User                    User         @relation(fields: [updatedBy], references: [id])
+}
+
+model Tag {
+  id        String    @id
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  PlanTag   PlanTag[]
+}
+
+model Testimonial {
+  id        String   @id
+  name      String
+  avatar    String?
+  role      String?
+  text      String
+  rating    Int      @default(5)
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([isActive, order])
+}
+
+model User {
+  id                                                                    String                      @id
+  email                                                                 String                      @unique
+  passwordHash                                                          String?
+  name                                                                  String?
+  image                                                                 String?
+  bio                                                                   String?
+  startWeight                                                           Int?
+  goalWeight                                                            Int?
+  role                                                                  Role                        @default(USER)
+  createdAt                                                             DateTime                    @default(now())
+  updatedAt                                                             DateTime
+  instagram                                                             String?
+  tiktok                                                                String?
+  twitter                                                               String?
+  website                                                               String?
+  youtube                                                               String?
+  lastActiveDate                                                        DateTime?
+  level                                                                 Int                         @default(1)
+  streak                                                                Int                         @default(0)
+  xp                                                                    Int                         @default(0)
+  city                                                                  String?
+  username                                                              String?                     @unique
+  resetToken                                                            String?
+  resetTokenExpiry                                                      DateTime?
+  allowMessages                                                         Boolean                     @default(true)
+  isPrivate                                                             Boolean                     @default(false)
+  requireFollowApproval                                                 Boolean                     @default(false)
+  showEmail                                                             Boolean                     @default(false)
+  showWeight                                                            Boolean                     @default(true)
+  emailVerified                                                         DateTime?
+  theme                                                                 String?                     @default("system")
+  coins                                                                 Int                         @default(0)
+  lastQuestReset                                                        DateTime?
+  Account                                                               Account[]
+  AccountabilityPartnership_AccountabilityPartnership_partnerIdToUser   AccountabilityPartnership[] @relation("AccountabilityPartnership_partnerIdToUser")
+  AccountabilityPartnership_AccountabilityPartnership_requesterIdToUser AccountabilityPartnership[] @relation("AccountabilityPartnership_requesterIdToUser")
+  ActivityLog                                                           ActivityLog[]
+  Backup                                                                Backup[]
+  BannedWord                                                            BannedWord[]
+  CalorieGoal                                                           CalorieGoal?
+  Challenge                                                             Challenge[]
+  ChallengeParticipant                                                  ChallengeParticipant[]
+  CheatChallenge                                                        CheatChallenge[]
+  CheatMeal                                                             CheatMeal[]
+  CheckIn                                                               CheckIn[]
+  CoinTransaction                                                       CoinTransaction[]
+  Collection                                                            Collection[]
+  Comment_Comment_moderatedByToUser                                     Comment[]                   @relation("Comment_moderatedByToUser")
+  Comment_Comment_userIdToUser                                          Comment[]                   @relation("Comment_userIdToUser")
+  CommentReaction                                                       CommentReaction[]
+  CrisisButton                                                          CrisisButton[]
+  EmailCampaign                                                         EmailCampaign[]
+  Favorite                                                              Favorite[]
+  Follow_Follow_followerIdToUser                                        Follow[]                    @relation("Follow_followerIdToUser")
+  Follow_Follow_followingIdToUser                                       Follow[]                    @relation("Follow_followingIdToUser")
+  GameScore                                                             GameScore[]
+  GroupEvent                                                            GroupEvent[]
+  GroupEventParticipant                                                 GroupEventParticipant[]
+  GroupGoalProgress                                                     GroupGoalProgress[]
+  GroupLeaderboard                                                      GroupLeaderboard[]
+  GroupMember                                                           GroupMember[]
+  GroupMessage                                                          GroupMessage[]
+  GroupPost                                                             GroupPost[]
+  GroupPostComment                                                      GroupPostComment[]
+  GroupPostLike                                                         GroupPostLike[]
+  GroupResource                                                         GroupResource[]
+  GroupWeeklyGoal                                                       GroupWeeklyGoal[]
+  Like                                                                  Like[]
+  Meal                                                                  Meal[]
+  Measurement                                                           Measurement[]
+  MoodLog                                                               MoodLog[]
+  Notification                                                          Notification[]
+  NotificationPreference                                                NotificationPreference?
+  Plan                                                                  Plan[]
+  Poll                                                                  Poll[]
+  PollVote                                                              PollVote[]
+  ProfileCustomization                                                  ProfileCustomization?
+  ProgressPhoto                                                         ProgressPhoto[]
+  PushSubscription                                                      PushSubscription[]
+  RecipeComment                                                         RecipeComment[]
+  Session                                                               Session[]
+  SiteSettings                                                          SiteSettings[]
+  UserBadge                                                             UserBadge[]
+  UserDailyQuest                                                        UserDailyQuest[]
+  UserGoal                                                              UserGoal[]
+  UserPurchase                                                          UserPurchase[]
+  UserQuest                                                             UserQuest[]
+  UserReward                                                            UserReward[]
+  GameSession                                                           GameSession[]
+  WallPost_WallPost_authorIdToUser                                      WallPost[]                  @relation("WallPost_authorIdToUser")
+  WallPost_WallPost_userIdToUser                                        WallPost[]                  @relation("WallPost_userIdToUser")
+  WeightLog                                                             WeightLog[]
+
+  @@index([coins])
+  @@index([xp, level])
+}
+
+model UserBadge {
+  id       String   @id
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+  Badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId, earnedAt])
+}
+
+model UserDailyQuest {
+  id            String     @id
+  userId        String
+  questId       String
+  progress      Int        @default(0)
+  completed     Boolean    @default(false)
+  completedAt   DateTime?
+  date          DateTime   @default(now())
+  claimedReward Boolean    @default(false)
+  DailyQuest    DailyQuest @relation(fields: [questId], references: [id], onDelete: Cascade)
+  User          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId, date])
+  @@index([date])
+  @@index([userId, completed])
+  @@index([userId, date])
+}
+
+model UserGoal {
+  id          String    @id
+  userId      String
+  goalId      String
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  startDate   DateTime  @default(now())
+  endDate     DateTime
+  Goal        Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, goalId, startDate])
+  @@index([endDate])
+  @@index([goalId])
+  @@index([userId, completed])
+}
+
+model UserPurchase {
+  id          String    @id
+  userId      String
+  itemId      String
+  price       Int
+  purchasedAt DateTime  @default(now())
+  isActive    Boolean   @default(true)
+  expiresAt   DateTime?
+  ShopItem    ShopItem  @relation(fields: [itemId], references: [id], onDelete: NoAction)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+  @@index([userId, isActive])
+  @@index([userId, purchasedAt])
 }
 
 model UserStory {
-  id           String   @id @default(cuid())
+  id           String   @id
   name         String
   beforeImage  String?
   afterImage   String?
@@ -1284,378 +1707,193 @@ model UserStory {
   isFeatured   Boolean  @default(false)
   order        Int      @default(0)
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime
 
   @@index([isActive, order])
   @@index([isFeatured])
 }
 
-model Testimonial {
-  id        String   @id @default(cuid())
-  name      String
-  avatar    String?
-  role      String?
-  text      String
-  rating    Int      @default(5)
-  isActive  Boolean  @default(true)
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
+  @@unique([identifier, token])
+}
+
+model WallPost {
+  id                           String   @id
+  userId                       String
+  authorId                     String
+  content                      String
+  isPublic                     Boolean  @default(true)
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime
+  User_WallPost_authorIdToUser User     @relation("WallPost_authorIdToUser", fields: [authorId], references: [id], onDelete: Cascade)
+  User_WallPost_userIdToUser   User     @relation("WallPost_userIdToUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([authorId])
+  @@index([userId, createdAt])
+}
+
+model WebVitals {
+  id             String   @id
+  metricName     String
+  value          Int
+  rating         String
+  delta          Int
+  metricId       String
+  navigationType String?
+  userAgent      String
+  url            String
+  createdAt      DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([metricName])
+  @@index([rating])
+}
+
+model WeightLog {
+  id        String   @id
+  userId    String
+  weight    Float
+  note      String?
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Quest {
+  id          String      @id @default(cuid())
+  type        QuestType
+  category    String
+  title       String
+  description String
+  icon        String?
+  targetType  String
+  targetValue Int
+  coinReward  Int         @default(0)
+  xpReward    Int         @default(0)
+  isActive    Boolean     @default(true)
+  priority    Int         @default(0)
+  conditions  Json?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userQuests  UserQuest[]
+
+  @@index([type, isActive])
+  @@index([category])
+}
+
+model UserQuest {
+  id            String    @id @default(cuid())
+  userId        String
+  questId       String
+  progress      Int       @default(0)
+  completed     Boolean   @default(false)
+  assignedAt    DateTime  @default(now())
+  completedAt   DateTime?
+  expiresAt     DateTime?
+  rewardClaimed Boolean   @default(false)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest         Quest     @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId, assignedAt])
+  @@index([userId, completed])
+  @@index([userId, expiresAt])
+  @@index([questId])
+}
+
+model Reward {
+  id           String       @id @default(cuid())
+  type         RewardType
+  category     String
+  name         String
+  description  String
+  imageUrl     String?
+  price        Int
+  stock        Int?
+  digitalData  Json?
+  physicalData Json?
+  premiumData  Json?
+  isActive     Boolean      @default(true)
+  isFeatured   Boolean      @default(false)
+  order        Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  userRewards  UserReward[]
+
+  @@index([category, isActive])
+  @@index([isFeatured, order])
+}
+
+model UserReward {
+  id          String    @id @default(cuid())
+  userId      String
+  rewardId    String
+  purchasedAt DateTime  @default(now())
+  coinsPaid   Int
+  isUsed      Boolean   @default(false)
+  usedAt      DateTime?
+  expiresAt   DateTime?
+  rewardData  Json?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward      Reward    @relation(fields: [rewardId], references: [id])
+
+  @@index([userId, purchasedAt])
+  @@index([rewardId])
+  @@index([userId, isUsed])
+}
+
+model MiniGame {
+  id          String        @id @default(cuid())
+  code        String        @unique
+  name        String
+  description String
+  icon        String?
+  settings    Json
+  rewardTiers Json
+  dailyLimit  Int           @default(5)
+  isActive    Boolean       @default(true)
+  order       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  sessions    GameSession[]
+
+  @@index([code])
   @@index([isActive, order])
 }
 
-model Group {
-  id              String              @id @default(cuid())
-  name            String
-  slug            String              @unique
-  description     String
-  imageUrl        String?
-  goalType        String
-  targetWeight    Int?
-  isPrivate       Boolean             @default(false)
-  maxMembers      Int?
-  status          GroupStatus         @default(PENDING)
-  rejectionReason String?
-  createdBy       String
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  approvedAt      DateTime?
-  ageGroup        GroupAgeGroup?
-  gender          GroupGender?
-  level           GroupLevel?
-  challenges      Challenge[]
-  events          GroupEvent[]
-  joinRequests    GroupJoinRequest[]
-  leaderboard     GroupLeaderboard[]
-  members         GroupMember[]
-  messages        GroupMessage[]
-  posts           GroupPost[]
-  resources       GroupResource[]
-  stats           GroupStats?
-  statsHistory    GroupStatsHistory[]
-  weeklyGoals     GroupWeeklyGoal[]
-
-  @@index([status, createdAt])
-  @@index([goalType])
-  @@index([slug])
-  @@index([level])
-  @@index([gender])
-  @@index([ageGroup])
-  @@index([createdBy])
-  @@index([status, goalType])
-  @@index([isPrivate, status])
-}
-
-model GroupMember {
-  id           String          @id @default(cuid())
-  groupId      String
-  userId       String
-  role         GroupMemberRole @default(MEMBER)
-  joinedAt     DateTime        @default(now())
-  lastActiveAt DateTime?
-  permissions  Json?
-  group        Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user         User            @relation("GroupMembers", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId])
-  @@index([userId])
-  @@index([groupId, role])
-  @@index([groupId, lastActiveAt])
-}
-
-model GroupJoinRequest {
-  id        String            @id @default(cuid())
-  groupId   String
-  userId    String
-  message   String?
-  status    JoinRequestStatus @default(PENDING)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  group     Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId])
-  @@index([userId, status])
-  @@index([groupId, status])
-}
-
-model GroupPost {
-  id        String             @id @default(cuid())
-  groupId   String
-  userId    String
-  content   String
-  imageUrl  String?
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
-  metadata  Json?
-  postType  GroupPostType      @default(UPDATE)
-  group     Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user      User               @relation("GroupPosts", fields: [userId], references: [id], onDelete: Cascade)
-  comments  GroupPostComment[]
-  likes     GroupPostLike[]
-
-  @@index([groupId, createdAt])
-  @@index([userId])
-  @@index([postType])
-  @@index([groupId, postType, createdAt])
-}
-
-model GroupPostLike {
-  id        String    @id @default(cuid())
-  postId    String
-  userId    String
-  createdAt DateTime  @default(now())
-  post      GroupPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User      @relation("GroupPostLikes", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, userId])
-  @@index([postId])
-}
-
-model GroupPostComment {
-  id        String    @id @default(cuid())
-  postId    String
-  userId    String
-  content   String
-  createdAt DateTime  @default(now())
-  post      GroupPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User      @relation("GroupPostComments", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([postId, createdAt])
-  @@index([userId])
-}
-
-model GroupMessage {
-  id          String           @id @default(cuid())
-  groupId     String
-  userId      String
-  content     String
-  messageType GroupMessageType @default(TEXT)
-  metadata    Json?
-  createdAt   DateTime         @default(now())
-  group       Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user        User             @relation("GroupMessages", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([groupId, createdAt])
-  @@index([userId])
-  @@index([messageType])
-}
-
-model GroupEvent {
-  id              String                  @id @default(cuid())
-  groupId         String
-  title           String
-  description     String?
-  eventType       GroupEventType
-  startDate       DateTime
-  endDate         DateTime?
-  location        String?
-  maxParticipants Int?
-  createdBy       String
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
-  creator         User                    @relation("GroupEvents", fields: [createdBy], references: [id])
-  group           Group                   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  participants    GroupEventParticipant[]
-
-  @@index([groupId, startDate])
-  @@index([createdBy])
-  @@index([eventType])
-  @@index([startDate])
-}
-
-model GroupEventParticipant {
-  id       String            @id @default(cuid())
-  eventId  String
-  userId   String
-  status   ParticipantStatus @default(GOING)
-  joinedAt DateTime          @default(now())
-  event    GroupEvent        @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user     User              @relation("GroupEventParticipants", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([eventId, userId])
-  @@index([userId])
-  @@index([eventId, status])
-}
-
-model GroupLeaderboard {
-  id              String            @id @default(cuid())
-  groupId         String
-  userId          String
-  period          LeaderboardPeriod
-  periodStart     DateTime
-  periodEnd       DateTime
-  activityScore   Int               @default(0)
-  weightLossScore Float             @default(0)
-  streakScore     Int               @default(0)
-  totalScore      Float             @default(0)
-  rank            Int?
-  updatedAt       DateTime          @updatedAt
-  group           Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user            User              @relation("GroupLeaderboard", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId, period, periodStart])
-  @@index([groupId, period, totalScore])
-  @@index([userId])
-  @@index([groupId, period, rank])
-  @@index([periodStart, periodEnd])
-}
-
-model GroupStats {
-  id              String   @id @default(cuid())
-  groupId         String   @unique
-  totalMembers    Int      @default(0)
-  activeMembers   Int      @default(0)
-  totalWeightLoss Float    @default(0)
-  avgWeightLoss   Float    @default(0)
-  totalPosts      Int      @default(0)
-  totalMessages   Int      @default(0)
-  activeRate      Float    @default(0)
-  lastCalculated  DateTime @updatedAt
-  group           Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@index([groupId])
-}
-
-model GroupStatsHistory {
-  id              String   @id @default(cuid())
-  groupId         String
-  date            DateTime
-  activeMembers   Int
-  totalWeightLoss Float
-  postsCount      Int
-  messagesCount   Int
-  group           Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, date])
-  @@index([groupId, date])
-}
-
-model GroupResource {
-  id           String            @id @default(cuid())
-  groupId      String
-  title        String
-  description  String?
-  resourceType GroupResourceType
-  url          String?
-  fileUrl      String?
-  content      String?
-  category     String
-  tags         String[]
-  views        Int               @default(0)
-  uploadedBy   String
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  group        Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  uploader     User              @relation("GroupResources", fields: [uploadedBy], references: [id])
-
-  @@index([groupId, category])
-  @@index([groupId, views])
-  @@index([resourceType])
-  @@index([uploadedBy])
-}
-
-model GroupWeeklyGoal {
-  id           String              @id @default(cuid())
-  groupId      String
-  weekStart    DateTime
-  weekEnd      DateTime
-  title        String
-  description  String?
-  targetType   String
-  targetValue  Float
-  currentValue Float               @default(0)
-  completed    Boolean             @default(false)
-  createdBy    String
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
-  progress     GroupGoalProgress[]
-  creator      User                @relation("GroupWeeklyGoals", fields: [createdBy], references: [id])
-  group        Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, weekStart])
-  @@index([groupId, weekStart])
-  @@index([groupId, completed])
-  @@index([weekStart, weekEnd])
-}
-
-model GroupGoalProgress {
-  id        String          @id @default(cuid())
-  goalId    String
-  userId    String
-  value     Float
-  createdAt DateTime        @default(now())
-  goal      GroupWeeklyGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
-  user      User            @relation("GroupGoalProgress", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([goalId, userId])
-  @@index([userId])
-  @@index([goalId, createdAt])
-}
-
-model Challenge {
-  id           String                 @id @default(cuid())
-  groupId      String?
-  title        String
-  description  String
-  type         ChallengeType
-  target       Float
-  unit         String
-  startDate    DateTime
-  endDate      DateTime
-  isActive     Boolean                @default(true)
-  createdBy    String
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
-  creator      User                   @relation(fields: [createdBy], references: [id])
-  group        Group?                 @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  leaderboard  ChallengeLeaderboard[]
-  participants ChallengeParticipant[]
-
-  @@index([groupId, isActive])
-  @@index([type, isActive])
-  @@index([startDate, endDate])
-  @@index([createdBy])
-  @@index([isActive, startDate])
-}
-
-model ChallengeParticipant {
+model GameSession {
   id          String    @id @default(cuid())
-  challengeId String
   userId      String
-  progress    Float     @default(0)
+  gameId      String
+  score       Int       @default(0)
+  duration    Int?
   completed   Boolean   @default(false)
+  coinsEarned Int       @default(0)
+  gameData    Json?
+  startedAt   DateTime  @default(now())
   completedAt DateTime?
-  joinedAt    DateTime  @default(now())
-  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  game        MiniGame  @relation(fields: [gameId], references: [id])
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([challengeId, userId])
-  @@index([userId])
-  @@index([challengeId, completed])
+  @@index([userId, startedAt])
+  @@index([gameId, score])
+  @@index([userId, gameId, startedAt])
 }
 
-model NewsletterSubscriber {
-  id             String    @id @default(cuid())
-  email          String    @unique
-  name           String?
-  isActive       Boolean   @default(true)
-  subscribedAt   DateTime  @default(now())
-  unsubscribedAt DateTime?
+model StreakBonus {
+  id          String     @id @default(cuid())
+  streakDays  Int        @unique
+  coinReward  Int
+  xpReward    Int
+  badgeType   BadgeType?
+  description String
+  createdAt   DateTime   @default(now())
 
-  @@index([email])
-  @@index([isActive])
-}
-
-enum PlanStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum Role {
-  USER
-  ADMIN
+  @@index([streakDays])
 }
 
 enum ActivityType {
@@ -1682,14 +1920,6 @@ enum ActivityType {
   GROUP_DELETED
   CHALLENGE_CREATED
   CHALLENGE_DELETED
-}
-
-enum EmailStatus {
-  DRAFT
-  QUEUED
-  SENDING
-  SENT
-  FAILED
 }
 
 enum BadgeType {
@@ -1739,6 +1969,108 @@ enum BadgeType {
   FAST_FOOD_FREE_30_DAYS
   BALANCED_RECOVERY
   NEWSLETTER_SUBSCRIBER
+  QUEST_MASTER_10
+  QUEST_MASTER_50
+  QUEST_MASTER_100
+  COIN_COLLECTOR_1000
+  COIN_COLLECTOR_5000
+  COIN_COLLECTOR_10000
+  GAME_CALORIE_MASTER
+  GAME_MEMORY_MASTER
+  GAME_QUICK_CLICK_MASTER
+  SHOP_FIRST_PURCHASE
+  SHOP_ENTHUSIAST_10
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+enum ChallengeType {
+  WEIGHT_LOSS
+  ACTIVITY
+  STREAK
+  CHECK_IN
+  RECIPE_SHARE
+  PLAN_SHARE
+}
+
+enum CheatType {
+  SWEET
+  FAST_FOOD
+  SODA
+  ALCOHOL
+  OTHER
+}
+
+enum CoinTransactionType {
+  EARN
+  SPEND
+  BONUS
+  REFUND
+  EARNED
+  SPENT
+}
+
+enum QuestType {
+  DAILY
+  WEEKLY
+  SPECIAL
+}
+
+enum RewardType {
+  BADGE
+  THEME
+  AVATAR
+  FRAME
+  DISCOUNT_CODE
+  GIFT_CARD
+  AD_FREE
+  PREMIUM_STATS
+  CUSTOM_PROFILE
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ConfessionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CustomizationType {
+  FRAME
+  BACKGROUND
+  THEME
+  BADGE
+  ANIMATION
+}
+
+enum EmailStatus {
+  DRAFT
+  QUEUED
+  SENDING
+  SENT
+  FAILED
+}
+
+enum FollowStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum GameType {
+  CALORIE_GUESS
+  MEMORY_CARDS
+  NUTRITION_QUIZ
+  DAILY_PUZZLE
 }
 
 enum GoalType {
@@ -1753,69 +2085,11 @@ enum GoalType {
   MONTHLY_RECIPE_SHARE
 }
 
-enum PartnershipStatus {
-  PENDING
-  ACTIVE
-  ENDED
-  REJECTED
-}
-
-enum RecipeStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum GroupStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum GroupLevel {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-}
-
-enum GroupGender {
-  MALE
-  FEMALE
-  MIXED
-}
-
 enum GroupAgeGroup {
   AGE_18_25
   AGE_26_35
   AGE_36_45
   AGE_46_PLUS
-}
-
-enum GroupMemberRole {
-  ADMIN
-  MODERATOR
-  MEMBER
-}
-
-enum JoinRequestStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum GroupPostType {
-  UPDATE
-  ACHIEVEMENT
-  MOTIVATION
-  PROGRESS
-  PHOTO
-}
-
-enum GroupMessageType {
-  TEXT
-  EMOJI
-  GIF
-  SYSTEM
 }
 
 enum GroupEventType {
@@ -1826,16 +2100,37 @@ enum GroupEventType {
   OTHER
 }
 
-enum ParticipantStatus {
-  GOING
-  MAYBE
-  NOT_GOING
+enum GroupGender {
+  MALE
+  FEMALE
+  MIXED
 }
 
-enum LeaderboardPeriod {
-  WEEKLY
-  MONTHLY
-  ALL_TIME
+enum GroupLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum GroupMemberRole {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+enum GroupMessageType {
+  TEXT
+  EMOJI
+  GIF
+  SYSTEM
+}
+
+enum GroupPostType {
+  UPDATE
+  ACHIEVEMENT
+  MOTIVATION
+  PROGRESS
+  PHOTO
 }
 
 enum GroupResourceType {
@@ -1847,19 +2142,22 @@ enum GroupResourceType {
   LINK
 }
 
-enum ChallengeType {
-  WEIGHT_LOSS
-  ACTIVITY
-  STREAK
-  CHECK_IN
-  RECIPE_SHARE
-  PLAN_SHARE
+enum GroupStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
-enum FollowStatus {
+enum JoinRequestStatus {
   PENDING
-  ACCEPTED
+  APPROVED
   REJECTED
+}
+
+enum LeaderboardPeriod {
+  WEEKLY
+  MONTHLY
+  ALL_TIME
 }
 
 enum NotificationType {
@@ -1898,37 +2196,27 @@ enum NotificationType {
   GROUP_JOIN_REQUEST
   GROUP_JOIN_APPROVED
   GROUP_JOIN_REJECTED
+  QUEST_COMPLETED
+  QUEST_AVAILABLE
+  REWARD_PURCHASED
+  COIN_EARNED
+  STREAK_MILESTONE
 }
 
-enum BlogStatus {
-  DRAFT
-  PUBLISHED
-  SCHEDULED
+enum ParticipantStatus {
+  GOING
+  MAYBE
+  NOT_GOING
 }
 
-enum CheatType {
-  SWEET
-  FAST_FOOD
-  SODA
-  ALCOHOL
-  OTHER
-}
-
-enum CustomizationType {
-  FRAME
-  BACKGROUND
-  THEME
-  BADGE
-  ANIMATION
-}
-
-enum ConfessionStatus {
+enum PartnershipStatus {
   PENDING
-  APPROVED
+  ACTIVE
+  ENDED
   REJECTED
 }
 
-enum CommentStatus {
+enum PlanStatus {
   PENDING
   APPROVED
   REJECTED
@@ -1942,4 +2230,51 @@ enum PromoSectionType {
   TESTIMONIALS
   CTA
   STATS
+}
+
+enum QuestDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum DailyQuestType {
+  DAILY_LOGIN
+  LIKE_PLAN
+  COMMENT
+  UPDATE_PROFILE
+  LOG_WEIGHT
+  PLAY_GAME
+  TRACK_CALORIES
+  CREATE_PLAN
+}
+
+enum RecipeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ShopCategory {
+  COSMETIC
+  BOOSTER
+  BADGE
+  FEATURE
+}
+
+enum ShopItemType {
+  FRAME
+  THEME
+  AVATAR
+  XP_BOOST
+  COIN_BOOST
+  STREAK_SHIELD
+  SPECIAL_BADGE
+  AD_FREE
+  PREMIUM_REPORT
 }

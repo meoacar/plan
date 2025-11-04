@@ -67,6 +67,15 @@ export async function POST(req: Request) {
     // Rozetleri kontrol et
     const newBadges = await checkBadges(session.user.id);
 
+    // Quest Integration: Plan oluşturma görevi güncelle
+    try {
+      const { onPlanCreated } = await import('@/lib/quest-integration');
+      await onPlanCreated(session.user.id);
+    } catch (questError) {
+      console.error('Quest integration error:', questError);
+      // Quest hatası plan oluşturmayı etkilemez
+    }
+
     // Kullanıcıya bilgi ver
     return NextResponse.json({ 
       plan,

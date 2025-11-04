@@ -60,6 +60,17 @@ export async function addXP(userId: string, amount: number, reason: string) {
     },
   });
 
+  // Quest Integration: Seviye atlandıysa coin bonusu ver
+  if (leveledUp) {
+    try {
+      const { onLevelUp } = await import('@/lib/quest-integration');
+      await onLevelUp(userId, newLevel, user.level || 1);
+    } catch (questError) {
+      console.error('Level up quest integration error:', questError);
+      // Quest hatası XP kazanımını etkilemez
+    }
+  }
+
   return { user: updatedUser, leveledUp, newLevel };
 }
 
@@ -358,6 +369,15 @@ export async function updateStreak(userId: string) {
       },
     });
     await addXP(userId, XP_REWARDS.DAILY_LOGIN, "Günlük giriş");
+    
+    // Quest Integration: Günlük giriş görevi güncelle
+    try {
+      const { onDailyLogin } = await import('@/lib/quest-integration');
+      await onDailyLogin(userId);
+    } catch (questError) {
+      console.error('Daily login quest integration error:', questError);
+    }
+    
     return { streak: 1, isNew: true };
   }
 
@@ -387,6 +407,14 @@ export async function updateStreak(userId: string) {
     });
     await addXP(userId, XP_REWARDS.DAILY_LOGIN, "Günlük giriş");
 
+    // Quest Integration: Günlük giriş görevi güncelle
+    try {
+      const { onDailyLogin } = await import('@/lib/quest-integration');
+      await onDailyLogin(userId);
+    } catch (questError) {
+      console.error('Daily login quest integration error:', questError);
+    }
+
     // Streak rozetleri
     if (newStreak >= 7) {
       await checkAndAwardBadge(userId, "ACTIVE_7_DAYS");
@@ -396,6 +424,16 @@ export async function updateStreak(userId: string) {
     }
     if (newStreak >= 100) {
       await checkAndAwardBadge(userId, "ACTIVE_100_DAYS");
+    }
+
+    // Quest Integration: Streak milestone kontrolü
+    if (newStreak === 7 || newStreak === 30 || newStreak === 100) {
+      try {
+        const { onStreakMilestone } = await import('@/lib/quest-integration');
+        await onStreakMilestone(userId, newStreak);
+      } catch (questError) {
+        console.error('Streak milestone quest integration error:', questError);
+      }
     }
 
     return { streak: newStreak, isNew: true };
@@ -409,6 +447,15 @@ export async function updateStreak(userId: string) {
       },
     });
     await addXP(userId, XP_REWARDS.DAILY_LOGIN, "Günlük giriş");
+    
+    // Quest Integration: Günlük giriş görevi güncelle
+    try {
+      const { onDailyLogin } = await import('@/lib/quest-integration');
+      await onDailyLogin(userId);
+    } catch (questError) {
+      console.error('Daily login quest integration error:', questError);
+    }
+    
     return { streak: 1, isNew: true, broken: true };
   }
 }

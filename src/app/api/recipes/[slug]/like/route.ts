@@ -52,6 +52,14 @@ export async function POST(
         await addXP(recipe.userId, XP_REWARDS.RECIPE_LIKE_RECEIVED, "Tarif beğenisi aldı");
         await checkRecipeBadges(recipe.userId);
 
+        // Quest Integration: Beğeni görevi güncelle
+        try {
+          const { onLikeGiven } = await import('@/lib/quest-integration');
+          await onLikeGiven(session.user.id, recipe.userId);
+        } catch (questError) {
+          console.error('Quest integration error:', questError);
+        }
+
         // Bildirim gönder
         try {
           const { createNotification } = await import('@/lib/notifications');

@@ -34,6 +34,15 @@ export async function POST(
     await addXP(recipe.userId, XP_REWARDS.RECIPE_APPROVED, "Tarif onaylandı");
     await checkRecipeBadges(recipe.userId);
 
+    // Quest Integration: Tarif onaylama görevi güncelle
+    try {
+      const { onRecipeApproved } = await import('@/lib/quest-integration');
+      await onRecipeApproved(recipe.userId);
+    } catch (questError) {
+      console.error('Quest integration error:', questError);
+      // Quest hatası tarif onaylamayı etkilemez
+    }
+
     // Aktivite logu
     await logActivity({
       userId: session.user.id,

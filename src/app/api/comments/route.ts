@@ -82,6 +82,15 @@ export async function POST(req: Request) {
     await addXP(session.user.id, XP_REWARDS.COMMENT_GIVEN, "Yorum yapıldı");
     await checkBadges(session.user.id);
 
+    // Quest Integration: Yorum görevi güncelle
+    try {
+      const { onCommentGiven } = await import('@/lib/quest-integration');
+      await onCommentGiven(session.user.id, comment.plan.userId);
+    } catch (questError) {
+      console.error('Quest integration error:', questError);
+      // Quest hatası yorum eklemeyi etkilemez
+    }
+
     // Gamification: Plan sahibine XP
     if (comment.plan.userId !== session.user.id) {
       await addXP(comment.plan.userId, XP_REWARDS.COMMENT_RECEIVED, "Plana yorum yapıldı");

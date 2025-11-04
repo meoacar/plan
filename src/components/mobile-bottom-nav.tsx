@@ -2,9 +2,10 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Users, Bell, User, Menu } from 'lucide-react';
-import { useState } from 'react';
+import { Home, Users, Bell, User, Menu, Target } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useMobile } from '@/hooks/use-mobile';
+import { useSession } from 'next-auth/react';
 
 interface MobileBottomNavProps {
   isAuthenticated: boolean;
@@ -15,6 +16,22 @@ export function MobileBottomNav({ isAuthenticated, unreadCount = 0 }: MobileBott
   const pathname = usePathname();
   const isMobile = useMobile(768);
   const [showMenu, setShowMenu] = useState(false);
+  const { data: session } = useSession();
+  const [activeQuestCount, setActiveQuestCount] = useState(0);
+
+  // Aktif görev sayısını getir
+  useEffect(() => {
+    if (isAuthenticated && session?.user?.id) {
+      fetch('/api/quests')
+        .then(res => res.json())
+        .then(data => {
+          const allQuests = [...(data.daily || []), ...(data.weekly || []), ...(data.special || [])];
+          const activeCount = allQuests.filter((q: any) => !q.completed).length;
+          setActiveQuestCount(activeCount);
+        })
+        .catch(err => console.error('Görevler alınamadı:', err));
+    }
+  }, [isAuthenticated, session?.user?.id]);
 
   // Sadece mobilde göster
   if (!isMobile) return null;
@@ -26,6 +43,17 @@ export function MobileBottomNav({ isAuthenticated, unreadCount = 0 }: MobileBott
       label: 'Ana Sayfa',
       active: pathname === '/',
     },
+    ...(isAuthenticated
+      ? [
+          {
+            href: '/gamification?tab=quests',
+            icon: Target,
+            label: 'Görevler',
+            active: pathname === '/gamification',
+            badge: activeQuestCount,
+          },
+        ]
+      : []),
     {
       href: '/groups',
       icon: Users,
@@ -133,6 +161,27 @@ export function MobileBottomNav({ isAuthenticated, unreadCount = 0 }: MobileBott
               </div>
 
               <div className="space-y-2">
+                {isAuthenticated && (
+                  <>
+                    {/* Görevler - Özel Vurgu */}
+                    <Link
+                      href="/gamification?tab=quests"
+                      onClick={() => setShowMenu(false)}
+                      className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600 transition-all shadow-md"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Target className="w-6 h-6" />
+                        <div className="flex-1">
+                          <div className="font-bold">Görevler</div>
+                          <div className="text-xs opacity-90">
+                            {activeQuestCount > 0 ? `${activeQuestCount} aktif görev` : 'Görevlerini kontrol et'}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </>
+                )}
+                
                 <Link
                   href="/submit"
                   onClick={() => setShowMenu(false)}
@@ -175,6 +224,22 @@ export function MobileBottomNav({ isAuthenticated, unreadCount = 0 }: MobileBott
                     >
                       <span className="text-xl">🏆</span>
                       <span className="font-medium">Rozetler</span>
+                    </Link>
+                    <Link
+                      href="/shop"
+                      onClick={() => setShowMenu(false)}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="text-xl">🛍️</span>
+                      <span className="font-medium">Mağaza</span>
+                    </Link>
+                    <Link
+                      href="/games"
+                      onClick={() => setShowMenu(false)}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="text-xl">🎮</span>
+                      <span className="font-medium">Mini Oyunlar</span>
                     </Link>
                     <Link
                       href="/ayarlar"

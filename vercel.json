@@ -35,6 +35,18 @@
     {
       "path": "/api/cron/weekly-report",
       "schedule": "0 20 * * 0"
+    },
+    {
+      "path": "/api/cron/daily-quests",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/weekly-quests",
+      "schedule": "0 0 * * 1"
+    },
+    {
+      "path": "/api/cron/cleanup-quests",
+      "schedule": "0 1 * * *"
     }
   ]
 }

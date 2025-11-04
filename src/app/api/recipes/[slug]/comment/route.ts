@@ -52,6 +52,14 @@ export async function POST(
     // Gamification: Yorum yapana ve tarif sahibine XP ver
     await addXP(session.user.id, XP_REWARDS.RECIPE_COMMENT_GIVEN, "Tarif yorumu yaptı");
     
+    // Quest Integration: Yorum görevi güncelle
+    try {
+      const { onCommentGiven } = await import('@/lib/quest-integration');
+      await onCommentGiven(session.user.id, recipe.userId);
+    } catch (questError) {
+      console.error('Quest integration error:', questError);
+    }
+    
     if (recipe.userId !== session.user.id) {
       await addXP(recipe.userId, XP_REWARDS.RECIPE_COMMENT_RECEIVED, "Tarif yorumu aldı");
       await checkRecipeBadges(recipe.userId);

@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
 import { Button } from "./ui/button"
 import { useState, useRef, useEffect } from "react"
-import { Menu, X, User, LogOut, Settings, ChevronDown, FolderOpen, Camera, Trophy, BarChart3, Users, BarChart2, Utensils } from "lucide-react"
+import { Menu, X, User, LogOut, Settings, ChevronDown, FolderOpen, Camera, Trophy, BarChart3, Users, BarChart2, Utensils, Store, Gamepad2, Target } from "lucide-react"
 import { Logo } from "./logo"
 import { NotificationBell } from "./notifications/notification-bell"
+import CoinBalance from "./coins/CoinBalance"
 
 interface NavbarPage {
   id: string
@@ -29,8 +30,23 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [featuresMenuOpen, setFeaturesMenuOpen] = useState(false)
+  const [coins, setCoins] = useState<number>(0)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const featuresMenuRef = useRef<HTMLDivElement>(null)
+
+  // Coin bakiyesini getir
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch('/api/coins/balance')
+        .then(res => res.json())
+        .then(data => {
+          if (data.coins !== undefined) {
+            setCoins(data.coins)
+          }
+        })
+        .catch(err => console.error('Coin bakiyesi alınamadı:', err))
+    }
+  }, [session?.user?.id])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -272,6 +288,28 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                         </div>
                       </Link>
                       <Link
+                        href="/shop"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                      >
+                        <Store className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Mağaza</span>
+                          <span className="text-xs text-gray-500">Ödüller & Coinler</span>
+                        </div>
+                      </Link>
+                      <Link
+                        href="/games"
+                        onClick={() => setFeaturesMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
+                      >
+                        <Gamepad2 className="w-5 h-5 text-[#2d7a4a] group-hover:scale-110 transition-transform" />
+                        <div className="flex-1">
+                          <span className="text-gray-700 group-hover:text-[#2d7a4a] font-medium block">Mini Oyunlar</span>
+                          <span className="text-xs text-gray-500">Oyna & Coin Kazan</span>
+                        </div>
+                      </Link>
+                      <Link
                         href="/partnerships"
                         onClick={() => setFeaturesMenuOpen(false)}
                         className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gradient-to-r hover:from-[#2d7a4a]/5 hover:to-[#4caf50]/5 transition-all group"
@@ -365,6 +403,21 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
               <div className="w-20 h-9 bg-gray-200 rounded-lg animate-pulse"></div>
             ) : session ? (
               <>
+                {/* Görevler Linki */}
+                <Link
+                  href="/gamification?tab=quests"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 transition-all duration-200 group"
+                  title="Görevler"
+                >
+                  <Target className="w-5 h-5 text-purple-600 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-purple-600">Görevler</span>
+                </Link>
+
+                {/* Coin Bakiyesi */}
+                <Link href="/shop" title="Mağaza">
+                  <CoinBalance coins={coins} size="sm" />
+                </Link>
+
                 {/* Bildirim İkonu */}
                 <NotificationBell />
 
@@ -611,6 +664,13 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                       <p className="text-xs text-gray-600">Profili Görüntüle →</p>
                     </div>
                   </Link>
+
+                  {/* Coin Bakiyesi - Mobil */}
+                  <div className="mt-3 flex items-center justify-center">
+                    <Link href="/shop" onClick={() => setMobileMenuOpen(false)} className="w-full">
+                      <CoinBalance coins={coins} size="md" className="w-full justify-center" />
+                    </Link>
+                  </div>
                 </div>
               )}
 
@@ -799,6 +859,22 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                   <div className="px-4 py-2 mt-2">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Motivasyon</p>
                   </div>
+                  
+                  {/* Görevler - Özel Vurgu */}
+                  <Link
+                    href="/gamification?tab=quests"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mx-4 mb-2 p-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600 transition-all shadow-md"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Target className="w-6 h-6" />
+                      <div className="flex-1">
+                        <div className="font-bold">Görevler</div>
+                        <div className="text-xs opacity-90">Günlük görevlerini tamamla</div>
+                      </div>
+                    </div>
+                  </Link>
+
                   <Link
                     href="/gamification"
                     onClick={() => setMobileMenuOpen(false)}
@@ -808,6 +884,26 @@ export function NavbarClient({ siteTitle, logoUrl, navbarPages }: NavbarClientPr
                       }`}
                   >
                     🏆 Rozetler & Liderlik
+                  </Link>
+                  <Link
+                    href="/shop"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/shop"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    🛍️ Mağaza
+                  </Link>
+                  <Link
+                    href="/games"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === "/games"
+                      ? "bg-[#2d7a4a] text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    🎮 Mini Oyunlar
                   </Link>
                   <Link
                     href="/partnerships"

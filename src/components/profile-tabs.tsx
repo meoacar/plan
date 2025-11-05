@@ -98,10 +98,11 @@ export function ProfileTabs({
                                         Reddedildi
                                     </div>
                                     <div className="absolute -bottom-2 -right-2 z-10">
-                                        <Link href={`/plan/${plan.slug}/edit`}>
-                                            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 shadow-lg">
-                                                ✏️ Düzenle
-                                            </Button>
+                                        <Link 
+                                            href={`/plan/${plan.slug}/edit`}
+                                            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-medium rounded-md px-3 py-1.5 text-sm transition-colors"
+                                        >
+                                            ✏️ Düzenle
                                         </Link>
                                     </div>
                                     <div className="opacity-60 hover:opacity-100 transition-opacity">
@@ -131,10 +132,11 @@ export function ProfileTabs({
                                     {isOwnProfile ? "Henüz yayınlanmış plan bulunmuyor" : "Henüz onaylanmış plan bulunmuyor"}
                                 </p>
                                 {isOwnProfile && (
-                                    <Link href="/submit">
-                                        <Button className="mt-6" size="lg">
-                                            İlk Planını Ekle
-                                        </Button>
+                                    <Link 
+                                        href="/submit"
+                                        className="inline-flex items-center justify-center mt-6 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 font-medium transition-colors"
+                                    >
+                                        İlk Planını Ekle
                                     </Link>
                                 )}
                             </CardContent>
@@ -216,10 +218,11 @@ export function ProfileTabs({
                                     </div>
 
                                     <div className="mt-4 flex justify-end">
-                                        <Link href="/polls">
-                                            <Button variant="outline" size="sm">
-                                                Tüm Anketleri Gör →
-                                            </Button>
+                                        <Link 
+                                            href="/polls"
+                                            className="inline-flex items-center justify-center border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 text-sm font-medium transition-colors"
+                                        >
+                                            Tüm Anketleri Gör →
                                         </Link>
                                     </div>
                                 </CardContent>

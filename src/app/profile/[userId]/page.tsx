@@ -38,12 +38,12 @@ async function getUser(userIdOrUsername: string, isOwnProfile: boolean = false) 
       tiktok: true,
       website: true,
       createdAt: true,
-      plans: {
+      Plan: {
         // Kendi profilinde tüm planları göster, başkasının profilinde sadece onaylanmışları
         where: isOwnProfile ? undefined : { status: "APPROVED" },
         orderBy: { createdAt: "desc" },
         include: {
-          user: {
+          User: {
             select: {
               id: true,
               name: true,
@@ -52,33 +52,33 @@ async function getUser(userIdOrUsername: string, isOwnProfile: boolean = false) 
           },
           _count: {
             select: {
-              likes: true,
-              comments: true,
+              Like: true,
+              Comment_Comment_planIdToPlan: true,
             },
           },
         },
       },
       _count: {
         select: {
-          plans: { where: { status: "APPROVED" } },
-          comments: true,
-          likes: true,
+          Plan: { where: { status: "APPROVED" } },
+          Comment_Comment_userIdToUser: true,
+          Like: true,
         },
       },
-      polls: {
+      Poll: {
         where: isOwnProfile ? undefined : { isActive: true },
         orderBy: { createdAt: "desc" },
         include: {
-          options: {
+          PollOption: {
             orderBy: { order: "asc" },
             include: {
               _count: {
-                select: { votes: true },
+                select: { PollVote: true },
               },
             },
           },
           _count: {
-            select: { votes: true },
+            select: { PollVote: true },
           },
         },
       },
@@ -141,9 +141,11 @@ export default async function ProfilePage({ params }: PageProps) {
   const weightDiff = user.startWeight && user.goalWeight ? user.startWeight - user.goalWeight : null
 
   // Planları duruma göre ayır (sadece kendi profilinde)
-  const approvedPlans = user.plans.filter((p: any) => p.status === "APPROVED")
-  const pendingPlans = isOwnProfile ? user.plans.filter((p: any) => p.status === "PENDING") : []
-  const rejectedPlans = isOwnProfile ? user.plans.filter((p: any) => p.status === "REJECTED") : []
+  // Prisma'dan gelen User'ı user'a dönüştür (PlanCard için)
+  const transformPlan = (p: any) => ({ ...p, user: p.User, _count: { likes: p._count.Like, comments: p._count.Comment_Comment_planIdToPlan } })
+  const approvedPlans = user.Plan.filter((p: any) => p.status === "APPROVED").map(transformPlan)
+  const pendingPlans = isOwnProfile ? user.Plan.filter((p: any) => p.status === "PENDING").map(transformPlan) : []
+  const rejectedPlans = isOwnProfile ? user.Plan.filter((p: any) => p.status === "REJECTED").map(transformPlan) : []
 
   // Profil özelleştirmelerini getir
   const customization = await getUserCustomization(user.id)
@@ -765,7 +767,7 @@ export default async function ProfilePage({ params }: PageProps) {
               approvedPlans={approvedPlans}
               pendingPlans={pendingPlans}
               rejectedPlans={rejectedPlans}
-              polls={user.polls || []}
+              polls={user.Poll || []}
               userId={user.id}
             />
           </div>

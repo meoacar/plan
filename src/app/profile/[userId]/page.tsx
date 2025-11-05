@@ -346,31 +346,25 @@ export default async function ProfilePage({ params }: PageProps) {
                       {!isOwnProfile && <FollowButton userId={user.id} />}
                       {isOwnProfile && (
                         <div className="hidden md:flex items-center gap-2">
-                          <Link href="/favorites">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg border-2"
-                              style={{
-                                borderColor: themeColors?.accent || '#f59e0b',
-                                color: themeColors?.accent || '#f59e0b',
-                              }}
-                            >
-                              ⭐ Favorilerim
-                            </Button>
+                          <Link 
+                            href="/favorites"
+                            className="inline-flex items-center justify-center font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 rounded-md px-3 py-2 text-sm"
+                            style={{
+                              borderColor: themeColors?.accent || '#f59e0b',
+                              color: themeColors?.accent || '#f59e0b',
+                            }}
+                          >
+                            ⭐ Favorilerim
                           </Link>
-                          <Link href="/profile/edit">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg border-2"
-                              style={{
-                                borderColor: themeColors?.primary || '#3b82f6',
-                                color: themeColors?.primary || '#3b82f6',
-                              }}
-                            >
-                              ✏️ Düzenle
-                            </Button>
+                          <Link 
+                            href="/profile/edit"
+                            className="inline-flex items-center justify-center font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg border-2 rounded-md px-3 py-2 text-sm"
+                            style={{
+                              borderColor: themeColors?.primary || '#3b82f6',
+                              color: themeColors?.primary || '#3b82f6',
+                            }}
+                          >
+                            ✏️ Düzenle
                           </Link>
                         </div>
                       )}

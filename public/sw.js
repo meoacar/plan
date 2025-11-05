@@ -51,15 +51,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip POST, PUT, DELETE requests (only cache GET requests)
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Skip API requests from caching
+  if (event.request.url.includes('/api/')) {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Clone response before caching
-        const responseToCache = response.clone();
-        
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
+        // Only cache successful responses
+        if (response.status === 200) {
+          const responseToCache = response.clone();
+          
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache).catch(() => {
+              // Silently fail cache put
+            });
+          });
+        }
         
         return response;
       })
@@ -70,8 +84,13 @@ self.addEventListener('fetch', (event) => {
             if (response) {
               return response;
             }
-            // If not in cache, return offline page
-            return caches.match('/offline');
+            // If not in cache and it's a navigation request, return offline page
+            if (event.request.mode === 'navigate') {
+              return caches.match('/offline').then(offlineResponse => {
+                return offlineResponse || new Response('Offline', { status: 503 });
+              });
+            }
+            return new Response('Not found', { status: 404 });
           });
       })
   );

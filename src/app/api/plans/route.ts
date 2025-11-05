@@ -245,9 +245,18 @@ export async function GET(req: Request) {
       }
     )
   } catch (error) {
+    console.error("Plans GET error:", error);
+    // Hata durumunda boş liste dön, UI'ı bozma
     return NextResponse.json(
-      { error: "Planlar yüklenirken bir hata oluştu" },
-      { status: 500 }
+      {
+        plans: [],
+        pagination: {
+          page: 1,
+          limit: 12,
+          total: 0,
+          totalPages: 0
+        }
+      }
     )
   }
 }

@@ -12,10 +12,8 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
+      // Yetkisiz kullanıcılar için 0 dön
+      return NextResponse.json({ count: 0 });
     }
 
     const count = await getUnreadNotificationCount(session.user.id);
@@ -23,9 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ count });
   } catch (error) {
     console.error('Okunmamış bildirim sayısı getirme hatası:', error);
-    return NextResponse.json(
-      { error: 'Sayı getirilemedi' },
-      { status: 500 }
-    );
+    // Hata durumunda 0 dön, UI'ı bozmayalım
+    return NextResponse.json({ count: 0 });
   }
 }

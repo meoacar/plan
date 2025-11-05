@@ -9,8 +9,23 @@ const urlsToCache = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
+      .then((cache) => {
+        // Her URL'i ayrı ayrı cache'le, hata olursa devam et
+        return Promise.allSettled(
+          urlsToCache.map(url => 
+            cache.add(url).catch(err => {
+              console.warn(`Failed to cache ${url}:`, err);
+              return null;
+            })
+          )
+        );
+      })
       .then(() => self.skipWaiting())
+      .catch(err => {
+        console.error('Service Worker install failed:', err);
+        // Hata olsa bile install'ı tamamla
+        return self.skipWaiting();
+      })
   );
 });
 

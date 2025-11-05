@@ -314,13 +314,14 @@ export default async function ProfilePage({ params }: PageProps) {
                       {/* Edit Button Glow */}
                       <div className="absolute -inset-1 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full blur opacity-75 group-hover/edit:opacity-100 transition duration-300 animate-pulse"></div>
                       {/* Edit Button */}
-                      <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-1.5 shadow-2xl transition-all duration-300 hover:scale-110 hover:rotate-12">
-                        <Link href="/profile/edit">
-                          <Button size="sm" className="rounded-full h-14 w-14 p-0 bg-white hover:bg-gray-50 text-3xl shadow-lg">
-                            ✏️
-                          </Button>
-                        </Link>
-                      </div>
+                      <Link 
+                        href="/profile/edit"
+                        className="relative bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-1.5 shadow-2xl transition-all duration-300 hover:scale-110 hover:rotate-12 inline-flex items-center justify-center"
+                      >
+                        <div className="rounded-full h-14 w-14 flex items-center justify-center bg-white hover:bg-gray-50 text-3xl shadow-lg">
+                          ✏️
+                        </div>
+                      </Link>
                     </div>
                   )}
                 </div>

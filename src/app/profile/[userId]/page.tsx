@@ -142,7 +142,14 @@ export default async function ProfilePage({ params }: PageProps) {
 
   // Planları duruma göre ayır (sadece kendi profilinde)
   // Prisma'dan gelen User'ı user'a dönüştür (PlanCard için)
-  const transformPlan = (p: any) => ({ ...p, user: p.User, _count: { likes: p._count.Like, comments: p._count.Comment_Comment_planIdToPlan } })
+  // Date objelerini string'e çevir (client component'e geçmek için)
+  const transformPlan = (p: any) => ({
+    ...p,
+    user: p.User,
+    _count: { likes: p._count.Like, comments: p._count.Comment_Comment_planIdToPlan },
+    createdAt: p.createdAt.toISOString(),
+    updatedAt: p.updatedAt.toISOString(),
+  })
   const approvedPlans = user.Plan.filter((p: any) => p.status === "APPROVED").map(transformPlan)
   const pendingPlans = isOwnProfile ? user.Plan.filter((p: any) => p.status === "PENDING").map(transformPlan) : []
   const rejectedPlans = isOwnProfile ? user.Plan.filter((p: any) => p.status === "REJECTED").map(transformPlan) : []
@@ -762,7 +769,12 @@ export default async function ProfilePage({ params }: PageProps) {
               approvedPlans={approvedPlans}
               pendingPlans={pendingPlans}
               rejectedPlans={rejectedPlans}
-              polls={user.Poll || []}
+              polls={(user.Poll || []).map((poll: any) => ({
+                ...poll,
+                createdAt: poll.createdAt.toISOString(),
+                updatedAt: poll.updatedAt.toISOString(),
+                endsAt: poll.endsAt ? poll.endsAt.toISOString() : null,
+              }))}
               userId={user.id}
             />
           </div>

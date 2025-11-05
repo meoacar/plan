@@ -79,7 +79,7 @@ export function Footer({ settings, footerLinks = [], footerPages = [] }: FooterP
                 </li>
                 <li>
                   <Link
-                    href="/plan"
+                    href="/submit"
                     className="text-gray-400 hover:text-purple-400 transition-colors text-sm flex items-center gap-2 group"
                   >
                     <span className="text-green-500 group-hover:scale-110 transition-transform">📋</span>
@@ -141,22 +141,22 @@ export function Footer({ settings, footerLinks = [], footerPages = [] }: FooterP
                 ) : (
                   <>
                     <li>
-                      <Link href="/about" className="text-gray-400 hover:text-purple-400 transition-colors text-sm">
+                      <Link href="/pages/hakkimizda" className="text-gray-400 hover:text-purple-400 transition-colors text-sm">
                         Hakkımızda
                       </Link>
                     </li>
                     <li>
-                      <Link href="/contact" className="text-gray-400 hover:text-purple-400 transition-colors text-sm">
+                      <Link href="/pages/iletisim" className="text-gray-400 hover:text-purple-400 transition-colors text-sm">
                         İletişim
                       </Link>
                     </li>
                     <li>
-                      <Link href="/privacy" className="text-gray-400 hover:text-purple-400 transition-colors text-sm">
+                      <Link href="/pages/gizlilik-politikasi" className="text-gray-400 hover:text-purple-400 transition-colors text-sm">
                         Gizlilik Politikası
                       </Link>
                     </li>
                     <li>
-                      <Link href="/terms" className="text-gray-400 hover:text-purple-400 transition-colors text-sm">
+                      <Link href="/pages/kullanim-kosullari" className="text-gray-400 hover:text-purple-400 transition-colors text-sm">
                         Kullanım Koşulları
                       </Link>
                     </li>

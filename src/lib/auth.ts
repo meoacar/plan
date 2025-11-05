@@ -73,10 +73,10 @@ function buildProviders() {
   return providers
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   session: { 
-    strategy: "jwt",
+    strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
@@ -86,7 +86,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   allowDangerousEmailAccountLinking: true,
   providers: buildProviders(),
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id
         const dbUser = await prisma.user.findUnique({
@@ -98,7 +98,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
@@ -107,4 +107,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session
     }
   }
-})
+}
+
+export const { handlers, signIn, signOut, auth } = NextAuth(authOptions)

@@ -116,13 +116,13 @@ async function getFooterData() {
       prisma.siteSettings.findFirst({
         orderBy: { updatedAt: "desc" },
         include: {
-          footerLinks: {
+          FooterLink: {
             orderBy: { order: "asc" },
           },
         },
       }),
     ]);
-    return { pages, footerLinks: settings?.footerLinks || [] };
+    return { pages, footerLinks: settings?.FooterLink || [] };
   } catch (error) {
     console.error("Error fetching footer data:", error);
     return { pages: [], footerLinks: [] };
@@ -146,7 +146,7 @@ export default async function RootLayout({
       unreadCount = await prisma.notification.count({
         where: {
           userId: session.user.id,
-          read: false,
+          isRead: false,
         },
       });
     } catch (error) {
@@ -173,6 +173,7 @@ export default async function RootLayout({
         
         {/* Theme Color */}
         <meta name="theme-color" content="#9333ea" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         

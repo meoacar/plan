@@ -47,9 +47,9 @@ export async function GET(req: NextRequest) {
               level: true,
               _count: {
                 select: {
-                  plans: true,
-                  followers: true,
-                  following: true,
+                  Plan: { where: { status: "APPROVED" } },
+                  Follow_Follow_followingIdToUser: { where: { status: "ACCEPTED" } },
+                  Follow_Follow_followerIdToUser: { where: { status: "ACCEPTED" } },
                 },
               },
             },

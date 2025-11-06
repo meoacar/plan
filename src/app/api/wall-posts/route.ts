@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
           ...(isOwnProfile ? {} : { isPublic: true }),
         },
         include: {
-          author: {
+          User_WallPost_authorIdToUser: {
             select: {
               id: true,
               name: true,
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         isPublic: validatedData.isPublic,
       },
       include: {
-        author: {
+        User_WallPost_authorIdToUser: {
           select: {
             id: true,
             name: true,

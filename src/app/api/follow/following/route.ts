@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
           status: 'ACCEPTED', // Sadece kabul edilmiş takipler
         },
         include: {
-          following: {
+          User_Follow_followingIdToUser: {
             select: {
               id: true,
               name: true,
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     return NextResponse.json({
-      following: following.map((f) => f.following),
+      following: following.map((f) => f.User_Follow_followingIdToUser),
       total,
       page,
       totalPages: Math.ceil(total / limit),

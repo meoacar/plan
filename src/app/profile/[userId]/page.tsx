@@ -53,7 +53,7 @@ async function getUser(userIdOrUsername: string, isOwnProfile: boolean = false) 
           _count: {
             select: {
               Like: true,
-              Comment_Comment_planIdToPlan: true,
+              Comment: true,
             },
           },
         },
@@ -146,7 +146,7 @@ export default async function ProfilePage({ params }: PageProps) {
   const transformPlan = (p: any) => ({
     ...p,
     user: p.User,
-    _count: { likes: p._count.Like, comments: p._count.Comment_Comment_planIdToPlan },
+    _count: { likes: p._count.Like, comments: p._count.Comment },
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
   })

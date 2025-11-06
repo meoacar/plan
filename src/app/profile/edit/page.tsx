@@ -62,6 +62,8 @@ export default function EditProfilePage() {
   })
 
   useEffect(() => {
+    // Loading tamamlandıktan sonra ve hala unauthenticated ise yönlendir
+    if (status === "loading") return
     if (status === "unauthenticated") {
       router.push("/login")
     }

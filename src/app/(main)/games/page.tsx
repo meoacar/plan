@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { GamesClient } from './games-client';
 
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function GamesPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id) {
     redirect('/auth/signin');

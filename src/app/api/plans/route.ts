@@ -114,7 +114,7 @@ export async function GET(req: Request) {
     if (search) {
       where.OR = [
         { title: { contains: search, mode: "insensitive" } },
-        { user: { name: { contains: search, mode: "insensitive" } } }
+        { User: { name: { contains: search, mode: "insensitive" } } }
       ]
     }
 
@@ -152,7 +152,7 @@ export async function GET(req: Request) {
           imageUrl: true,
           views: true,
           createdAt: true,
-          user: {
+          User: {
             select: {
               id: true,
               name: true,

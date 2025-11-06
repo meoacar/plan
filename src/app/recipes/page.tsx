@@ -33,14 +33,14 @@ async function RecipeList({
     prisma.recipe.findMany({
       where,
       include: {
-        images: {
+        RecipeImage: {
           orderBy: { order: "asc" },
           take: 1,
         },
         _count: {
           select: {
-            likes: true,
-            comments: true,
+            RecipeLike: true,
+            RecipeComment: true,
           },
         },
       },
@@ -62,10 +62,10 @@ async function RecipeList({
             href={`/recipes/${recipe.slug}`}
             className="group overflow-hidden rounded-lg border bg-white shadow-sm transition hover:shadow-md"
           >
-            {recipe.images[0] && (
+            {recipe.RecipeImage[0] && (
               <div className="aspect-video overflow-hidden bg-gray-100">
                 <img
-                  src={recipe.images[0].url}
+                  src={recipe.RecipeImage[0].url}
                   alt={recipe.title}
                   className="h-full w-full object-cover transition group-hover:scale-105"
                 />
@@ -96,8 +96,8 @@ async function RecipeList({
                 )}
               </div>
               <div className="mt-3 flex items-center gap-3 border-t pt-3 text-sm text-gray-500">
-                <span>❤️ {recipe._count.likes}</span>
-                <span>💬 {recipe._count.comments}</span>
+                <span>❤️ {recipe._count.RecipeLike}</span>
+                <span>💬 {recipe._count.RecipeComment}</span>
                 <span>👁️ {recipe.views}</span>
               </div>
             </div>

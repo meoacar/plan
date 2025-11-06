@@ -18,8 +18,8 @@ export async function GET() {
         streak: true,
         _count: {
           select: {
-            badges: true,
-            plans: {
+            UserBadge: true,
+            Plan: {
               where: { status: "APPROVED" },
             },
           },
@@ -41,8 +41,8 @@ export async function GET() {
       xp: user.xp,
       level: user.level,
       streak: user.streak,
-      badgeCount: user._count.badges,
-      planCount: user._count.plans,
+      badgeCount: user._count.UserBadge,
+      planCount: user._count.Plan,
       nextLevelXP,
       progress: Math.min(100, Math.max(0, progress)),
     });

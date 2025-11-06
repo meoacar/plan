@@ -12,6 +12,7 @@ async function main() {
     where: { email: 'admin@example.com' },
     update: {},
     create: {
+      id: 'admin-user-id-001',
       email: 'admin@example.com',
       passwordHash: adminPassword,
       name: 'Admin',
@@ -25,6 +26,7 @@ async function main() {
     where: { email: 'user1@example.com' },
     update: {},
     create: {
+      id: 'user1-id-001',
       email: 'user1@example.com',
       passwordHash: user1Password,
       name: 'Ayşe Yılmaz',
@@ -39,6 +41,7 @@ async function main() {
     where: { email: 'user2@example.com' },
     update: {},
     create: {
+      id: 'user2-id-001',
       email: 'user2@example.com',
       passwordHash: user2Password,
       name: 'Mehmet Demir',
@@ -52,6 +55,7 @@ async function main() {
     where: { slug: '3-ayda-15-kilo-verdim-gercek-hikayem-abc123' },
     update: {},
     create: {
+      id: 'plan1-id-001',
       userId: user1.id,
       title: '3 Ayda 15 Kilo Verdim - Gerçek Hikayem',
       slug: '3-ayda-15-kilo-verdim-gercek-hikayem-abc123',
@@ -71,6 +75,7 @@ async function main() {
     where: { slug: 'spor-salonuyla-20-kilo-verdim-def456' },
     update: {},
     create: {
+      id: 'plan2-id-001',
       userId: user2.id,
       title: 'Spor Salonuyla 20 Kilo Verdim',
       slug: 'spor-salonuyla-20-kilo-verdim-def456',
@@ -90,6 +95,7 @@ async function main() {
     where: { slug: 'evde-egzersizle-10-kilo-ghi789' },
     update: {},
     create: {
+      id: 'plan3-id-001',
       userId: user1.id,
       title: 'Evde Egzersizle 10 Kilo',
       slug: 'evde-egzersizle-10-kilo-ghi789',
@@ -115,6 +121,7 @@ async function main() {
     },
     update: {},
     create: {
+      id: 'like1-id-001',
       userId: user2.id,
       planId: plan1.id,
     },
@@ -129,6 +136,7 @@ async function main() {
     },
     update: {},
     create: {
+      id: 'like2-id-001',
       userId: user1.id,
       planId: plan2.id,
     },
@@ -148,6 +156,7 @@ async function main() {
   if (existingComments.length === 0) {
     await prisma.comment.create({
       data: {
+        id: 'comment1-id-001',
         userId: user2.id,
         planId: plan1.id,
         body: 'Harika bir plan! Ben de benzer bir yol izliyorum, çok motive oldum.',
@@ -156,6 +165,7 @@ async function main() {
 
     await prisma.comment.create({
       data: {
+        id: 'comment2-id-001',
         userId: user1.id,
         planId: plan2.id,
         body: 'Tebrikler! Spor salonuna gitmek için motivasyon arıyordum, bu yazı çok yardımcı oldu.',
@@ -164,6 +174,7 @@ async function main() {
 
     await prisma.comment.create({
       data: {
+        id: 'comment3-id-001',
         userId: admin.id,
         planId: plan1.id,
         body: 'Çok güzel bir paylaşım, teşekkürler!',
@@ -176,6 +187,7 @@ async function main() {
     where: { slug: 'vegan' },
     update: {},
     create: {
+      id: 'cat-vegan-001',
       name: 'Vegan',
       slug: 'vegan',
       description: 'Hayvansal ürün içermeyen beslenme planları',
@@ -188,6 +200,7 @@ async function main() {
     where: { slug: 'keto' },
     update: {},
     create: {
+      id: 'cat-keto-001',
       name: 'Keto',
       slug: 'keto',
       description: 'Düşük karbonhidrat, yüksek yağ diyeti planları',
@@ -200,6 +213,7 @@ async function main() {
     where: { slug: 'spor' },
     update: {},
     create: {
+      id: 'cat-spor-001',
       name: 'Spor',
       slug: 'spor',
       description: 'Spor ve egzersiz odaklı planlar',
@@ -212,6 +226,7 @@ async function main() {
     where: { slug: 'evde-egzersiz' },
     update: {},
     create: {
+      id: 'cat-home-001',
       name: 'Evde Egzersiz',
       slug: 'evde-egzersiz',
       description: 'Evde yapılabilecek egzersiz planları',
@@ -224,6 +239,7 @@ async function main() {
     where: { slug: 'akdeniz-diyeti' },
     update: {},
     create: {
+      id: 'cat-med-001',
       name: 'Akdeniz Diyeti',
       slug: 'akdeniz-diyeti',
       description: 'Akdeniz mutfağı esaslı beslenme planları',
@@ -237,6 +253,7 @@ async function main() {
     where: { slug: 'hizli-kilo' },
     update: {},
     create: {
+      id: 'tag-fast-001',
       name: 'Hızlı Kilo',
       slug: 'hizli-kilo',
     },
@@ -246,6 +263,7 @@ async function main() {
     where: { slug: 'saglikli' },
     update: {},
     create: {
+      id: 'tag-healthy-001',
       name: 'Sağlıklı',
       slug: 'saglikli',
     },
@@ -255,6 +273,7 @@ async function main() {
     where: { slug: 'baslangic' },
     update: {},
     create: {
+      id: 'tag-beginner-001',
       name: 'Başlangıç',
       slug: 'baslangic',
     },
@@ -264,6 +283,7 @@ async function main() {
     where: { slug: 'ileri-seviye' },
     update: {},
     create: {
+      id: 'tag-advanced-001',
       name: 'İleri Seviye',
       slug: 'ileri-seviye',
     },
@@ -273,6 +293,7 @@ async function main() {
     where: { slug: 'ekonomik' },
     update: {},
     create: {
+      id: 'tag-budget-001',
       name: 'Ekonomik',
       slug: 'ekonomik',
     },
@@ -295,6 +316,7 @@ async function main() {
     },
     update: {},
     create: {
+      id: 'plantag1-001',
       planId: plan1.id,
       tagId: tagHealthy.id,
     },
@@ -309,6 +331,7 @@ async function main() {
     },
     update: {},
     create: {
+      id: 'plantag2-001',
       planId: plan1.id,
       tagId: tagBeginner.id,
     },
@@ -330,6 +353,7 @@ async function main() {
     },
     update: {},
     create: {
+      id: 'plantag3-001',
       planId: plan2.id,
       tagId: tagAdvanced.id,
     },
@@ -351,6 +375,7 @@ async function main() {
     },
     update: {},
     create: {
+      id: 'plantag4-001',
       planId: plan3.id,
       tagId: tagHealthy.id,
     },
@@ -365,6 +390,7 @@ async function main() {
     },
     update: {},
     create: {
+      id: 'plantag5-001',
       planId: plan3.id,
       tagId: tagBudget.id,
     },
@@ -375,6 +401,7 @@ async function main() {
   if (!existingSettings) {
     await prisma.siteSettings.create({
       data: {
+        id: 'settings-001',
         siteTitle: 'Zayıflama Planım',
         siteDescription: 'Gerçek insanların gerçek zayıflama hikayeleri ve planları. Sağlıklı yaşam için ilham alın, kendi planınızı paylaşın.',
         logoUrl: '/logo.png',

@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const title = settings?.siteTitle || "Zayıflama Planım - Gerçek Planlar";
   const description = settings?.siteDescription || "İnsanların gerçek zayıflama rutinlerini keşfet, kendi planını paylaş.";
-  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://zayiflamaplanim.com";
 
   // Cache bypass için timestamp ekle
   const timestamp = Date.now();

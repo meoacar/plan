@@ -18,7 +18,7 @@ export default async function ModerationPage() {
   // Yasaklı kelimeleri getir
   const bannedWords = await prisma.bannedWord.findMany({
     include: {
-      creator: {
+      User: {
         select: {
           id: true,
           name: true,
@@ -37,7 +37,7 @@ export default async function ModerationPage() {
       status: "PENDING",
     },
     include: {
-      user: {
+      User: {
         select: {
           id: true,
           name: true,
@@ -45,7 +45,7 @@ export default async function ModerationPage() {
           image: true,
         },
       },
-      category: {
+      Category: {
         select: {
           id: true,
           name: true,
@@ -54,8 +54,8 @@ export default async function ModerationPage() {
       },
       _count: {
         select: {
-          comments: true,
-          likes: true,
+          Comment: true,
+          Like: true,
         },
       },
     },

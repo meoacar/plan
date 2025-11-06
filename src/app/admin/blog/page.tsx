@@ -13,10 +13,10 @@ export const metadata: Metadata = {
 async function getBlogPosts() {
     return await prisma.blogPost.findMany({
         include: {
-            category: true,
+            BlogCategory: true,
             _count: {
                 select: {
-                    comments: true,
+                    BlogComment: true,
                 },
             },
         },
@@ -132,12 +132,12 @@ export default async function AdminBlogPage() {
                                         <div className="text-sm text-gray-500 line-clamp-1">{post.excerpt}</div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        {post.category && (
+                                        {post.BlogCategory && (
                                             <span
                                                 className="inline-block px-2 py-1 rounded text-xs font-medium text-white"
-                                                style={{ backgroundColor: post.category.color }}
+                                                style={{ backgroundColor: post.BlogCategory.color }}
                                             >
-                                                {post.category.name}
+                                                {post.BlogCategory.name}
                                             </span>
                                         )}
                                     </td>

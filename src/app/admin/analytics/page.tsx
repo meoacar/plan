@@ -214,16 +214,16 @@ async function getAnalyticsData() {
       image: true,
       _count: {
         select: {
-          plans: true,
-          comments: true,
-          likes: true,
+          Plan: true,
+          Comment_Comment_userIdToUser: true,
+          Like: true,
         },
       },
     },
     take: 10,
     orderBy: [
       {
-        plans: {
+        Plan: {
           _count: "desc",
         },
       },
@@ -235,7 +235,7 @@ async function getAnalyticsData() {
     name: string | null
     email: string
     image: string | null
-    _count: { plans: number; comments: number; likes: number }
+    _count: { Plan: number; Comment_Comment_userIdToUser: number; Like: number }
   }) => ({
     user: {
       id: user.id,
@@ -243,10 +243,10 @@ async function getAnalyticsData() {
       email: user.email,
       image: user.image,
     },
-    activityScore: user._count.plans * 10 + user._count.comments * 2 + user._count.likes,
-    planCount: user._count.plans,
-    commentCount: user._count.comments,
-    likeCount: user._count.likes,
+    activityScore: user._count.Plan * 10 + user._count.Comment_Comment_userIdToUser * 2 + user._count.Like,
+    planCount: user._count.Plan,
+    commentCount: user._count.Comment_Comment_userIdToUser,
+    likeCount: user._count.Like,
   }))
 
   const topPlans = await prisma.plan.findMany({
@@ -262,15 +262,15 @@ async function getAnalyticsData() {
       title: true,
       slug: true,
       views: true,
-      user: {
+      User: {
         select: {
           name: true,
         },
       },
       _count: {
         select: {
-          likes: true,
-          comments: true,
+          Like: true,
+          Comment: true,
         },
       },
     },
@@ -287,18 +287,18 @@ async function getAnalyticsData() {
     title: string
     slug: string
     views: number
-    user: { name: string | null }
-    _count: { likes: number; comments: number }
+    User: { name: string | null }
+    _count: { Like: number; Comment: number }
   }) => ({
     plan: {
       id: plan.id,
       title: plan.title,
       slug: plan.slug,
-      authorName: plan.user.name,
+      authorName: plan.User.name,
     },
     views: plan.views,
-    likes: plan._count.likes,
-    comments: plan._count.comments,
+    likes: plan._count.Like,
+    comments: plan._count.Comment,
   }))
 
   const userChange =

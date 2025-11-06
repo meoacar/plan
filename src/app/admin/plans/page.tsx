@@ -24,7 +24,7 @@ export default async function AdminPlansPage({ searchParams }: PageProps) {
     where: { status: status as any },
     orderBy: { createdAt: "desc" },
     include: {
-      user: {
+      User: {
         select: {
           id: true,
           name: true,

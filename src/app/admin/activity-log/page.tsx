@@ -41,7 +41,7 @@ export default async function AdminActivityLogPage({ searchParams }: PageProps) 
 
   // Kullanıcı arama (ad veya email)
   if (search) {
-    where.user = {
+    where.User = {
       OR: [
         { name: { contains: search, mode: "insensitive" } },
         { email: { contains: search, mode: "insensitive" } },
@@ -67,7 +67,7 @@ export default async function AdminActivityLogPage({ searchParams }: PageProps) 
   const logs = await prisma.activityLog.findMany({
     where,
     include: {
-      user: {
+      User: {
         select: {
           id: true,
           name: true,

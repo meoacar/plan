@@ -65,8 +65,8 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
   if (search) {
     where.OR = [
       { body: { contains: search, mode: "insensitive" } },
-      { user: { name: { contains: search, mode: "insensitive" } } },
-      { plan: { title: { contains: search, mode: "insensitive" } } },
+      { User_Comment_userIdToUser: { name: { contains: search, mode: "insensitive" } } },
+      { Plan: { title: { contains: search, mode: "insensitive" } } },
     ]
   }
 
@@ -86,14 +86,14 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
 
   // Sıralama
   let orderBy:
-    | { user: { name: "asc" | "desc" } }
-    | { plan: { title: "asc" | "desc" } }
+    | { User_Comment_userIdToUser: { name: "asc" | "desc" } }
+    | { Plan: { title: "asc" | "desc" } }
     | { createdAt: "asc" | "desc" }
   
   if (sortBy === "user") {
-    orderBy = { user: { name: sortOrder as "asc" | "desc" } }
+    orderBy = { User_Comment_userIdToUser: { name: sortOrder as "asc" | "desc" } }
   } else if (sortBy === "plan") {
-    orderBy = { plan: { title: sortOrder as "asc" | "desc" } }
+    orderBy = { Plan: { title: sortOrder as "asc" | "desc" } }
   } else {
     orderBy = { createdAt: sortOrder as "asc" | "desc" }
   }
@@ -102,7 +102,7 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
   const comments = await prisma.comment.findMany({
     where,
     include: {
-      user: {
+      User_Comment_userIdToUser: {
         select: {
           id: true,
           name: true,
@@ -110,14 +110,14 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
           image: true,
         },
       },
-      plan: {
+      Plan: {
         select: {
           id: true,
           title: true,
           slug: true,
         },
       },
-      moderator: {
+      User_Comment_moderatedByToUser: {
         select: {
           name: true,
         },

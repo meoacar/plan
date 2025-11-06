@@ -12,7 +12,7 @@ interface Plan {
   slug: string
   status: string
   createdAt: Date
-  user: {
+  User: {
     id: string
     name: string | null
     email: string
@@ -97,7 +97,7 @@ export function AdminPlanList({ plans, currentStatus }: AdminPlanListProps) {
                       {plan.title}
                     </Link>
                     <p className="text-base text-gray-700 mt-2 font-medium">
-                      👤 Gönderen: {plan.user.name || plan.user.email}
+                      👤 Gönderen: {plan.User.name || plan.User.email}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
                       📅 {new Date(plan.createdAt).toLocaleDateString("tr-TR", {

@@ -19,9 +19,9 @@ interface User {
   image?: string | null
   username?: string | null
   _count: {
-    plans: number
-    comments: number
-    likes: number
+    Plan: number
+    Comment_Comment_userIdToUser: number
+    Like: number
   }
 }
 
@@ -90,11 +90,11 @@ export function AdminUserList({ users }: AdminUserListProps) {
           comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           break
         case "plans":
-          comparison = a._count.plans - b._count.plans
+          comparison = a._count.Plan - b._count.Plan
           break
         case "activity":
-          const aActivity = a._count.plans + a._count.comments + a._count.likes
-          const bActivity = b._count.plans + b._count.comments + b._count.likes
+          const aActivity = a._count.Plan + a._count.Comment_Comment_userIdToUser + a._count.Like
+          const bActivity = b._count.Plan + b._count.Comment_Comment_userIdToUser + b._count.Like
           comparison = aActivity - bActivity
           break
       }
@@ -264,9 +264,9 @@ export function AdminUserList({ users }: AdminUserListProps) {
         user.name || "Anonim",
         user.email,
         user.role,
-        user._count.plans,
-        user._count.comments,
-        user._count.likes,
+        user._count.Plan,
+        user._count.Comment_Comment_userIdToUser,
+        user._count.Like,
         formatDate(user.createdAt),
       ]),
     ]
@@ -302,7 +302,7 @@ export function AdminUserList({ users }: AdminUserListProps) {
       admins: users.filter((u) => u.role === "ADMIN").length,
       newThisWeek: users.filter((u) => new Date(u.createdAt).getTime() > lastWeek).length,
       newThisMonth: users.filter((u) => new Date(u.createdAt).getTime() > lastMonth).length,
-      activeUsers: users.filter((u) => u._count.plans > 0 || u._count.comments > 0).length,
+      activeUsers: users.filter((u) => u._count.Plan > 0 || u._count.Comment_Comment_userIdToUser > 0).length,
     }
   }, [users, isMounted])
 
@@ -506,22 +506,22 @@ export function AdminUserList({ users }: AdminUserListProps) {
                     <div className="flex flex-wrap gap-2 mt-3">
                       <div className="bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
                         <span className="text-sm font-semibold text-blue-900">
-                          📋 {user._count.plans} Plan
+                          📋 {user._count.Plan} Plan
                         </span>
                       </div>
                       <div className="bg-green-50 px-3 py-1 rounded-lg border border-green-200">
                         <span className="text-sm font-semibold text-green-900">
-                          💬 {user._count.comments} Yorum
+                          💬 {user._count.Comment_Comment_userIdToUser} Yorum
                         </span>
                       </div>
                       <div className="bg-red-50 px-3 py-1 rounded-lg border border-red-200">
                         <span className="text-sm font-semibold text-red-900">
-                          ❤️ {user._count.likes} Beğeni
+                          ❤️ {user._count.Like} Beğeni
                         </span>
                       </div>
                       <div className="bg-purple-50 px-3 py-1 rounded-lg border border-purple-200">
                         <span className="text-sm font-semibold text-purple-900">
-                          ⚡ {user._count.plans + user._count.comments + user._count.likes} Toplam
+                          ⚡ {user._count.Plan + user._count.Comment_Comment_userIdToUser + user._count.Like} Toplam
                         </span>
                       </div>
                     </div>
@@ -699,15 +699,15 @@ export function AdminUserList({ users }: AdminUserListProps) {
                     </div>
                     <div>
                       <span className="text-gray-600">Planlar:</span>{" "}
-                      <span className="font-semibold">{userToEdit._count.plans}</span>
+                      <span className="font-semibold">{userToEdit._count.Plan}</span>
                     </div>
                     <div>
                       <span className="text-gray-600">Yorumlar:</span>{" "}
-                      <span className="font-semibold">{userToEdit._count.comments}</span>
+                      <span className="font-semibold">{userToEdit._count.Comment_Comment_userIdToUser}</span>
                     </div>
                     <div>
                       <span className="text-gray-600">Beğeniler:</span>{" "}
-                      <span className="font-semibold">{userToEdit._count.likes}</span>
+                      <span className="font-semibold">{userToEdit._count.Like}</span>
                     </div>
                     <div suppressHydrationWarning>
                       <span className="text-gray-600">Üyelik:</span>{" "}

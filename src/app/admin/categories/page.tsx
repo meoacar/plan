@@ -19,7 +19,7 @@ export default async function AdminCategoriesPage() {
     orderBy: { order: "asc" },
     include: {
       _count: {
-        select: { plans: true },
+        select: { Plan: true },
       },
     },
   })
@@ -29,7 +29,7 @@ export default async function AdminCategoriesPage() {
     orderBy: { name: "asc" },
     include: {
       _count: {
-        select: { plans: true },
+        select: { PlanTag: true },
       },
     },
   })

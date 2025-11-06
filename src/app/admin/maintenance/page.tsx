@@ -24,7 +24,7 @@ export default async function MaintenancePage() {
       orderBy: { createdAt: "desc" },
       take: 10,
       include: {
-        creator: {
+        User: {
           select: {
             id: true,
             name: true,

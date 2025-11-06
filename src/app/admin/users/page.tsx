@@ -29,9 +29,9 @@ export default async function AdminUsersPage() {
       username: true,
       _count: {
         select: {
-          plans: true,
-          comments: true,
-          likes: true,
+          Plan: true,
+          Comment_Comment_userIdToUser: true,
+          Like: true,
         },
       },
     },
